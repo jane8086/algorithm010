@@ -1,11 +1,3 @@
-///Users/jieanyan/Desktop/cpp_test/opencv3_test/opencv3_test.xcodeproj
-//  main.cpp
-//  opencv3_test
-//
-//  Created by jiean yan on 14.11.18.
-//  Copyright © 2018 jiean yan. All rights reserved.
-//
-
 #include <iostream>
 #include <stdlib.h>
 #include <math.h>
@@ -16,20 +8,30 @@
 
 using namespace std;
 using namespace cv;
-void generateGrayarr(int n);
 void generateGrayarr_horizontal(int monitor_w,int monitor_h,int n);
-void mode_choose(int monitor_w,int monitor_h,int n,bool mode);
+void generateGrayarr_vertical(int monitor_w,int monitor_h,int n);
+void creat_grayCode_patterns(int monitor_w,int monitor_h,int n,bool mode);
+
+
 /*
- creat a gray pattern
+ function creat_grayCode_patterns
+ input: monitor_w: resolution U
+        monitor_h: resolution V
+        n: sum of the periods
+        image_mode: 1 for creating horizontal images,
+                    0 for creating vertical images.
+ output: n gray_code images with different period
  */
 
-// monitor width and height and period n -->horizontal mode
+
+// monitor width and height and period n -->vertical mode
 void generateGrayarr_vertical(int monitor_w,int monitor_h,int n)
 {
     // base case
     if (n <= 0)
         return;
     
+    //--THE CODE BELOW, CREAT A VECTOR OF GRAY CODE---
     // 'arr' will store all generated codes
     vector<string> arr;
     
@@ -38,6 +40,7 @@ void generateGrayarr_vertical(int monitor_w,int monitor_h,int n)
     arr.push_back("1");
     
     //-- Every iteration of this loop generates 2*i codes from previously
+    
     // generated i codes.
     int i, j;
     
@@ -57,40 +60,48 @@ void generateGrayarr_vertical(int monitor_w,int monitor_h,int n)
     }
     //--THE CODE ABOVE, CREAT A VECTOR OF GRAY CODE
     
-    
-    //--THE CODE BELOW, CONVERT GRAY CODE TO PATTERN
+    //--THE CODE BELOW, CONVERT GRAY CODE TO PATTERNS
+    vector<Mat> gray_patterns;
     Mat gray_pattern(monitor_w,monitor_h,CV_8UC1);//create a blank pattern
-    gray_pattern = 255;//initialize pattern
-    int unit_w = monitor_w / n; //width unit
-    int n_2 = pow(2,n); //count
-    int unit_h = monitor_h/ n_2; // height unit
     
-    // convert gray code into  a pattern image
-    for (int k = 0 ; k < arr.size() ; k++ )
+    // convert gray code into several patterns which stored in a vector
+    for (int p = 1 ; p <= n ; p++)         //gray_code_pattern with n period
     {
-        string s = arr[k];
-        
-        for(int p= 0; p < n; p++)
+        int arrsiz;
+        arrsiz = pow(2,p);
+        gray_pattern =255;                //initialize Mat before use it
+        for(int x = 1 ; x <= arrsiz ; x++)//
         {
-            int tem = s[p];
-            if ((tem-48)== 0 )
-            {
-                gray_pattern(Range(p*unit_w,(p+1)*unit_w),Range(k*unit_h,(k+1)*unit_h))= 0;
-            }
             
+            int unit_h ;
+            unit_h = monitor_h / arrsiz ;
+            string s;
+            s = arr[x-1];
+            int tem;
+            tem = s[n-1];
+            if ((tem-48)==0)
+            {
+                gray_pattern(Range(0, monitor_w),Range((x-1)*unit_h, x*unit_h))=0;//fill black in pattern
+            }
         }
+        gray_patterns.push_back(gray_pattern.clone());
     }
     
+    
     //show graycode pattern
-    imwrite("gray.jpg",gray_pattern);
-    namedWindow("gray");
-    imshow("gray", gray_pattern);
+    for(int x = 0; x<n ; x++)
+    {
+        string picture = "vertical_gray_code_pattern_with" + to_string(x) + " period.jpg";
+        string windowname = "vertical_gray"+to_string(x);
+        imwrite(picture,gray_patterns[x]);
+        namedWindow(windowname);
+        imshow(windowname , gray_patterns[x]);
+    }
     waitKey(0);
+    
 }
 
-
-
-// monitor width and height and period n -->vertical version
+// monitor width and height and period n -->horizontal version
 void generateGrayarr_horizontal(int monitor_w,int monitor_h,int n)
 {
     // base case
@@ -100,7 +111,7 @@ void generateGrayarr_horizontal(int monitor_w,int monitor_h,int n)
     //--THE CODE BELOW, CREAT A VECTOR OF GRAY CODE---
     // 'arr' will store all generated codes
     vector<string> arr;
-
+    
     // start with one-bit pattern
     arr.push_back("0");
     arr.push_back("1");
@@ -125,42 +136,55 @@ void generateGrayarr_horizontal(int monitor_w,int monitor_h,int n)
     }
     //--THE CODE ABOVE, CREAT A VECTOR OF GRAY CODE------
     
-    //--THE CODE BELOW, CONVERT GRAY CODE TO PATTERN
-    Mat gray_pattern(monitor_w,monitor_h,CV_8UC1);//create a blank pattern
-    gray_pattern = 255;//initialize pattern
-    int unit_h = monitor_h / n; // height unit
-    int n_2 = pow(2,n); //count
-    int unit_w = monitor_w / n_2; //width unit
     
-    // convert gray code into  a pattern image
-    for (int k = 0 ; k < arr.size() ; k++ )
+    //--THE CODE BELOW, CONVERT GRAY CODE TO PATTERNS
+    vector<Mat> gray_patterns;                   //creat a vector to save gray_patterns
+    
+    Mat gray_pattern(monitor_w,monitor_h,CV_8UC1);//create a blank pattern
+    
+    // convert gray code into several patterns which stored in a vector
+    for (int p = 1 ; p <= n ; p++)         //gray_code_pattern with n period
     {
-        string s = arr[k];
-        
-        for(int p= 0; p < n; p++)
+        int arrsiz;
+        arrsiz = pow(2,p);
+        gray_pattern =255;                //initialize Mat before use it
+        for(int x = 1 ; x <= arrsiz ; x++)
         {
-            int tem = s[p];
-            if ((tem-48)== 0 )
-                {
-                    gray_pattern(Range(k*unit_w,(k+1)*unit_w),Range(p*unit_h,(p+1)*unit_h))= 0;
-                }
-        
-        }
+            
+            int unit_w ;
+            unit_w = monitor_w / arrsiz ;
+            string s;
+            s = arr[x-1];
+            int tem;
+            tem = s[n-1];
+            if ((tem-48)==0)
+            {
+                gray_pattern(Range((x-1)*unit_w, x*unit_w),Range(0,monitor_h))=0;//fill black in pattern
+            }
+         }
+        gray_patterns.push_back(gray_pattern.clone());
     }
     
     
     //show graycode pattern
-    imwrite("gray.jpg",gray_pattern);
-    namedWindow("gray");
-    imshow("gray", gray_pattern);
+    for(int x = 0; x<n ; x++)
+    {
+        string picture = "horizontal_gray_code_pattern_with" + to_string(x) + " period.jpg";
+        string windowname = "horizontal_gray"+to_string(x);
+        imwrite(picture,gray_patterns[x]);
+        namedWindow(windowname);
+        imshow(windowname , gray_patterns[x]);
+    }
     waitKey(0);
+    
+
 }
 
-//mode 1: vertical pattern
-//mode 0: horizontal pattern
-void mode_choose(int monitor_w,int monitor_h,int n,bool mode)
+//mode 0: vertical pattern
+//mode 1: horizontal pattern
+void creat_grayCode_patterns(int monitor_w,int monitor_h,int n,bool mode)
 {
-    if (mode == 1) {
+    if (mode == 0) {
         generateGrayarr_vertical(monitor_w, monitor_h,n);
     } else {
         generateGrayarr_horizontal(monitor_w, monitor_h, n);
@@ -170,11 +194,6 @@ void mode_choose(int monitor_w,int monitor_h,int n,bool mode)
 
 int main()
 {
-    int monitor_w=80;
-    int monitor_h=160;
-    int n=4;
-    bool mode=1;
-    mode_choose( monitor_w, monitor_h, n,  mode);
+    creat_grayCode_patterns(160,160,4,1);
     return 0;
 }
-
