@@ -55,3 +55,14 @@ int camera_connect(Camera &camera, CameraInfo &caminfo){
 
     return true;
 }
+
+
+int camera_disconnect(Camera &camera){
+
+    camera.Disconnect();
+    if(camera.IsConnected()){
+        cout << "Problems while disconnecting camera" << endl;
+        return -1;
+    }
+    return 0;
+}
