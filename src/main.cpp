@@ -40,12 +40,11 @@ int main(int argc, char **argv)
 //    destroyAllWindows();
 
     QSurfaceFormat format;
-    format.setSwapInterval(0);
+    format.setSwapInterval(1);
     QSurfaceFormat::setDefaultFormat(format);
 
     QGuiApplication app(argc, argv);
     ImageDisplayWindow window;
-
     window.setFormat(format);
     window.showFullScreen();
 
