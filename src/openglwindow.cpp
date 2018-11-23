@@ -74,6 +74,10 @@ bool OpenGLWindow::event(QEvent *event)
                 renderNow();
                 return true;
             }
+            else if (keyEvent->key() == Qt::Key_Escape)
+            {
+                QCoreApplication::quit();
+            }
 //        default:
 //            return QWindow::event(event);
         }
