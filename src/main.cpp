@@ -1,6 +1,7 @@
 #include "flycapture/FlyCapture2.h"
 #include "headers/camera.h"
 #include "headers/patterns.h"
+#include "headers/phases.h"
 
 int main(void)
 {
@@ -22,16 +23,16 @@ int main(void)
 
 
     /// Show created patterns
-    namedWindow("Patterns", WINDOW_NORMAL);
-    cvSetWindowProperty("Patterns", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-
+    //namedWindow("Patterns", WINDOW_NORMAL);
+    //cvSetWindowProperty("Patterns", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+/*
     for (int i = 0; i<static_cast<int>(patterns.size()); i++){
 
         imshow("Patterns", patterns[i]);
         waitKey(500);
     }
     destroyAllWindows();
-
+*/
 
 
 
@@ -43,6 +44,24 @@ int main(void)
 
 
     //4. Unwrap Phase Maps
+    Mat im1,im2,im3;
+    im1 = imread("grayim_column_1.png");
+    im2 = imread("grayim_column_2.png");
+    im3 = imread("grayim_column_3.png");
+    vector<Mat> relative_phases;
+    calculate_relative_phase(im1,im2,im3, relative_phases);
+    namedWindow("Patterns", WINDOW_NORMAL);
+    cvSetWindowProperty("Patterns", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+
+    for (int i = 0; i<static_cast<int>(relative_phases.size()); i++){
+
+        imshow("relative_phases", relative_phases[i]);
+        waitKey(0);
+    }
+    destroyAllWindows();
+
+
+    //imwrite("pha_rel",relative_phase);
 
 
     //5. Create Point Correspondences
