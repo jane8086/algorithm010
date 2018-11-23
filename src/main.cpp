@@ -38,14 +38,16 @@ int main(int argc, char **argv)
 //        waitKey(500);
 //    }
 //    destroyAllWindows();
-
+    cout << " ---------- GUIDE ----------" << std::endl;
+    cout << std::endl << "Press Up-arrow to start rendering" << std::endl;
+    cout << std::endl << "Press Down-arrow to pause" << std::endl;
+    cout << std::endl << "Press ESC to quit" << std::endl;
     QSurfaceFormat format;
-    format.setSwapInterval(0);
+    format.setSwapInterval(1);
     QSurfaceFormat::setDefaultFormat(format);
 
     QGuiApplication app(argc, argv);
     ImageDisplayWindow window;
-
     window.setFormat(format);
     window.showFullScreen();
 

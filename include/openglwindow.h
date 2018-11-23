@@ -8,6 +8,7 @@
 
 #include <QOpenGLPaintDevice>
 #include <QOpenGLTexture>
+#include <QInputEvent>
 
 class QPainter;
 class QOpenGLContext;
@@ -32,8 +33,8 @@ public slots:
     void renderNow();
 
 protected:
+    bool is_rendering;
     bool event(QEvent *event) override;
-
     void exposeEvent(QExposeEvent *event) override;
 
 private:

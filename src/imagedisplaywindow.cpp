@@ -15,6 +15,8 @@
 #include <QOpenGLPaintDevice>
 #include <QOpenGLTexture>
 #include <QPainter>
+#include <QInputEvent>
+
 
 ImageDisplayWindow::ImageDisplayWindow(): width(monitor_width), heigth(monitor_height), image_rate(0), image_number(0)
 {
@@ -83,11 +85,11 @@ void ImageDisplayWindow::initialize()
     generate_pixmap_array();
 
     for (int i=0; i<m_q_img_array.size();i++) {
-      QOpenGLTexture *texture;
-      texture = new QOpenGLTexture(m_q_img_array[i]);
-      texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
-      texture->setMagnificationFilter(QOpenGLTexture::Linear);
-      textures.push_back(texture);
+        QOpenGLTexture *texture;
+        texture = new QOpenGLTexture(m_q_img_array[i]);
+        texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+        texture->setMagnificationFilter(QOpenGLTexture::Linear);
+        textures.push_back(texture);
     }
 }
 
@@ -113,32 +115,37 @@ void ImageDisplayWindow::initialize()
 
 
 void ImageDisplayWindow::render(){
-  glViewport(0,0,width,heigth);
-  glClearColor(0.4f, 0.1f, 0.1f, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glViewport(0,0,width,heigth);
+    glClearColor(0.4f, 0.1f, 0.1f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  glEnable(GL_TEXTURE_2D);
+    glEnable(GL_TEXTURE_2D);
 
-  // To slow down the display rate of the image sequence
-  image_number = image_rate/display_rate;
-  if(image_number >= m_q_img_array.size()){
-    image_number = 0;
-    image_rate = 0;
-  }
+    // To slow down the display rate of the image sequence
 
 
-  // Render with texture
-  textures[image_number]->bind();
+    if (is_rendering)
+    {
+        image_number = image_rate/display_rate;
+        if(image_number >= m_q_img_array.size()){
+            image_number = 0;
+            image_rate = 0;
+        }
+    }
 
-  glMatrixMode(GL_PROJECTION);
-  glPushMatrix();
-  glLoadIdentity();
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
 
-  glBegin(GL_QUADS);
-  glTexCoord2f(0,0);
+    // Render with texture
+    textures[image_number]->bind();
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glBegin(GL_QUADS);
+    glTexCoord2f(0,0);
       glVertex2f(-1.0f, -1.0f);
       glTexCoord2f(1,0);
       glVertex2f(1.0f, -1.0f);
@@ -146,18 +153,24 @@ void ImageDisplayWindow::render(){
       glVertex2f(1.0f, 1.0f);
       glTexCoord2f(0,1);
       glVertex2f(-1.0f, 1.0f);
-  glEnd();
+    glEnd();
+
+    if (is_rendering)
+    {
+        ++image_rate;
+    }
 
 
-  ++image_rate;
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
 
-  glPopMatrix();
-  glMatrixMode(GL_PROJECTION);
-  glPopMatrix();
-  glMatrixMode(GL_MODELVIEW);
-
-  glDisable(GL_TEXTURE_2D);
+    glDisable(GL_TEXTURE_2D);
 }
+
+
+
 
 
 

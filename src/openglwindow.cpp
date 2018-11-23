@@ -5,6 +5,7 @@
 #include <QtGui/QOpenGLContext>
 #include <QtGui/QOpenGLPaintDevice>
 #include <QtGui/QPainter>
+#include <QTime>
 
 OpenGLWindow::OpenGLWindow(QWindow *parent)
     : QWindow(parent)
@@ -48,13 +49,38 @@ void OpenGLWindow::renderLater()
 
 bool OpenGLWindow::event(QEvent *event)
 {
-    switch (event->type()) {
-    case QEvent::UpdateRequest:
-        renderNow();
-        return true;
-    default:
-        return QWindow::event(event);
-    }
+//    switch (event->type()) {
+//    case QEvent::UpdateRequest:
+//        renderNow();
+//        return true;
+//    default:
+//        return QWindow::event(event);
+//    }
+        switch (event->type()) {
+        case QEvent::UpdateRequest:
+            renderNow();
+            return true;
+        case QEvent::KeyPress:
+            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+            if (keyEvent->key() == Qt::Key_Up)
+            {
+                is_rendering = true;
+                renderLater();
+                return true;
+            }
+            else if (keyEvent->key() == Qt::Key_Down)
+            {
+                is_rendering = false;
+                renderNow();
+                return true;
+            }
+            else if (keyEvent->key() == Qt::Key_Escape)
+            {
+                QCoreApplication::quit();
+            }
+//        default:
+//            return QWindow::event(event);
+        }
 }
 
 void OpenGLWindow::exposeEvent(QExposeEvent *event)
