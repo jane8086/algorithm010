@@ -28,29 +28,34 @@ void ImageDisplayWindow::generate_qimages_array()
   create_patterns_all(monitor_width, monitor_height, periods, patterns, 0, patterns);
   QVector<QImage> q_img_array;
 
-  // Convert by reading ".png" images
-  // Check if image folder exist
-  if (!QDir("Folder").exists()){
-    QDir().mkdir("img");
-  }
-
-  for (unsigned long i=0; i<patterns.size();i++) {
-         ostringstream tt;
-         tt<<i;
-         String file_name = "img/pattern_"+tt.str()+".png";
-         cv::imwrite(file_name,patterns[i]);
-
-         QImage q_image = QImage(QString::fromStdString(file_name));
-         q_image.bits();
-         q_img_array.push_back(q_image);
-  }
-
-////Convert by sharing the same Buffer
-//  for (unsigned long i=0; i<patterns.size(); i++) {
-//    Mat pattern = patterns[i];
-//    QImage q_image(pattern.data, pattern.cols, pattern.rows, static_cast<int>(pattern.step), QImage::Format_Grayscale8);
-//    q_img_array.push_back(q_image);
+////   Convert by reading ".png" images
+////   Check if image folder exist
+//  if (!QDir("Folder").exists()){
+//    QDir().mkdir("img");
 //  }
+
+//  for (unsigned long i=0; i<patterns.size();i++) {
+//         ostringstream tt;
+//         tt<<i;
+//         String file_name = "img/pattern_"+tt.str()+".png";
+//         cv::imwrite(file_name,patterns[i]);
+
+//         QImage q_image = QImage(QString::fromStdString(file_name));
+//         q_image.bits();
+//         q_img_array.push_back(q_image);
+//  }
+
+//Convert by sharing the same Buffer
+  for (unsigned long i=0; i<patterns.size(); i++) {
+    Mat pattern = patterns[i];
+    QVector<QRgb> colorTable;
+    for (int i=0; i<256; i++)
+        colorTable.push_back(qRgb(i,i,i));
+    const uchar *qImageBuffer = (const uchar*)pattern.data;
+    QImage q_image(qImageBuffer, pattern.cols, pattern.rows, static_cast<int>(pattern.step), QImage::Format_Grayscale8);
+    q_image.setColorTable(colorTable);
+    q_img_array.push_back(q_image);
+  }
 
 
   m_q_img_array = q_img_array;
