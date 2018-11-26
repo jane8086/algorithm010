@@ -19,6 +19,6 @@ SOURCES += src/main.cpp \
     src/patterns.cpp
 
 HEADERS += \
-    headers/camera.h \
-    headers/patterns.h
+    include/camera.h \
+    include/patterns.h
 
