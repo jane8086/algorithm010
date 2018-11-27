@@ -12,7 +12,7 @@ int main(void)
     int monitor_height = 1080;
     int monitor_width = 1920;
     int periods = 3;
-    create_patterns_all(monitor_width, monitor_height, periods, patterns, 0, patterns);
+    create_patterns_all(monitor_width, monitor_height, periods, 0, patterns);
 
     //2. Capture Images
     FlyCapture2::Camera camera;

@@ -1,7 +1,6 @@
 #include "flycapture/FlyCapture2.h"
 #include <iostream>
 #include "opencv2/opencv.hpp"
-#include "include/camera.h"
 
 
 
@@ -82,13 +81,13 @@ int camera_capture(Camera &camera, vector<cv::Mat> &patterns, vector<Mat> &patte
 
     //Create Frame for displaying Pictures
     namedWindow("Pattern", WINDOW_NORMAL);
-    moveWindow("Pattern", 1024 + 316, -20);
+    moveWindow("Pattern", +2000, -20);
     setWindowProperty("Pattern", WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
 
     for(int pattern_i = 0; pattern_i < patterns.size(); pattern_i++){
 
         imshow("Pattern", patterns[pattern_i]);
-        waitKey(100);
+        waitKey(500);
         Image new_image;
         FlyCapture2::Error error = camera.RetrieveBuffer(&new_image);
         if (error != PGRERROR_OK) {
