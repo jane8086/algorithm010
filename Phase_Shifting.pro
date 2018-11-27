@@ -16,9 +16,11 @@ TEMPLATE = app
 
 SOURCES += src/main.cpp \
     src/camera.cpp \
-    src/patterns.cpp
+    src/patterns.cpp \
+    src/tools.cpp
 
 HEADERS += \
     include/camera.h \
-    include/patterns.h
+    include/patterns.h \
+    include/tools.h
 
