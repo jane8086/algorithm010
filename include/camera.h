@@ -8,7 +8,7 @@
 /** @brief Connects, adjusts camera and captures patterns.
  *
  */
-int capture_routine(FlyCapture2::Camera & camera, std::vector<cv::Mat> &patterns, std::vector<cv::Mat> &patterns_captured);
+int camera_routine(FlyCapture2::Camera & camera, std::vector<cv::Mat> &patterns, std::vector<cv::Mat> &patterns_captured);
 
 #endif // CAMERA
 
