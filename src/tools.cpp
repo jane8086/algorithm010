@@ -10,7 +10,7 @@ int save_images(std::vector<Mat> &images){
     //Look if folder with images already exists
     for(int image_i = 0; image_i < images.size(); image_i++){
 
-        string path = "images/" + to_string(image_i)+".png";
+        string path = "images/pattern_" + to_string(image_i)+".png";
         imwrite(path, images[image_i]);
 
     }

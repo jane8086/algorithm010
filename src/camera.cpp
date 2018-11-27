@@ -84,7 +84,10 @@ int camera_capture(Camera &camera, vector<cv::Mat> &patterns, vector<Mat> &patte
     moveWindow("Pattern", +2000, -20);
     setWindowProperty("Pattern", WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
 
-    for(int pattern_i = 0; pattern_i < patterns.size(); pattern_i++){
+    int pattern_i = 0;
+    string path = "images/" ;
+
+    while(pattern_i < patterns.size()){
 
         imshow("Pattern", patterns[pattern_i]);
         waitKey(500);
@@ -93,7 +96,7 @@ int camera_capture(Camera &camera, vector<cv::Mat> &patterns, vector<Mat> &patte
         if (error != PGRERROR_OK) {
 
           std::cout << "capture error" << std::endl;
-          continue;
+          break;
         }
         Image grayscale;
         new_image.Convert(FlyCapture2::PIXEL_FORMAT_MONO8, &grayscale);
@@ -105,13 +108,21 @@ int camera_capture(Camera &camera, vector<cv::Mat> &patterns, vector<Mat> &patte
         // checking if frame is not empty and showing camera informations
         if (frame.data) {
 
-          patterns_captured.push_back(frame);
-          pattern_i++;
+          Mat capture_image = frame;
+          ostringstream name;
+          name << pattern_i + 1;
+          bool saved =
+              imwrite(path + "pattern_cam_im" + name.str() + ".png", capture_image);
 
+          if (saved) {
+
+            //cout << "pattern:  " << image_counter + 1 << "was saved" << endl;
+            pattern_i++;
           } else {
-        cout << "Could not save pattern" << pattern_i + 1 << endl;
+            cout << "could not save image: " << pattern_i + 1 << endl;
             return -1;
           }
+        }
     }
 
     destroyWindow("Pattern");

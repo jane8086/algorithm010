@@ -271,8 +271,8 @@ int create_patterns_graycodehorizontal(int screen_Width,int screen_Hight,int per
 
 int create_patterns_offset(int screen_Width, int screen_Hight, vector<Mat> &output ){
 
-    Mat allwhite(screen_Width, screen_Hight, CV_8UC1, Scalar(255));
-    Mat allblack(screen_Width, screen_Hight, CV_8UC1, Scalar(0));
+    Mat allwhite(screen_Hight, screen_Width, CV_8UC1, Scalar(255));
+    Mat allblack(screen_Hight, screen_Width, CV_8UC1, Scalar(0));
     output.push_back(allwhite);
     output.push_back(allblack);
     return 0;

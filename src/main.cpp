@@ -18,7 +18,6 @@ int main(void)
     FlyCapture2::Camera camera;
     vector<Mat> patterns_captured;
     camera_routine(camera, patterns, patterns_captured);
-    save_images(patterns_captured);
 
 
     //3. Show and Capture Patterns
