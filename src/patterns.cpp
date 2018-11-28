@@ -31,7 +31,7 @@ int create_patterns_phaseshift(int screen_Width, int screen_Hight, int period_su
             for( int j = 0; j < grayim.cols; ++j )
             {
                 grayim.at<uchar>(i,j) = offset + int(amplitude*
-                                                     (sin(period_sum*2*pi*j/float(screen_Width) + (k-1)*2*pi/3.0)));
+                                                     (cos(period_sum*2*pi*j/float(screen_Width) + (k-1)*2*pi/3.0)));
             }
 
         // pushback mat to vector
@@ -45,7 +45,7 @@ int create_patterns_phaseshift(int screen_Width, int screen_Hight, int period_su
             for( int j = 0; j < grayim.cols; ++j )
             {
                 grayim.at<uchar>(i,j) = offset + int(amplitude*
-                                                     (sin(period_sum*2*pi*i/float(screen_Hight) + (k-1)*2*pi/3.0)));
+                                                     (cos(period_sum*2*pi*i/float(screen_Hight) + (k-1)*2*pi/3.0)));
             }
 
         // pushback
@@ -78,11 +78,11 @@ int create_patterns_colorphaseshift(int screen_Width, int screen_Hight, int peri
         for( int j = 0; j < colorim_hor.cols; ++j )
         {
             Vec3b pixel;
-            pixel[0] = offset + int(amplitude*(sin(period_sum*2*pi*j/
+            pixel[0] = offset + int(amplitude*(cos(period_sum*2*pi*j/
                                                    float(screen_Width) + 2*pi/3.0))); //Blue
-            pixel[1] = offset + int(amplitude*(sin(period_sum*2*pi*j/
+            pixel[1] = offset + int(amplitude*(cos(period_sum*2*pi*j/
                                                    float(screen_Width)))); //Green
-            pixel[2] = offset + int(amplitude*(sin(period_sum*2*pi*j/
+            pixel[2] = offset + int(amplitude*(cos(period_sum*2*pi*j/
                                                    float(screen_Width) - 2*pi/3.0)));//Red
             colorim_hor.at<Vec3b>(i,j) = pixel;
         }
@@ -95,11 +95,11 @@ int create_patterns_colorphaseshift(int screen_Width, int screen_Hight, int peri
         for( int j = 0; j < colorim_ver.cols; ++j )
         {
             Vec3b pixel;
-            pixel[0] = offset + int(amplitude*(sin(period_sum*2*pi*i/
+            pixel[0] = offset + int(amplitude*(cos(period_sum*2*pi*i/
                                                    float(screen_Hight) + 2*pi/3.0))); //Blue
-            pixel[1] = offset + int(amplitude*(sin(period_sum*2*pi*i/
+            pixel[1] = offset + int(amplitude*(cos(period_sum*2*pi*i/
                                                    float(screen_Hight)))); //Green
-            pixel[2] = offset + int(amplitude*(sin(period_sum*2*pi*i/
+            pixel[2] = offset + int(amplitude*(cos(period_sum*2*pi*i/
                                                    float(screen_Hight) - 2*pi/3.0)));//Red
             colorim_ver.at<Vec3b>(i,j) = pixel;
         }
