@@ -15,9 +15,14 @@ int camera_adjust(Camera &camera){
     prop.type = BRIGHTNESS;
     prop.onOff = true;
     prop.autoManualMode = false;
+
+    //Set gain
     Property prop_g;
     prop_g.type = GAIN;
     prop_g.autoManualMode = false;
+    prop_g.absControl = true;
+    prop_g.absValue = 6.8;
+
     FlyCapture2::Error error1 = camera.SetProperty(&prop);
     FlyCapture2::Error error2 = camera.SetProperty(&prop_g);
     return 0;
