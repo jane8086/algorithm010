@@ -25,8 +25,8 @@ SOURCES += src/main.cpp \
     src/tools.cpp
 
 HEADERS += \
-    headers/camera.h \
-    headers/patterns.h \
-    headers/phases.h \
-    headers/tools.h
+    include/camera.h \
+    include/patterns.h \
+    include/phases.h \
+    include/tools.h
 
