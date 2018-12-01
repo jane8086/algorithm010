@@ -5,14 +5,8 @@
 using namespace cv;
 using namespace std;
 
-/** @brief Calculates the raltive phase map from vector of three phase shifted patterns
+/** @brief Calculates two absolut phasemaps vertical and horizontal
  *
  */
-Mat calculate_relative_phasemap(vector<Mat> &patterns);
-int calculate_absolute_phase(Mat relative_phase, Mat period_number, int range, vector<Mat> &absolute_phase);
-/** @brief Loads captured graycode phase shifting patterns from folder
- *
- */
-int load_phaspatterns(vector<Mat> &phase_images, int amount_shifts);
-
+int calculate_absolute_phasemaps(vector<Mat> &phaseMaps_absolut, int &amount_shifts, int amount_patterns);
 #endif // PHASES_H

@@ -17,17 +17,43 @@ int save_images(std::vector<Mat> &images){
     return 0;
 }
 
-int load_images(vector<Mat> &phase_images, int &amount_shifts){
+int load_images_phase(vector<Mat> &phase_images, int &amount_shifts){
 
-    for(int image_i = 0; image_i < amount_shifts; image_i++){
+    for(int image_i = 1; image_i < 2*amount_shifts+1; image_i++){
 
-        string
+        string image_path ="images/pattern_cam_im" + to_string(image_i) + ".png";
+        Mat image = imread(image_path, IMREAD_GRAYSCALE);
+        if(image.empty()){
+            cout << "Coud not read image from filesystem" << endl;
+            return -1;
+        }
+        phase_images.push_back(image);
 
 
 
     }
 
+    return 0;
 
+}
+
+int load_images_gray(vector<Mat> &gray_images, int &amount_shifts, int &amount_patterns){
+
+    for(int image_i = amount_shifts*2; image_i < amount_patterns; image_i++){
+
+        string image_path ="images/pattern_cam_im" + to_string(image_i) + ".png";
+        Mat image = imread(image_path, IMREAD_GRAYSCALE);
+        if(image.empty()){
+            cout << "Coud not read image from filesystem" << endl;
+            return -1;
+        }
+        gray_images.push_back(image);
+
+
+
+    }
+
+    return 0;
 
 
 }

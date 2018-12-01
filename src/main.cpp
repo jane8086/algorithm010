@@ -1,6 +1,7 @@
 #include "flycapture/FlyCapture2.h"
 #include "headers/camera.h"
 #include "headers/patterns.h"
+#include "headers/tools.h"
 #include "headers/phases.h"
 
 int main(void)
@@ -44,11 +45,8 @@ int main(void)
 
 
     //4. Unwrap Phase Maps
-    Mat phasemap_relative_vertical = calculate_relative_phase();
-    imshow("phase map", relative_phases);
-//    imshow("phase map",relative_phases);
-    waitKey(0);
-
+    vector<Mat> patterns_absolut_phase;
+    calculate_absolute_phasemaps(patterns_absolut_phase, amount_shifts, (int)patterns.size());
 
 
 //    vector<Mat> relative_phases;

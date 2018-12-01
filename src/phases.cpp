@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "opencv2/opencv.hpp"
+#include "headers/tools.h"
 
 using namespace std;
 using namespace cv;
@@ -15,11 +16,11 @@ using namespace cv;
  *        &relative_phase: address of the vector of mats
  * output:vector of mats
  */
-Mat calculate_relative_phase(vector<Mat> patterns, Mat &relative_phases)
+Mat calculate_relative_phase(vector<Mat> &patterns)
 {
 
     // Here we assume that we are showing shifted patterns
-    Mat phasemap_relative;
+    Mat phasemap_relative(patterns[0].rows, patterns[0].cols, CV_8U);
 
 
     // get dimension of the image
@@ -65,7 +66,7 @@ Mat calculate_relative_phase(vector<Mat> patterns, Mat &relative_phases)
  *        &absolute_phase: address of the vector of mats
  * output: vector of mats
  */
-int calculate_absolute_phase(Mat relative_phase, Mat period_number, int range, vector<Mat> &absolute_phase)
+int calculate_absolute_phase(Mat &relative_phase, Mat &period_number, int range, vector<Mat> &absolute_phase)
 {
     int row_num, col_num;
     Mat phase_abs(row_num, col_num, CV_16UC1);
@@ -84,9 +85,59 @@ int calculate_absolute_phase(Mat relative_phase, Mat period_number, int range, v
     return 0;
 }
 
-int load_phaspatterns(vector<Mat> &phase_images, int amount_shifts){
+Mat calculate_period_Mat(vector<Mat> &graycodeimages){
+
+
+    // Here we assume that we are showing shifted patterns
+    Mat period_Mar(graycodeimages[0].rows, graycodeimages[0].cols, CV_8U);
+
+
+    // Get size of graycode word
+    //....
+
+
+
+}
+
+
+
+
+int calculate_absolute_phasemaps(vector<Mat> &phaseMaps_absolut, int &amount_shifts, int amount_patterns){
+
+    //Load images from folder
+    vector<Mat> patterns_phase_captured;
+    load_images_phase(patterns_phase_captured, amount_shifts);
+
+    //Maybe do some preprocessing here
+    //....
+
+
+    if(amount_shifts != 3){
+        cout <<"Can't calculate relative phase yet! " << endl;
+        return -1;
+    }
+
+    //create subvector phase shift patterns
+    vector<Mat>::const_iterator first = patterns_phase_captured.begin();
+    vector<Mat>::const_iterator last = patterns_phase_captured.end();
+    vector<Mat> phase_patterns_vertical(first, first+amount_shifts);
+    vector<Mat> phase_patterns_horizontal(first+amount_shifts, last);
+
+    //Calculate both relative phasemaps
+    Mat relative_phasemap_vertical = calculate_relative_phase(phase_patterns_vertical);
+    Mat relative_phasemap_horizontal = calculate_relative_phase(phase_patterns_horizontal);
+
+    //Calculate absolute phasemaps
+    vector<Mat> patterns_graycode_captured;
+    load_images_gray(patterns_graycode_captured, amount_shifts, amount_patterns);
+
+    //Maybe do some preprocessing here aswell
+    //--> Convert images into binary images...
 
 
 
 
 }
+
+
+
