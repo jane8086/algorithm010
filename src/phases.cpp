@@ -15,69 +15,41 @@ using namespace cv;
  *        &relative_phase: address of the vector of mats
  * output:vector of mats
  */
-int calculate_relative_phase(Mat im1, Mat im2, Mat im3, vector<Mat> &relative_phase)
+int calculate_relative_phase(Mat im1, Mat im2, Mat im3, Mat &relative_phases)
 {
     // get dimension of the image
-    int row_num, col_num;
-    row_num = im1.rows;
-    col_num = im1.cols;
+    int row_size, col_size;
+    row_size = im1.rows;
+    col_size = im1.cols;
 
-    // definition of Mat file
-    int period_quarter = 64;    //represent pi/2, choose 64 for convenience of displaying as gray image
-    Mat phase_rel(row_num, 3*col_num, CV_8UC1);
-
-    //calculate the relative phase and  save in Mat: phase_rel
-    for(int row = 0; row < row_num; row++)
+    int period_quarter =64;
+    for (int col = 0; col < col_size; col++)
     {
-        for(int col = 0; col < 3*col_num; col++)
+        for (int row = 0; row < row_size; row++ )
         {
-            double intensity_1, intensity_2, intensity_3;
-            // read the intensity value of three Mats
-            intensity_1 = (double)im1.at<uchar>(row,col);
-            intensity_2 = (double)im2.at<uchar>(row,col);
-            intensity_3 = (double)im3.at<uchar>(row,col);
 
-            // calculate tangent value of every pixel
-            double phase_tangent, phase_relative;
-            phase_tangent = sqrt(3.0)*(intensity_1 - intensity_3)/(2*intensity_2 - intensity_1 - intensity_3);
+            double intensity_1, intensity_2, intensity_3, relative_phase;
 
-            // calculate the arc tangent value of every pixel
-            phase_relative = atan(phase_tangent); // range of angle here: -pi/2 ~ pi/2
+            intensity_1 = static_cast<double>(im1.at<uchar>(row,col));
+            intensity_2 = static_cast<double>(im2.at<uchar>(row,col));
+            intensity_3 = static_cast<double>(im3.at<uchar>(row,col));
 
-            // save the angle as interger, attention here: period_quarter represent pi/2, and it can be change.
-            int phase_relative_int;
-            // modify the calculated phase value to the range: 0~360 grad
-            phase_relative_int = (int)(phase_relative*2*period_quarter/pi); // range of angle here: -90~90 grad
+            relative_phase = atan(sqrt(3.0)*(intensity_1-intensity_3)/(2*intensity_2-intensity_1-intensity_3));
+
+            relative_phase = relative_phase*2*period_quarter/CV_PI;
             if((2*intensity_2 - intensity_1 - intensity_3) < 0)  // represent the sign of cos value
             {
-                phase_relative_int += 2*period_quarter; //range of angle: -90 ~ 270 grad
+                relative_phase += 2*period_quarter; //range of angle: -90 ~ 270 grad
             }
-            if (phase_relative_int < 0)         //range of angle: 0~360 grad
+            if (relative_phase < 0)         //range of angle: 0~360 grad
             {
-                phase_relative_int += 4*period_quarter;
+                relative_phase += 4*period_quarter;
             }
-
-            phase_rel.at<uchar>(row, col) = phase_relative_int;
-
+            relative_phases.at<uchar>(row,col) = relative_phase;
         }
     }
-
-    /* Because the dimension of the phase_rel is row_num x 3*col_num, its column number should be cut to 1/3,
-     * as following codes.
-    */
-    Mat phase_relative(row_num, col_num, CV_8UC1);
-    for(int row = 0; row < row_num; row++)
-    {
-        for(int col = 0; col < col_num; col++)
-        {
-            phase_relative.at<uchar>(row,col) = phase_rel.at<uchar>(row,3*col); //range of angle: 0 ~ 360
-        }
-    }
-
-    imwrite("relativePhase.png",phase_relative);
-    relative_phase.push_back(phase_relative.clone());
-
     return 0;
+
 }
 
 /*
