@@ -21,10 +21,12 @@ TEMPLATE = app
 SOURCES += src/main.cpp \
     src/camera.cpp \
     src/patterns.cpp \
-    src/phases.cpp
+    src/phases.cpp \
+    src/tools.cpp
 
 HEADERS += \
     headers/camera.h \
     headers/patterns.h \
-    headers/phases.h
+    headers/phases.h \
+    headers/tools.h
 

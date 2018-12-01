@@ -15,12 +15,17 @@ using namespace cv;
  *        &relative_phase: address of the vector of mats
  * output:vector of mats
  */
-int calculate_relative_phase(Mat im1, Mat im2, Mat im3, Mat &relative_phases)
+Mat calculate_relative_phase(vector<Mat> patterns, Mat &relative_phases)
 {
+
+    // Here we assume that we are showing shifted patterns
+    Mat phasemap_relative;
+
+
     // get dimension of the image
     int row_size, col_size;
-    row_size = im1.rows;
-    col_size = im1.cols;
+    row_size = patterns[0].rows;
+    col_size = patterns[0].cols;
 
     int period_quarter =64;
     for (int col = 0; col < col_size; col++)
@@ -30,9 +35,9 @@ int calculate_relative_phase(Mat im1, Mat im2, Mat im3, Mat &relative_phases)
 
             double intensity_1, intensity_2, intensity_3, relative_phase;
 
-            intensity_1 = static_cast<double>(im1.at<uchar>(row,col));
-            intensity_2 = static_cast<double>(im2.at<uchar>(row,col));
-            intensity_3 = static_cast<double>(im3.at<uchar>(row,col));
+            intensity_1 = static_cast<double>(patterns[0].at<uchar>(row,col));
+            intensity_2 = static_cast<double>(patterns[1].at<uchar>(row,col));
+            intensity_3 = static_cast<double>(patterns[2].at<uchar>(row,col));
 
             relative_phase = atan(sqrt(3.0)*(intensity_1-intensity_3)/(2*intensity_2-intensity_1-intensity_3));
 
@@ -45,10 +50,10 @@ int calculate_relative_phase(Mat im1, Mat im2, Mat im3, Mat &relative_phases)
             {
                 relative_phase += 4*period_quarter;
             }
-            relative_phases.at<uchar>(row,col) = relative_phase;
+            phasemap_relative.at<uchar>(row,col) = relative_phase;
         }
     }
-    return 0;
+    return phasemap_relative;
 
 }
 
@@ -77,4 +82,11 @@ int calculate_absolute_phase(Mat relative_phase, Mat period_number, int range, v
     absolute_phase.push_back(phase_abs.clone());
 
     return 0;
+}
+
+int load_phaspatterns(vector<Mat> &phase_images, int amount_shifts){
+
+
+
+
 }

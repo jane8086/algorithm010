@@ -17,7 +17,8 @@ int main(void)
     vector<Mat> patterns;
     int monitor_height = 1080;
     int monitor_width = 1920;
-    int periods = 10;
+    int periods = 3;
+    int amount_shifts = 3;
     create_patterns_all(monitor_width, monitor_height, periods, patterns, 0, patterns);
 
 
@@ -43,16 +44,7 @@ int main(void)
 
 
     //4. Unwrap Phase Maps
-    Mat im1,im2,im3;
-
-    im1 = patterns[3];
-    im2 = patterns[4];
-    im3 = patterns[5];
-    int row_size, col_size;
-    row_size = im1.rows;
-    col_size = im1.cols;
-    Mat relative_phases(row_size, col_size, CV_8UC1);
-    calculate_relative_phase(im1,im2,im3,relative_phases);
+    Mat phasemap_relative_vertical = calculate_relative_phase();
     imshow("phase map", relative_phases);
 //    imshow("phase map",relative_phases);
     waitKey(0);
