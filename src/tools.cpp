@@ -39,7 +39,7 @@ int load_images_phase(vector<Mat> &phase_images, int &amount_shifts){
 
 int load_images_gray(vector<Mat> &gray_images, int &amount_shifts, int &amount_patterns){
 
-    for(int image_i = amount_shifts*2; image_i < amount_patterns; image_i++){
+    for(int image_i = amount_shifts*2+1; image_i < amount_patterns+1; image_i++){
 
         string image_path ="images/pattern_cam_im" + to_string(image_i) + ".png";
         Mat image = imread(image_path, IMREAD_GRAYSCALE);

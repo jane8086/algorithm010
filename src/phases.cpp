@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <math.h>
 #include "opencv2/opencv.hpp"
-#include "headers/tools.h"
+#include "include/tools.h"
+#include "include/preprocessing.h"
 
 using namespace std;
 using namespace cv;
@@ -66,41 +67,68 @@ Mat calculate_relative_phase(vector<Mat> &patterns)
  *        &absolute_phase: address of the vector of mats
  * output: vector of mats
  */
-int calculate_absolute_phase(Mat &relative_phase, Mat &period_number, int range, vector<Mat> &absolute_phase)
+Mat calculate_absolute_phase(Mat &relative_phase, Mat &period_number, int range)
 {
     int row_num, col_num;
-    Mat phase_abs(row_num, col_num, CV_16UC1);
     row_num = relative_phase.rows;
     col_num = relative_phase.cols;
+    Mat phase_abs(row_num, col_num, CV_16UC1);
+
+
     for(int row = 0; row < row_num; ++row)
     {
         for(int col = 0; col < col_num; ++col)
         {
-            phase_abs.at<uchar>(row,col) = relative_phase.at<uchar>(row,col) +
-                                                period_number.at<uchar>(row,col) * range;
+            int absolute_period = relative_phase.at<uchar>(row,col) + period_number.at<uchar>(row,col)* range;
+
+            phase_abs.at<uchar>(row,col) = absolute_period;
         }
     }
-    absolute_phase.push_back(phase_abs.clone());
-
-    return 0;
+    return phase_abs;
 }
 
 Mat calculate_period_Mat(vector<Mat> &graycodeimages){
 
 
     // Here we assume that we are showing shifted patterns
-    Mat period_Mar(graycodeimages[0].rows, graycodeimages[0].cols, CV_8U);
+    Mat period_Mat(graycodeimages[0].rows, graycodeimages[0].cols, CV_8U);
+    int amount_images = graycodeimages.size();
+
+    // We also assume that this ufnction gets a vector of binary images
+    int gray_value[graycodeimages.size()];
+
+    for(int col_i = 0; col_i < graycodeimages[0].cols; col_i ++){
+
+        for(int row_i = 0; row_i < graycodeimages[0].rows; row_i ++){
+
+            //Get binary value
+            gray_value[0] = graycodeimages[0].at<uchar>(row_i, col_i); // Get first value
+
+            for( int image_i = 1; image_i < amount_images; image_i++){
+
+                gray_value[image_i] = gray_value[image_i-1]^graycodeimages[image_i].at<uchar>(row_i, col_i);
+
+            }
+
+            //Convert binay to integer
+            int period_number = 0;
+
+            for(int j=0; j<amount_images; j++){
+
+                period_number += (gray_value[j])*pow(2,(amount_images-j-1));
+
+            }
 
 
-    // Get size of graycode word
-    //....
+            //Assign value to Mat
+            period_Mat.at<uchar>(row_i, col_i) = period_number;
 
+        }
+    }
 
+    return period_Mat;
 
 }
-
-
-
 
 int calculate_absolute_phasemaps(vector<Mat> &phaseMaps_absolut, int &amount_shifts, int amount_patterns){
 
@@ -127,9 +155,31 @@ int calculate_absolute_phasemaps(vector<Mat> &phaseMaps_absolut, int &amount_shi
     Mat relative_phasemap_vertical = calculate_relative_phase(phase_patterns_vertical);
     Mat relative_phasemap_horizontal = calculate_relative_phase(phase_patterns_horizontal);
 
-    //Calculate absolute phasemaps
+
+    ///Calculate absolute phasemaps
     vector<Mat> patterns_graycode_captured;
     load_images_gray(patterns_graycode_captured, amount_shifts, amount_patterns);
+
+    //Do some preporocseeing here:
+    convert_binary(patterns_graycode_captured);
+
+    //create subvector graycode patterns
+    vector<Mat>::const_iterator first_gray = patterns_graycode_captured.begin();
+    vector<Mat>::const_iterator last_gray = patterns_graycode_captured.end();
+    vector<Mat> gray_patterns_vertical(first_gray, first_gray+amount_shifts);
+    vector<Mat> gray_patterns_horizontal(first_gray+amount_shifts, last_gray);
+
+    //Calculate period number horizontal and vertical
+    Mat periodnumber_vertical = calculate_period_Mat(gray_patterns_vertical);
+    Mat periodnumber_horizontal = calculate_period_Mat(gray_patterns_horizontal);
+
+
+    //Calculate absolute phasemap
+    Mat absolutephayse_vertical = calculate_absolute_phase(relative_phasemap_vertical, periodnumber_vertical, 360);
+    imshow("Absolute Phase", absolutephayse_vertical);
+    waitKey();
+
+
 
     //Maybe do some preprocessing here aswell
     //--> Convert images into binary images...
