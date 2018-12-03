@@ -4,17 +4,11 @@
 #include "include/tools.h"
 #include "include/phases.h"
 
+
 int main(void)
 {
 
-    //1. Connect and adjust camera
-//    FlyCapture2::Camera camera;
-//    FlyCapture2::CameraInfo caminfo;
-//    camera_connect(camera, caminfo);
-//    camera_adjust(camera);
-//    camera_disconnect(camera);
-
-    //2. Create Phase and Gray code patterns
+    //1. Create Phase and Gray code patterns
     vector<Mat> patterns;
     int monitor_height = 1080;
     int monitor_width = 1920;
@@ -28,8 +22,11 @@ int main(void)
         waitKey();
     }
 
-    //3. Show and Capture Patterns
 
+    //3. Show and Capture Patterns
+    //FlyCapture2::Camera camera;
+    //vector<Mat> patterns_captured;
+    //camera_routine(camera, patterns, patterns_captured);
 
 
     //4. Unwrap Phase Maps

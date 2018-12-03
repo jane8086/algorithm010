@@ -277,8 +277,18 @@ int create_patterns_graycodehorizontal(int screen_Width,int screen_Hight,int per
 
 }
 
+int create_patterns_offset(int screen_Width, int screen_Hight, vector<Mat> &output ){
 
-int create_patterns_all(int screen_Width, int screen_Hight, int period_sum, vector<Mat>, int pattern_type, vector<Mat> &patterns){
+    Mat allwhite(screen_Hight, screen_Width, CV_8UC1, Scalar(255));
+    Mat allblack(screen_Hight, screen_Width, CV_8UC1, Scalar(0));
+    output.push_back(allwhite);
+    output.push_back(allblack);
+    return 0;
+
+
+}
+
+int create_patterns_all(int screen_Width, int screen_Hight, int period_sum, int pattern_type, vector<Mat> &patterns){
 
     if(pattern_type){
 
@@ -293,7 +303,10 @@ int create_patterns_all(int screen_Width, int screen_Hight, int period_sum, vect
 
     if(create_patterns_graycodevertical(screen_Width, screen_Hight, period_sum, patterns))
         return -1;
+    if(create_patterns_offset(screen_Width, screen_Hight, patterns))
+        return -1;
 
     return 0;
 
 }
+
