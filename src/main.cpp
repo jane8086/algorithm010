@@ -18,9 +18,15 @@ int main(void)
     vector<Mat> patterns;
     int monitor_height = 1080;
     int monitor_width = 1920;
-    int periods = 3;
+    int periods = 4;
     int amount_shifts = 3;
     create_patterns_all(monitor_width, monitor_height, periods, patterns, 0, patterns);
+
+    for(int i = 0; i <patterns.size(); i++){
+
+        imshow("Patterns", patterns[i]);
+        waitKey();
+    }
 
     //3. Show and Capture Patterns
 

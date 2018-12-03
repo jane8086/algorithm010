@@ -136,6 +136,11 @@ int create_patterns_colorphaseshift(int screen_Width, int screen_Hight, int peri
 // monitor width and height and period n -->vertical mode
 int create_patterns_graycodevertical(int screen_Width,int screen_Hight,int perdiod_sum, vector<Mat> &graycodevertical)
 {
+
+    // adjust period_sum
+    perdiod_sum = perdiod_sum/2;
+
+
     // base case
     if (perdiod_sum <= 0)
         return -1;
@@ -203,6 +208,9 @@ int create_patterns_graycodevertical(int screen_Width,int screen_Hight,int perdi
 // monitor width andscreen_Widthnd perioscreen_Widthrizontal version
 int create_patterns_graycodehorizontal(int screen_Width,int screen_Hight,int period_sum, vector<Mat> &patterns_graycode_horizontal)
 {
+    // adjust period
+    period_sum = period_sum/2;
+
     // base case
     if (period_sum <= 0)
     {
