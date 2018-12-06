@@ -2,14 +2,13 @@
 #define CAMERA
 
 #include "flycapture/FlyCapture2.h"
+#include "opencv2/opencv.hpp"
 
-int camera_adjust(FlyCapture2::Camera &camera);
 
-/** @brief Connects the Blackfly S to the program.
+/** @brief Connects, adjusts camera and captures patterns.
  *
  */
-int camera_connect(FlyCapture2::Camera &camera, FlyCapture2::CameraInfo &caminfo);
-int camera_disconnect(FlyCapture2::Camera &camera);
+int camera_routine(FlyCapture2::Camera & camera, std::vector<cv::Mat> &patterns, std::vector<cv::Mat> &patterns_captured);
 
 #endif // CAMERA
 

@@ -31,7 +31,7 @@ int create_patterns_phaseshift(int screen_Width, int screen_Hight, int period_su
             for( int j = 0; j < grayim.cols; ++j )
             {
                 grayim.at<uchar>(i,j) = offset + int(amplitude*
-                                                     (sin(period_sum*2*pi*j/float(screen_Width) + (k-1)*2*pi/3.0)));
+                                                     (cos(period_sum*2*pi*j/float(screen_Width) + (k-1)*2*pi/3.0)));
             }
 
         // pushback mat to vector
@@ -45,7 +45,7 @@ int create_patterns_phaseshift(int screen_Width, int screen_Hight, int period_su
             for( int j = 0; j < grayim.cols; ++j )
             {
                 grayim.at<uchar>(i,j) = offset + int(amplitude*
-                                                     (sin(period_sum*2*pi*i/float(screen_Hight) + (k-1)*2*pi/3.0)));
+                                                     (cos(period_sum*2*pi*i/float(screen_Hight) + (k-1)*2*pi/3.0)));
             }
 
         // pushback
@@ -78,11 +78,11 @@ int create_patterns_colorphaseshift(int screen_Width, int screen_Hight, int peri
         for( int j = 0; j < colorim_hor.cols; ++j )
         {
             Vec3b pixel;
-            pixel[0] = offset + int(amplitude*(sin(period_sum*2*pi*j/
+            pixel[0] = offset + int(amplitude*(cos(period_sum*2*pi*j/
                                                    float(screen_Width) + 2*pi/3.0))); //Blue
-            pixel[1] = offset + int(amplitude*(sin(period_sum*2*pi*j/
+            pixel[1] = offset + int(amplitude*(cos(period_sum*2*pi*j/
                                                    float(screen_Width)))); //Green
-            pixel[2] = offset + int(amplitude*(sin(period_sum*2*pi*j/
+            pixel[2] = offset + int(amplitude*(cos(period_sum*2*pi*j/
                                                    float(screen_Width) - 2*pi/3.0)));//Red
             colorim_hor.at<Vec3b>(i,j) = pixel;
         }
@@ -95,11 +95,11 @@ int create_patterns_colorphaseshift(int screen_Width, int screen_Hight, int peri
         for( int j = 0; j < colorim_ver.cols; ++j )
         {
             Vec3b pixel;
-            pixel[0] = offset + int(amplitude*(sin(period_sum*2*pi*i/
+            pixel[0] = offset + int(amplitude*(cos(period_sum*2*pi*i/
                                                    float(screen_Hight) + 2*pi/3.0))); //Blue
-            pixel[1] = offset + int(amplitude*(sin(period_sum*2*pi*i/
+            pixel[1] = offset + int(amplitude*(cos(period_sum*2*pi*i/
                                                    float(screen_Hight)))); //Green
-            pixel[2] = offset + int(amplitude*(sin(period_sum*2*pi*i/
+            pixel[2] = offset + int(amplitude*(cos(period_sum*2*pi*i/
                                                    float(screen_Hight) - 2*pi/3.0)));//Red
             colorim_ver.at<Vec3b>(i,j) = pixel;
         }
@@ -136,6 +136,11 @@ int create_patterns_colorphaseshift(int screen_Width, int screen_Hight, int peri
 // monitor width and height and period n -->vertical mode
 int create_patterns_graycodevertical(int screen_Width,int screen_Hight,int perdiod_sum, vector<Mat> &graycodevertical)
 {
+
+    // adjust period_sum
+    perdiod_sum = perdiod_sum/2;
+
+
     // base case
     if (perdiod_sum <= 0)
         return -1;
@@ -203,6 +208,9 @@ int create_patterns_graycodevertical(int screen_Width,int screen_Hight,int perdi
 // monitor width andscreen_Widthnd perioscreen_Widthrizontal version
 int create_patterns_graycodehorizontal(int screen_Width,int screen_Hight,int period_sum, vector<Mat> &patterns_graycode_horizontal)
 {
+    // adjust period
+    period_sum = period_sum/2;
+
     // base case
     if (period_sum <= 0)
     {
@@ -269,8 +277,18 @@ int create_patterns_graycodehorizontal(int screen_Width,int screen_Hight,int per
 
 }
 
+int create_patterns_offset(int screen_Width, int screen_Hight, vector<Mat> &output ){
 
-int create_patterns_all(int screen_Width, int screen_Hight, int period_sum, vector<Mat>, int pattern_type, vector<Mat> &patterns){
+    Mat allwhite(screen_Hight, screen_Width, CV_8UC1, Scalar(255));
+    Mat allblack(screen_Hight, screen_Width, CV_8UC1, Scalar(0));
+    output.push_back(allwhite);
+    output.push_back(allblack);
+    return 0;
+
+
+}
+
+int create_patterns_all(int screen_Width, int screen_Hight, int period_sum, int pattern_type, vector<Mat> &patterns){
 
     if(pattern_type){
 
@@ -285,7 +303,10 @@ int create_patterns_all(int screen_Width, int screen_Hight, int period_sum, vect
 
     if(create_patterns_graycodevertical(screen_Width, screen_Hight, period_sum, patterns))
         return -1;
+    if(create_patterns_offset(screen_Width, screen_Hight, patterns))
+        return -1;
 
     return 0;
 
 }
+
