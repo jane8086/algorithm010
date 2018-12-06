@@ -10,7 +10,7 @@ int convert_binary(vector<Mat> &graycode_images){
 
     for(int image_i = 0; image_i < graycode_images.size(); image_i++){
 
-        threshold(graycode_images[image_i], graycode_images[image_i], 50, 1, THRESH_BINARY);
+        threshold(graycode_images[image_i], graycode_images[image_i], 40, 1, THRESH_BINARY);
 
     }
 
