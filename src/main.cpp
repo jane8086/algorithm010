@@ -16,6 +16,7 @@ int main(void)
     int amount_shifts = 3;
     create_patterns_all(monitor_width, monitor_height, periods, 0, patterns);
 
+
 //    //3. Show and Capture Patterns
 //    FlyCapture2::Camera camera;
 //    vector<Mat> patterns_captured;

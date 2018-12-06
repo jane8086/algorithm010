@@ -21,7 +21,7 @@ Mat calculate_relative_phase(vector<Mat> &patterns)
 {
 
     // Here we assume that we are showing shifted patterns
-    Mat phasemap_relative(patterns[0].rows, patterns[0].cols, CV_8U);
+    Mat phasemap_relative(patterns[0].rows, patterns[0].cols, CV_32FC1);
 
 
     // get dimension of the image
@@ -29,7 +29,7 @@ Mat calculate_relative_phase(vector<Mat> &patterns)
     row_size = patterns[0].rows;
     col_size = patterns[0].cols;
 
-    int period_quarter =64;
+    int period_quarter =90;
     for (int col = 0; col < col_size; col++)
     {
         for (int row = 0; row < row_size; row++ )
@@ -42,7 +42,6 @@ Mat calculate_relative_phase(vector<Mat> &patterns)
             intensity_3 = static_cast<double>(patterns[2].at<uchar>(row,col));
 
             relative_phase = atan(sqrt(3.0)*(intensity_1-intensity_3)/(2*intensity_2-intensity_1-intensity_3));
-
             relative_phase = relative_phase*2*period_quarter/CV_PI;
             if((2*intensity_2 - intensity_1 - intensity_3) < 0)  // represent the sign of cos value
             {
@@ -52,7 +51,7 @@ Mat calculate_relative_phase(vector<Mat> &patterns)
             {
                 relative_phase += 4*period_quarter;
             }
-            phasemap_relative.at<uchar>(row,col) = relative_phase;
+            phasemap_relative.at<float>(row,col) = relative_phase;
         }
     }
     return phasemap_relative;
@@ -67,21 +66,22 @@ Mat calculate_relative_phase(vector<Mat> &patterns)
  *        &absolute_phase: address of the vector of mats
  * output: vector of mats
  */
-Mat calculate_absolute_phase(Mat &relative_phase, Mat &period_number, int range)
+Mat calculate_absolute_phase(Mat &relative_phase, Mat &period_number)
 {
     int row_num, col_num;
     row_num = relative_phase.rows;
     col_num = relative_phase.cols;
-    Mat phase_abs(row_num, col_num, CV_16UC1);
+    Mat phase_abs(row_num, col_num, CV_32FC1);
+    int range = 360;
 
 
     for(int row = 0; row < row_num; row++)
     {
         for(int col = 0; col < col_num; col++)
         {
-            unsigned int period = period_number.at<uchar>(row, col);
-            unsigned int absolute_period = relative_phase.at<uchar>(row,col) + period*range;
-            phase_abs.at<unsigned int>(row,col) = absolute_period;
+            float period = period_number.at<uchar>(row, col);
+            float absolute_period = relative_phase.at<float>(row,col) + period*range;
+            phase_abs.at<float>(row,col) = absolute_period;
         }
     }
     return phase_abs;
@@ -173,18 +173,18 @@ int calculate_absolute_phasemaps(vector<Mat> &phaseMaps_absolut, int &amount_pha
     Mat periodnumber_horizontal = calculate_period_Mat(gray_patterns_vertical);
     Mat periodnumber_vertical = calculate_period_Mat(gray_patterns_horizontal);
 
-    //imshow("Graycode_horizontal", periodnumber_horizontal*80);
-    //imshow("Phase_horizontal", relative_phasemap_horizontal);
-    imshow("Graycode_vertical", periodnumber_vertical*80);
-    imshow("Phase_vertical", relative_phasemap_vertical);
 
     //Calculate absolute phasemap
-    Mat absolutephayse_vertical = calculate_absolute_phase(relative_phasemap_vertical, periodnumber_vertical, 255);
-    Mat absolutephase_horizontal = calculate_absolute_phase(relative_phasemap_horizontal, periodnumber_horizontal, 255);
-    imshow("Absolute Phase_vertical", absolutephayse_vertical*20);
-    imshow("Absolute Phase hor", absolutephase_horizontal*20);
+    Mat absolutephase_vertical = calculate_absolute_phase(relative_phasemap_vertical, periodnumber_vertical);
+    Mat absolutephase_horizontal = calculate_absolute_phase(relative_phasemap_horizontal, periodnumber_horizontal);
+    imshow("absolutephase_horizontal", absolutephase_horizontal/(4*360)); // normalized picture
+    imshow("absolutephase_vertical", absolutephase_vertical/(4*360));
 
     waitKey();
+
+    //Normalize data for imshow
+
+
 
 
 
