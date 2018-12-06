@@ -57,4 +57,3 @@ int load_images_gray(vector<Mat> &gray_images, int &amount_shifts, int &amount_p
 
 
 }
-
