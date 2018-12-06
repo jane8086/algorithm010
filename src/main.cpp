@@ -14,7 +14,8 @@ int main(void)
     int monitor_width = 1920;
     int periods = 4;
     int amount_shifts = 3;
-    create_patterns_all(monitor_width, monitor_height, periods, 0, patterns);
+    if(create_patterns_all(monitor_width, monitor_height, periods, 0, patterns))
+        return -1;
 
 
 //    //3. Show and Capture Patterns

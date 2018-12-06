@@ -57,3 +57,9 @@ int load_images_gray(vector<Mat> &gray_images, int &amount_shifts, int &amount_p
 
 
 }
+
+bool isPowerOfTwo (int x)
+{
+  /* First x in the below expression is for the case when x is 0 */
+  return x && (!(x&(x-1)));
+}

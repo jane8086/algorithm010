@@ -13,4 +13,6 @@ int load_images_phase(std::vector<cv::Mat> &phase_images, int &amount_shifts);
  */
 int load_images_gray(std::vector<cv::Mat> &gray_images, int &amount_shifts, int &amount_patterns);
 
+bool isPowerOfTwo (int x);
+
 #endif // TOOLS_H
