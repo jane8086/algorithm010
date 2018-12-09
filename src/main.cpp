@@ -3,12 +3,10 @@
 #include "include/patterns.h"
 #include "include/tools.h"
 #include "include/phases.h"
-#include <QDir>
 
 
 int main(void)
 {
-    QDir::setCurrent("/home/tae/phase_shifting");
 
     //1. Create Phase and Gray code patterns
     vector<Mat> patterns;
