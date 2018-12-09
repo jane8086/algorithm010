@@ -57,3 +57,25 @@ int load_images_gray(vector<Mat> &gray_images, int &amount_shifts, int &amount_p
 
 
 }
+
+bool isPowerOfTwo (int x)
+{
+  /* First x in the below expression is for the case when x is 0 */
+  return x && (!(x&(x-1)));
+}
+
+int load_image_ground(vector<Mat> &ground_image, int &amount_shifts, int &period)
+{
+    for(int image_i = amount_shifts*2+2*log2(period)+1; image_i < amount_shifts*2+2*log2(period)+3; image_i++)
+    {
+        string path = "/images/pattern_cam_im" + to_string(image_i) + ".png";
+        Mat image = imread(path, IMREAD_GRAYSCALE);
+
+        if(image.empty())
+        {
+            cout << "Coud not read image from filesystem" << endl;
+            return -1;
+        }
+        ground_image.push_back(image);
+    }
+}
