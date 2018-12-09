@@ -37,3 +37,9 @@ int reduce_moire(vector<Mat> &phase_shift, vector<Mat> &dst_phase_shift,int diam
     }
     return 0;
 }
+
+
+int detect_screen(vector<Mat> &ground_image)
+{
+
+}
