@@ -9,4 +9,5 @@ using namespace std;
  *
  */
 int calculate_absolute_phasemaps(vector<Mat> &phaseMaps_absolut, int &amount_shifts, int amount_patterns);
+Mat calculate_relative_phase(vector<Mat> &patterns);
 #endif // PHASES_H
