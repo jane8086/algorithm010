@@ -22,11 +22,11 @@ int convert_binary(vector<Mat> &graycode_images){
 }
 
 
-int reduce_moire(vector<Mat> &phase_shift, vector<Mat> &dst_phase_shift,int diameter=20)
+int reduce_moire(vector<Mat> &phase_shift, vector<Mat> &dst_phase_shift,int diameter=10)
 {
-    if (( diameter <= 0) || (diameter <=20))
+    if (( diameter <= 0) || (diameter <10))
     {
-        cout << "Invalid value of diameter. Suggested: 20->80" << endl;
+        cout << "Invalid value of diameter. Suggested: 10->80" << endl;
         return -1;
     }
 
