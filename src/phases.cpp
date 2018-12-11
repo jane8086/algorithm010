@@ -155,6 +155,10 @@ int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, int &amount_ph
     vector<Mat> patterns_phase_captured;
     load_images_phase(patterns_phase_captured, amount_phaseshifts);
 
+    // reduce moire effect by using bilateral filter
+    vector<Mat> pattern_phase_filtered;
+    reduce_moire(patterns_phase_captured,pattern_phase_filtered,30);
+
     //Maybe do some preprocessing here
     //....display_pixel
 
@@ -165,8 +169,8 @@ int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, int &amount_ph
     }
 
     //create subvector phase shift patterns
-    vector<Mat>::const_iterator first = patterns_phase_captured.begin();
-    vector<Mat>::const_iterator last = patterns_phase_captured.end();
+    vector<Mat>::const_iterator first = pattern_phase_filtered.begin();
+    vector<Mat>::const_iterator last = pattern_phase_filtered.end();
     vector<Mat> phase_patterns_vertical(first, first+amount_phaseshifts);
     vector<Mat> phase_patterns_horizontal(first+amount_phaseshifts, last);
 
@@ -195,10 +199,11 @@ int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, int &amount_ph
 
     //Calculate absolute phasemap
     Mat absolutephase_vertical = calculate_absolute_phase(relative_phasemap_vertical, periodnumber_vertical);
-    Mat absolutephase_horizontal = calculate_absolute_phase(relative_phasemap_horizontal, periodnumber_horizontal);
+    Mat absolutephase_horizontal = calculate_absolute_phase(relative_phasemap_horizontal, periodnumber_horizontal);s
 
     absolute_phasemaps.push_back(absolutephase_horizontal);
     absolute_phasemaps.push_back(absolutephase_vertical);
+
 
     return 0;
 

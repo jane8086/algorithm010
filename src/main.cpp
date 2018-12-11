@@ -4,10 +4,13 @@
 #include "include/tools.h"
 #include "include/phases.h"
 #include "monitor.h"
+#include "include/preprocessing.h"
+#include <QDir>
 
 
 int main(void)
 {
+
 
     //1. Create Phase and Gray code patterns
     vector<Mat> patterns;
@@ -15,6 +18,7 @@ int main(void)
     int periods = 4;
     int amount_shifts = 3;
     create_patterns_all(monitor.size_x, monitor.size_y, periods, 0, patterns);
+
 
 //    //3. Show and Capture Patterns
 //    FlyCapture2::Camera camera;
@@ -25,6 +29,8 @@ int main(void)
     vector<Mat> patterns_absolut_phase;
     calculate_absolute_phasemaps(patterns_absolut_phase, amount_shifts, (int)patterns.size());
 
+    // detect screen
+    Mat screen = detect_screen(periods, amount_shifts, 10);
 
 
 
