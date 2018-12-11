@@ -17,6 +17,7 @@ int main(void)
     Monitor monitor(SAMSUNG_CURVED);
     int periods = 4;
     int amount_shifts = 3;
+
     create_patterns_all(monitor.size_x, monitor.size_y, periods, 0, patterns);
 
 
@@ -26,8 +27,17 @@ int main(void)
 //    camera_routine(camera, patterns, patterns_captured);
 
     //4. Unwrap Phase Maps
-    vector<Mat> patterns_absolut_phase;
-    calculate_absolute_phasemaps(patterns_absolut_phase, amount_shifts, (int)patterns.size());
+    //vector<Mat> patterns_absolut_phase;
+    //calculate_absolute_phasemaps(patterns_absolut_phase, amount_shifts, (int)patterns.size());
+
+    // test from chao zhang: get period map using novel method
+    vector<Mat> patterns_novel;
+    create_patterns_novel(800, 600, 10, patterns_novel);
+    Mat period_map;
+    period_map = calculate_relative_phase(patterns_novel);
+    imshow("period map",period_map);
+    waitKey();
+    // test end
 
     // detect screen
     Mat screen = detect_screen(periods, amount_shifts, 10);

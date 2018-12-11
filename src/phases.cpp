@@ -29,6 +29,62 @@ int transform_curvaturescreenpoint( Point2f &display_pixel, Point3f &display_pix
 }
 
 /*
+ * function: calculate_relative_phase_general
+ * input: im1: Mat file of the first phase
+ *        im2: Mat file of the second phase
+ *        im3: Mat file of the third phase
+ *        &relative_phase: address of the vector of mats
+ * output:vector of mats
+ */
+Mat calculate_relative_phase_general(vector<Mat> &patterns)
+{
+
+    // Here we assume that we are showing shifted patterns
+    Mat phasemap_relative(patterns[0].rows, patterns[0].cols, CV_8U);
+
+    // calculate image number
+    vector<Mat>::const_iterator first = patterns.begin();
+    vector<Mat>::const_iterator last = patterns.end();
+    int N = last - first;
+    double intensity_sum_sin, intensity_sum_cos, relative_phase;
+
+    // get dimension of the image
+    int row_size, col_size;
+    row_size = patterns[0].rows;
+    col_size = patterns[0].cols;
+
+    int period_quarter =64;
+    for (int col = 0; col < col_size; col++)
+    {
+        for (int row = 0; row < row_size; row++ )
+        {
+            intensity_sum_sin=0; intensity_sum_cos=0;
+            for (int n=1; n<N+1; n++){
+                intensity_sum_sin += static_cast<double>(patterns[n-1].at<uchar>(row,col))
+                        * sin(2*CV_PI*n/(double)N);
+                intensity_sum_cos += static_cast<double>(patterns[n-1].at<uchar>(row,col))
+                        * cos(2*CV_PI*n/(double)N);
+            }
+
+            relative_phase = atan(intensity_sum_sin/intensity_sum_cos);
+
+            relative_phase = relative_phase*2*period_quarter/CV_PI;
+            if((intensity_sum_cos < 0))  // represent the sign of cos value
+            {
+                relative_phase += 2*period_quarter; //range of angle: -90 ~ 270 grad
+            }
+            if (relative_phase < 0)         //range of angle: 0~360 grad
+            {
+                relative_phase += 4*period_quarter;
+            }
+            phasemap_relative.at<uchar>(row,col) = relative_phase;
+        }
+    }
+    return phasemap_relative;
+}
+
+
+/*
  * function: calculate_relative_phase
  * input: im1: Mat file of the first phase
  *        im2: Mat file of the second phase
@@ -162,11 +218,12 @@ int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, int &amount_ph
     //Maybe do some preprocessing here
     //....display_pixel
 
-
+/*
     if(amount_phaseshifts != 3){
         cout <<"Can't calculate relative phase yet! " << endl;
         return -1;
     }
+*/
 
     //create subvector phase shift patterns
     vector<Mat>::const_iterator first = pattern_phase_filtered.begin();
