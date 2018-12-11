@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "opencv2/opencv.hpp"
+#include "include/tools.h"
 
 using namespace std;
 using namespace cv;
@@ -390,6 +391,11 @@ int create_patterns_offset(int screen_Width, int screen_Hight, vector<Mat> &outp
 }
 
 int create_patterns_all(int screen_Width, int screen_Hight, int period_sum, int pattern_type, vector<Mat> &patterns){
+
+    if(!isPowerOfTwo(period_sum)){
+        cout << "Period number must be power of two !" << endl;
+        return -1;
+    }
 
     if(pattern_type){
 

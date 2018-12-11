@@ -3,31 +3,28 @@
 #include "include/patterns.h"
 #include "include/tools.h"
 #include "include/phases.h"
+#include "monitor.h"
+#include "include/preprocessing.h"
+#include <QDir>
 
 
 int main(void)
 {
 
+
     //1. Create Phase and Gray code patterns
     vector<Mat> patterns;
-    int monitor_height = 1080;
-    int monitor_width = 1920;
+    Monitor monitor(SAMSUNG_CURVED);
     int periods = 4;
     int amount_shifts = 3;
-    create_patterns_all(monitor_width, monitor_height, periods, 0, patterns);
 
-    for(int i = 0; i <patterns.size(); i++){
-
-        imshow("Patterns", patterns[i]);
-        waitKey();
-    }
+    create_patterns_all(monitor.size_x, monitor.size_y, periods, 0, patterns);
 
 
-    //3. Show and Capture Patterns
-    //FlyCapture2::Camera camera;
-    //vector<Mat> patterns_captured;
-    //camera_routine(camera, patterns, patterns_captured);
-
+//    //3. Show and Capture Patterns
+//    FlyCapture2::Camera camera;
+//    vector<Mat> patterns_captured;
+//    camera_routine(camera, patterns, patterns_captured);
 
     //4. Unwrap Phase Maps
     //vector<Mat> patterns_absolut_phase;
@@ -42,7 +39,24 @@ int main(void)
     waitKey();
     // test end
 
+    // detect screen
+    Mat screen = detect_screen(periods, amount_shifts, 10);
+
+
+
+
     //5. Create Point Correspondences
+    vector<Point2f> image_points;
+    vector<Point> points_world_pixel;
+    vector<Point3f> points_world;
+    calculate_realWorld_3d_coordinates(points_world, points_world_pixel, image_points, patterns_absolut_phase[0], patterns_absolut_phase[1],monitor, periods);
+    saveDatayml(image_points, points_world_pixel, points_world);
+
+
+
+
+
+
     return 0;
 
 }
