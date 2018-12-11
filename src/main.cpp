@@ -34,7 +34,7 @@ int main(void)
     vector<Mat> patterns_novel;
     create_patterns_novel(800, 600, 10, patterns_novel);
     Mat period_map;
-    period_map = calculate_relative_phase(patterns_novel);
+    period_map = calculate_relative_phase_general(patterns_novel);
     imshow("period map",period_map);
     waitKey();
     // test end
@@ -49,7 +49,7 @@ int main(void)
     vector<Point2f> image_points;
     vector<Point> points_world_pixel;
     vector<Point3f> points_world;
-    calculate_realWorld_3d_coordinates(points_world, points_world_pixel, image_points, patterns_absolut_phase[0], patterns_absolut_phase[1],monitor, periods);
+    //calculate_realWorld_3d_coordinates(points_world, points_world_pixel, image_points, patterns_absolut_phase[0], patterns_absolut_phase[1],monitor, periods);
     saveDatayml(image_points, points_world_pixel, points_world);
 
 

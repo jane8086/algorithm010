@@ -256,7 +256,7 @@ int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, int &amount_ph
 
     //Calculate absolute phasemap
     Mat absolutephase_vertical = calculate_absolute_phase(relative_phasemap_vertical, periodnumber_vertical);
-    Mat absolutephase_horizontal = calculate_absolute_phase(relative_phasemap_horizontal, periodnumber_horizontal);s
+    Mat absolutephase_horizontal = calculate_absolute_phase(relative_phasemap_horizontal, periodnumber_horizontal);
 
     absolute_phasemaps.push_back(absolutephase_horizontal);
     absolute_phasemaps.push_back(absolutephase_vertical);

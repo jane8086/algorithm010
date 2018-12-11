@@ -65,9 +65,9 @@ int saveDatayml(vector<Point2f> image_point, vector<Point> points_world_pixel, v
     fs.open("image_point.npy");
     fs<< cv::format(image_point, cv::Formatter::FMT_NUMPY) << std::endl;
     fs.close();
+}
 
-bool isPowerOfTwo (int x)
-{
+bool isPowerOfTwo(int x){
   /* First x in the below expression is for the case when x is 0 */
   return x && (!(x&(x-1)));
 }
@@ -88,3 +88,4 @@ int load_image_ground(vector<Mat> &ground_image, int &amount_shifts, int &period
         ground_image.push_back(image);
     }
 }
+
