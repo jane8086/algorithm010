@@ -23,12 +23,14 @@ SOURCES += src/main.cpp \
     src/patterns.cpp \
     src/phases.cpp \
     src/tools.cpp \
-    src/preprocessing.cpp
+    src/preprocessing.cpp \
+    src/monitor.cpp
 
 HEADERS += \
     include/camera.h \
     include/patterns.h \
     include/phases.h \
     include/tools.h \
-    include/preprocessing.h
+    include/preprocessing.h \
+    include/monitor.h
 
