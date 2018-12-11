@@ -5,6 +5,8 @@
 using namespace cv;
 using namespace std;
 
+int create_patterns_novel(int screen_Width, int screen_Hight, int period_sum, vector<Mat> &patterns_novel);
+int create_patterns_phaseshift_general(int screen_Width, int screen_Hight, int period_sum, int step_number, vector<Mat> &patterns_phaseshift);
 int create_patterns_phaseshift(int screen_Width, int screen_Hight, int period_sum, vector<Mat> &patterns_phaseshift);
 int create_patterns_colorphaseshift(int screen_Width, int screen_Hight, int period_sum, vector<Mat> &patterns_colorphaseshift);
 int create_patterns_graycodevertical(int screen_Width,int screen_Hight,int n, vector<Mat> &graycodevertical);
