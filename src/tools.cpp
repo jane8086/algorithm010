@@ -1,5 +1,6 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
+#include <fstream>
 
 using namespace cv;
 using namespace std;
@@ -57,6 +58,13 @@ int load_images_gray(vector<Mat> &gray_images, int &amount_shifts, int &amount_p
 
 
 }
+
+int saveDatayml(vector<Point2f> image_point, vector<Point> points_world_pixel, vector<Point3f> points_world){
+
+    ofstream fs;
+    fs.open("image_point.npy");
+    fs<< cv::format(image_point, cv::Formatter::FMT_NUMPY) << std::endl;
+    fs.close();
 
 bool isPowerOfTwo (int x)
 {
