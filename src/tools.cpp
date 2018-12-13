@@ -81,10 +81,22 @@ int load_images_gray(vector<Mat> &gray_images, int &amount_shifts, int &amount_p
 
 int saveDatayml(vector<Point2f> image_point, vector<Point> points_world_pixel, vector<Point3f> points_world){
 
-    ofstream fs;
-    fs.open("image_point.npy");
-    fs<< cv::format(image_point, cv::Formatter::FMT_NUMPY) << std::endl;
-    fs.close();
+    ofstream fs1;
+    fs1.open("image_point.npy");
+    fs1<< cv::format(image_point, cv::Formatter::FMT_NUMPY) << std::endl;
+    fs1.close();
+
+    ofstream fs2;
+    fs2.open("points_world_pixel.npy");
+    fs2<< cv::format(points_world_pixel, cv::Formatter::FMT_NUMPY) << std::endl;
+    fs2.close();
+
+    ofstream fs3;
+    fs3.open("points_world.npy");
+    fs3<< cv::format(points_world, cv::Formatter::FMT_NUMPY) << std::endl;
+    fs3.close();
+
+
 }
 
 
@@ -95,10 +107,13 @@ bool isPowerOfTwo (int x)
 }
 
 
-int load_image_ground(vector<Mat> &ground_image, int &amount_shifts, int &period)
+int load_image_ground(vector<Mat> &ground_image, int &amount_shifts, int &amount_pattern)
 {
+    int period = pow(2,(amount_pattern - 2*amount_shifts-2)/2);
+
     for(int image_i = amount_shifts*2+2*log2(period)+1; image_i < amount_shifts*2+2*log2(period)+3; image_i++)
     {
+
         string image_path ="images/pattern_cam_im" + to_string(image_i) + ".png";
         Mat image = imread(image_path, IMREAD_GRAYSCALE);
 
