@@ -40,12 +40,10 @@ Mat calculate_relative_phase_general(vector<Mat> &patterns)
 {
 
     // Here we assume that we are showing shifted patterns
-    Mat phasemap_relative(patterns[0].rows, patterns[0].cols, CV_8U);
+    Mat phasemap_relative(patterns[0].rows, patterns[0].cols, CV_32FC1);
 
     // calculate image number
-    vector<Mat>::const_iterator first = patterns.begin();
-    vector<Mat>::const_iterator last = patterns.end();
-    int N = last - first;
+    int N = patterns.size();
     double intensity_sum_sin, intensity_sum_cos, relative_phase;
 
     // get dimension of the image
@@ -53,7 +51,7 @@ Mat calculate_relative_phase_general(vector<Mat> &patterns)
     row_size = patterns[0].rows;
     col_size = patterns[0].cols;
 
-    int period_quarter =64;
+    int period_quarter =90;
     for (int col = 0; col < col_size; col++)
     {
         for (int row = 0; row < row_size; row++ )
@@ -77,7 +75,7 @@ Mat calculate_relative_phase_general(vector<Mat> &patterns)
             {
                 relative_phase += 4*period_quarter;
             }
-            phasemap_relative.at<uchar>(row,col) = relative_phase;
+            phasemap_relative.at<float>(row,col) = relative_phase;
         }
     }
     return phasemap_relative;
@@ -162,7 +160,7 @@ Mat calculate_absolute_phase(Mat &relative_phase, Mat &period_number)
     return phase_abs;
 }
 
-Mat calculate_period_Mat(vector<Mat> &graycodeimages){
+Mat calculate_period_Mat_graycode(vector<Mat> &graycodeimages){
 
 
     // Here we assume that we are showing shifted patterns
@@ -205,11 +203,37 @@ Mat calculate_period_Mat(vector<Mat> &graycodeimages){
 
 }
 
-int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, int &amount_phaseshifts, int amount_patterns){
+int calculate_periodnumber_graycode(vector<Mat> &period_number_Mats,int &amount_phaseshifts, int &amount_patterns){
 
-    //Load images from folder
+    //Calculate absolute phasemaps
+    vector<Mat> patterns_graycode_captured;
+    load_images_gray(patterns_graycode_captured, amount_phaseshifts, amount_patterns);
+
+    //Do some preporocseeing here:
+    convert_binary(patterns_graycode_captured);
+
+    //create subvector graycode patterns
+    vector<Mat>::const_iterator first_gray = patterns_graycode_captured.begin();
+    vector<Mat>::const_iterator last_gray = patterns_graycode_captured.end();
+    vector<Mat> gray_patterns_vertical(first_gray, first_gray+2); //ststic for period and amount of shifts
+    vector<Mat> gray_patterns_horizontal(first_gray+2, last_gray);//static for period and amount of shifts
+
+    //Calculate period number horizontal and vertical
+    Mat periodnumber_horizontal = calculate_period_Mat_graycode(gray_patterns_vertical);
+    Mat periodnumber_vertical = calculate_period_Mat_graycode(gray_patterns_horizontal);
+
+    period_number_Mats.push_back(periodnumber_horizontal);
+    period_number_Mats.push_back(periodnumber_vertical);
+
+}
+
+
+
+int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, int &amount_phaseshifts, int amount_patterns, int &color_patterns, int &novel_method){
+
+    //Load phase images from folder
     vector<Mat> patterns_phase_captured;
-    load_images_phase(patterns_phase_captured, amount_phaseshifts);
+    load_images_phase(patterns_phase_captured, amount_phaseshifts, color_patterns);
 
     // reduce moire effect by using bilateral filter
     vector<Mat> pattern_phase_filtered;
@@ -232,32 +256,33 @@ int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, int &amount_ph
     vector<Mat> phase_patterns_horizontal(first+amount_phaseshifts, last);
 
     //Calculate both relative phasemaps
-    Mat relative_phasemap_vertical = calculate_relative_phase(phase_patterns_vertical);
-    Mat relative_phasemap_horizontal = calculate_relative_phase(phase_patterns_horizontal);
+    Mat relative_phasemap_horizontal;
+    Mat relative_phasemap_vertical;
 
+    if(color_patterns){
+        // Calculate relative_phase based on color patterns here....
+    }else{
 
-    ///Calculate absolute phasemaps
-    vector<Mat> patterns_graycode_captured;
-    load_images_gray(patterns_graycode_captured, amount_phaseshifts, amount_patterns);
+        relative_phasemap_vertical = calculate_relative_phase(phase_patterns_vertical);
+        relative_phasemap_horizontal = calculate_relative_phase(phase_patterns_horizontal);
 
-    //Do some preporocseeing here:
-    convert_binary(patterns_graycode_captured);
+    }
 
-    //create subvector graycode patterns
-    vector<Mat>::const_iterator first_gray = patterns_graycode_captured.begin();
-    vector<Mat>::const_iterator last_gray = patterns_graycode_captured.end();
-    vector<Mat> gray_patterns_vertical(first_gray, first_gray+2); //ststic for period and amount of shifts
-    vector<Mat> gray_patterns_horizontal(first_gray+2, last_gray);//static for period and amount of shifts
+    //Calculate Period Number Mats
+    vector<Mat> period_number_mats;
 
-    //Calculate period number horizontal and vertical
-    Mat periodnumber_horizontal = calculate_period_Mat(gray_patterns_vertical);
-    Mat periodnumber_vertical = calculate_period_Mat(gray_patterns_horizontal);
+    if(novel_method){
+
+        //Calculate the period number here
+    }else{
+
+        calculate_periodnumber_graycode(period_number_mats, amount_phaseshifts,amount_patterns);
+    }
 
 
     //Calculate absolute phasemap
-    Mat absolutephase_vertical = calculate_absolute_phase(relative_phasemap_vertical, periodnumber_vertical);
-    Mat absolutephase_horizontal = calculate_absolute_phase(relative_phasemap_horizontal, periodnumber_horizontal);
-
+    Mat absolutephase_vertical = calculate_absolute_phase(relative_phasemap_vertical, period_number_mats[1]);
+    Mat absolutephase_horizontal = calculate_absolute_phase(relative_phasemap_horizontal, period_number_mats[0]);
     absolute_phasemaps.push_back(absolutephase_horizontal);
     absolute_phasemaps.push_back(absolutephase_vertical);
 

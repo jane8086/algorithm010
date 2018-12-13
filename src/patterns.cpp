@@ -390,36 +390,35 @@ int create_patterns_offset(int screen_Width, int screen_Hight, vector<Mat> &outp
 
 }
 
-int create_patterns_all(int screen_Width, int screen_Hight, int period_sum, int pattern_type, vector<Mat> &patterns){
+int create_patterns_all(int screen_Width, int screen_Hight, int period_sum, vector<Mat> &patterns, int color_pattern ,int novel_method){
 
     if(!isPowerOfTwo(period_sum)){
         cout << "Period number must be power of two !" << endl;
         return -1;
     }
 
-    if(pattern_type){
+    if(color_pattern){
 
         create_patterns_colorphaseshift(screen_Width, screen_Hight, period_sum, patterns);
+    }else{
+
+        if(create_patterns_phaseshift(screen_Width, screen_Hight, period_sum, patterns))
+            return -1;
     }
 
-    if(create_patterns_phaseshift(screen_Width, screen_Hight, period_sum, patterns))
-        return -1;
+    if(novel_method){
+        if(create_patterns_novel(screen_Width, screen_Hight, period_sum, patterns))
+            return -1;
+    }else{
 
-    if(create_patterns_graycodehorizontal(screen_Width, screen_Hight, period_sum, patterns))
-        return -1;
-
-    if(create_patterns_graycodevertical(screen_Width, screen_Hight, period_sum, patterns))
-        return -1;
+        if(create_patterns_graycodehorizontal(screen_Width, screen_Hight, period_sum, patterns))
+            return -1;
+        if(create_patterns_graycodevertical(screen_Width, screen_Hight, period_sum, patterns))
+            return -1;
+    }
 
     if(create_patterns_offset(screen_Width, screen_Hight, patterns))
         return -1;
-
-    if(create_patterns_novel(screen_Width, screen_Hight, period_sum, patterns))
-        return -1;
-    if(create_patterns_phaseshift_general(screen_Width, screen_Hight, period_sum, 5, patterns)
-)
-        return -1;
-
 
     return 0;
 
