@@ -22,7 +22,7 @@ int convert_binary(vector<Mat> &graycode_images){
 }
 
 
-int reduce_moire(vector<Mat> &phase_shift, vector<Mat> &dst_phase_shift,int diameter=10)
+int reduce_moire(vector<Mat> &phase_shift, vector<Mat> &dst_phase_shift,int diameter=20)
 {
     if (( diameter <= 0) || (diameter <10))
     {
@@ -39,24 +39,25 @@ int reduce_moire(vector<Mat> &phase_shift, vector<Mat> &dst_phase_shift,int diam
     for (int i = 0; i < phase_shift.size(); i++)
     {
         Mat dst = phase_shift[i].clone();
-        bilateralFilter(phase_shift[i],dst,diameter,50,50);
+        bilateralFilter(phase_shift[i],dst,diameter,20,20);
         dst_phase_shift.push_back(dst);
     }
     return 0;
 }
 
 
-Mat detect_screen(int &period, int &amount_shifts,int crop_amount = 1)
+Mat detect_screen(int &amount_pattern, int &amount_shifts,int crop_amount = 1)
 {
     vector<Mat> ground_image;
     vector<vector<Point>> contour;
 
-    load_image_ground(ground_image, amount_shifts, period); //first white then black
+    load_image_ground(ground_image, amount_shifts, amount_pattern); //first white then black
 
     // detect screen by subtraction black and white images
     Mat subtract = ground_image[0] - ground_image[1];
+
     blur(subtract,subtract,Size(3,3)); // blur image for better result
-    threshold(subtract,subtract,20,255,THRESH_BINARY);
+    threshold(subtract,subtract,15,255,THRESH_BINARY);
 
     // find contour
     findContours(subtract,contour,RETR_LIST,CHAIN_APPROX_SIMPLE);
@@ -89,6 +90,31 @@ Mat detect_screen(int &period, int &amount_shifts,int crop_amount = 1)
 
     return frame;
 }
+
+int remove_noise(Mat &relative, Mat &frame)
+{
+    vector<vector<Point>> contour;
+
+    Mat dst = Mat::zeros(relative.size(), CV_8U);
+    relative.convertTo(dst,CV_8U);
+
+    findContours(dst,contour,RETR_LIST,CHAIN_APPROX_TC89_L1);
+
+    // draw contour of noise
+    Mat map(relative.size(), CV_8U, Scalar(255));
+    for (int i = 0; i < contour.size(); i++ )
+    {
+        drawContours(map,contour,i,Scalar(0,0,0),2);
+    }
+
+    threshold(map,map,40,1, THRESH_BINARY);
+    bitwise_and(frame,map,frame);
+
+    return 0;
+}
+
+
+
 
 
 

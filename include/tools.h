@@ -32,7 +32,7 @@ bool isPowerOfTwo (int x);
 /** @brief Loads captured shadow masks patterns from folder images and shadow masks
  *
  */
-int load_image_ground(std::vector<cv::Mat> &ground_image, int &amount_shifts, int &period);
+int load_image_ground(vector<Mat> &ground_image, int &amount_shifts, int &amount_pattern);
 
 
 
