@@ -240,7 +240,7 @@ int create_patterns_graycodevertical(int screen_Width,int screen_Hight,int perdi
 {
 
     // adjust period_sum
-    perdiod_sum = perdiod_sum/2;
+    perdiod_sum = log2(perdiod_sum);
 
 
     // base case
@@ -311,7 +311,7 @@ int create_patterns_graycodevertical(int screen_Width,int screen_Hight,int perdi
 int create_patterns_graycodehorizontal(int screen_Width,int screen_Hight,int period_sum, vector<Mat> &patterns_graycode_horizontal)
 {
     // adjust period
-    period_sum = period_sum/2;
+    period_sum = log2(period_sum);
 
     // base case
     if (period_sum <= 0)
