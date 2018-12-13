@@ -306,7 +306,7 @@ int calculate_realWorld_3d_coordinates(vector<Point3f> &points_world_mm, vector<
 
         for( int column_i = 0; column_i < absolutephasemap_hor.cols; column_i++){
 
-            if (screen.at<uchar>(row_i,column_i))
+            if (screen.at<uchar>(row_i,column_i)!=0)
             {
 
                 //Current point in image
