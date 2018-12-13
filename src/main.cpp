@@ -3,7 +3,7 @@
 #include "include/patterns.h"
 #include "include/tools.h"
 #include "include/phases.h"
-#include "monitor.h"
+#include "include/monitor.h"
 #include "include/preprocessing.h"
 #include <QDir>
 
@@ -23,7 +23,6 @@ int main(void)
     //Routine to create all phase_shifting patterns
     create_patterns_all(monitor.size_x, monitor.size_y, periods, patterns, color_patterns, novel_method);
 
-
 //    //3. Show and Capture Patterns
 //    FlyCapture2::Camera camera;
 //    vector<Mat> patterns_captured;
@@ -31,20 +30,22 @@ int main(void)
 
 
     // detect screen
-    Mat screen = detect_screen(periods, amount_shifts, 10);
-
+    Mat screen;
 
     //Calculate absolute phasemaps
     vector<Mat> absolute_phasemaps;
-    calculate_absolute_phasemaps(absolute_phasemaps, amount_shifts, patterns.size(), color_patterns, novel_method);
+    calculate_absolute_phasemaps(absolute_phasemaps, screen, amount_shifts, patterns.size(), color_patterns, novel_method);
 
+    // show the display point
+    imshow("Display point", screen*255);
+    waitKey();
 
 
     //5. Create Point Correspondences
     vector<Point2f> image_points;
     vector<Point> points_world_pixel;
     vector<Point3f> points_world;
-    //calculate_realWorld_3d_coordinates(points_world, points_world_pixel, image_points, patterns_absolut_phase[0], patterns_absolut_phase[1],monitor, periods);
+    calculate_realWorld_3d_coordinates(points_world, points_world_pixel, image_points, absolute_phasemaps[0], absolute_phasemaps[1],monitor, periods,screen);
     saveDatayml(image_points, points_world_pixel, points_world);
 
 
