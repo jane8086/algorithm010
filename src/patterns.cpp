@@ -390,7 +390,7 @@ int create_patterns_offset(int screen_Width, int screen_Hight, vector<Mat> &outp
 
 }
 
-int create_patterns_all(int screen_Width, int screen_Hight, int period_sum, vector<Mat> &patterns, int color_pattern ,int novel_method){
+int create_patterns_all(int screen_Width, int screen_Hight, int period_sum, vector<Mat> &patterns,int amount_shifts, int color_pattern ,int novel_method){
 
     if(!isPowerOfTwo(period_sum)){
         cout << "Period number must be power of two !" << endl;
@@ -402,7 +402,7 @@ int create_patterns_all(int screen_Width, int screen_Hight, int period_sum, vect
         create_patterns_colorphaseshift(screen_Width, screen_Hight, period_sum, patterns);
     }else{
 
-        if(create_patterns_phaseshift(screen_Width, screen_Hight, period_sum, patterns))
+        if(create_patterns_phaseshift_general(screen_Width, screen_Hight, period_sum, amount_shifts, patterns))
             return -1;
     }
 
