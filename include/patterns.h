@@ -20,5 +20,5 @@ int create_patterns_graycodehorizontal(int screen_Width,int screen_Hight,int per
  *  @param novel_method If 1, second phase_shifting patterns are used to encode absolute phase
  *  @param patterns Vector of generated patterns
  */
-int create_patterns_all(int screen_Width, int screen_Hight, int period_sum, vector<Mat> &patterns, int color_pattern = 0,int novel_method = 0);
+int create_patterns_all(int screen_Width, int screen_Hight, int period_sum, vector<Mat> &patterns, int amount_shifts = 3, int color_pattern = 0,int novel_method = 0);
 #endif // PATTERNS_H

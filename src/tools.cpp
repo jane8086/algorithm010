@@ -79,12 +79,66 @@ int load_images_gray(vector<Mat> &gray_images, int &amount_shifts, int &amount_p
 
 }
 
+int save_points_to_csv(vector<Point2f> points_2d, string filename){
+
+    ofstream fs1;
+    fs1.open(filename);
+    fs1 << "x,y, \n";
+
+    //iterate throuugh whole vector
+    for(int point_i=0; point_i<points_2d.size(); point_i++){
+
+        fs1 << to_string(points_2d[point_i].x) + "," + to_string(points_2d[point_i].y) + "\n";
+
+    }
+
+    fs1.close();
+
+}
+
+int save_points_to_csv(vector<Point> points_2d, string filename){
+
+    ofstream fs1;
+    fs1.open(filename);
+    fs1 << "x,y, \n";
+
+    //iterate throuugh whole vector
+    for(int point_i=0; point_i<points_2d.size(); point_i++){
+
+        fs1 << to_string(points_2d[point_i].x) + "," + to_string(points_2d[point_i].y) + "\n";
+
+    }
+
+    fs1.close();
+
+}
+
+int save_points_to_csv(vector<Point3f> points_3d, string filename){
+
+    ofstream fs1;
+    fs1.open(filename);
+    fs1 << "x,y, \n";
+
+    //iterate throuugh whole vector
+    for(int point_i=0; point_i<points_3d.size(); point_i++){
+
+        fs1 << to_string(points_3d[point_i].x) + "," + to_string(points_3d[point_i].y) + "," + to_string(points_3d[point_i].z) + "\n";
+
+    }
+
+    fs1.close();
+
+}
+
+
+
+
+
 int saveDatayml(vector<Point2f> image_point, vector<Point> points_world_pixel, vector<Point3f> points_world){
 
-    ofstream fs;
-    fs.open("image_point.npy");
-    fs<< cv::format(image_point, cv::Formatter::FMT_NUMPY) << std::endl;
-    fs.close();
+    save_points_to_csv(image_point, "imagepoints.csv");
+    save_points_to_csv(points_world_pixel, "displaypoints_pixel.csv");
+    save_points_to_csv(points_world, "displaypoints_world_mm.csv");
 }
 
 
@@ -95,10 +149,13 @@ bool isPowerOfTwo (int x)
 }
 
 
-int load_image_ground(vector<Mat> &ground_image, int &amount_shifts, int &period)
+int load_image_ground(vector<Mat> &ground_image, int &amount_shifts, int &amount_pattern)
 {
+    int period = pow(2,(amount_pattern - 2*amount_shifts-2)/2);
+
     for(int image_i = amount_shifts*2+2*log2(period)+1; image_i < amount_shifts*2+2*log2(period)+3; image_i++)
     {
+
         string image_path ="images/pattern_cam_im" + to_string(image_i) + ".png";
         Mat image = imread(image_path, IMREAD_GRAYSCALE);
 
