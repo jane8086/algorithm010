@@ -10,7 +10,9 @@ using namespace std;
  *  @param a pixel resolution in width.
  *
  */
-int calculate_absolute_phasemaps(vector<Mat> &phaseMaps_absolut, int &amount_shifts, int amount_patterns);
-int calculate_realWorld_3d_coordinates(vector<Point3f> &points_world, vector<Point> &points_world_pixel, vector<Point2f> &points_image, Mat &absolutephasemap_hor, Mat &absolutephasemap_ver, Monitor &monitor, int &periods);
+int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, Mat &screen, int &amount_phaseshifts, int amount_patterns, int &color_patterns, int &novel_method);
 
+int calculate_realWorld_3d_coordinates(vector<Point3f> &points_world_mm, vector<Point> &points_world_pixel, vector<Point2f> &points_image, \
+                                       Mat &absolutephasemap_hor, Mat &absolutephasemap_ver, Monitor &monitor, int &periods, Mat &screen);
+Mat calculate_relative_phase_general(vector<Mat> &patterns);
 #endif // PHASES_H

@@ -5,6 +5,7 @@
 using namespace cv;
 using namespace std;
 
+
 int save_images(std::vector<Mat> &images){
 
 
@@ -18,7 +19,29 @@ int save_images(std::vector<Mat> &images){
     return 0;
 }
 
-int load_images_phase(vector<Mat> &phase_images, int &amount_shifts){
+
+int load_images_phase_color(vector<Mat> &phase_images){
+
+    int amount_shifts = 3; // Can't make more shifts than three color channels!
+
+    for( int image_i = 1; image_i < amount_shifts+1; image_i++){
+
+        string image_path ="images/pattern_cam_im" + to_string(image_i) + ".png";
+        Mat image = imread(image_path, IMREAD_GRAYSCALE);
+        if(image.empty()){
+            cout << "Coud not read image from filesystem" << endl;
+            return -1;
+        }
+        phase_images.push_back(image);
+
+}
+}
+
+int load_images_phase(vector<Mat> &phase_images, int &amount_shifts, int color_method){
+
+    if(color_method){
+        load_images_phase_color(phase_images);
+    }else{
 
     for(int image_i = 1; image_i < 2*amount_shifts+1; image_i++){
 
@@ -29,14 +52,11 @@ int load_images_phase(vector<Mat> &phase_images, int &amount_shifts){
             return -1;
         }
         phase_images.push_back(image);
-
-
-
     }
-
+    }
     return 0;
-
 }
+
 
 int load_images_gray(vector<Mat> &gray_images, int &amount_shifts, int &amount_patterns){
 
@@ -59,14 +79,68 @@ int load_images_gray(vector<Mat> &gray_images, int &amount_shifts, int &amount_p
 
 }
 
-int saveDatayml(vector<Point2f> image_point, vector<Point> points_world_pixel, vector<Point3f> points_world){
+int save_points_to_csv(vector<Point2f> points_2d, string filename){
 
-    ofstream fs;
-    fs.open("image_point.npy");
-    fs<< cv::format(image_point, cv::Formatter::FMT_NUMPY) << std::endl;
-    fs.close();
+    ofstream fs1;
+    fs1.open(filename);
+    fs1 << "x,y, \n";
+
+    //iterate throuugh whole vector
+    for(int point_i=0; point_i<points_2d.size(); point_i++){
+
+        fs1 << to_string(points_2d[point_i].x) + "," + to_string(points_2d[point_i].y) + "\n";
+
+    }
+
+    fs1.close();
 
 }
+
+int save_points_to_csv(vector<Point> points_2d, string filename){
+
+    ofstream fs1;
+    fs1.open(filename);
+    fs1 << "x,y, \n";
+
+    //iterate throuugh whole vector
+    for(int point_i=0; point_i<points_2d.size(); point_i++){
+
+        fs1 << to_string(points_2d[point_i].x) + "," + to_string(points_2d[point_i].y) + "\n";
+
+    }
+
+    fs1.close();
+
+}
+
+int save_points_to_csv(vector<Point3f> points_3d, string filename){
+
+    ofstream fs1;
+    fs1.open(filename);
+    fs1 << "x,y, \n";
+
+    //iterate throuugh whole vector
+    for(int point_i=0; point_i<points_3d.size(); point_i++){
+
+        fs1 << to_string(points_3d[point_i].x) + "," + to_string(points_3d[point_i].y) + "," + to_string(points_3d[point_i].z) + "\n";
+
+    }
+
+    fs1.close();
+
+}
+
+
+
+
+
+int saveDatayml(vector<Point2f> image_point, vector<Point> points_world_pixel, vector<Point3f> points_world){
+
+    save_points_to_csv(image_point, "imagepoints.csv");
+    save_points_to_csv(points_world_pixel, "displaypoints_pixel.csv");
+    save_points_to_csv(points_world, "displaypoints_world_mm.csv");
+}
+
 
 bool isPowerOfTwo (int x)
 {
@@ -75,10 +149,13 @@ bool isPowerOfTwo (int x)
 }
 
 
-int load_image_ground(vector<Mat> &ground_image, int &amount_shifts, int &period)
+int load_image_ground(vector<Mat> &ground_image, int &amount_shifts, int &amount_pattern)
 {
+    int period = pow(2,(amount_pattern - 2*amount_shifts-2)/2);
+
     for(int image_i = amount_shifts*2+2*log2(period)+1; image_i < amount_shifts*2+2*log2(period)+3; image_i++)
     {
+
         string image_path ="images/pattern_cam_im" + to_string(image_i) + ".png";
         Mat image = imread(image_path, IMREAD_GRAYSCALE);
 
@@ -91,3 +168,4 @@ int load_image_ground(vector<Mat> &ground_image, int &amount_shifts, int &period
     }
     return 0;
 }
+
