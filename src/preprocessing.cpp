@@ -104,7 +104,7 @@ int remove_noise(Mat &relative, Mat &frame)
     Mat map(relative.size(), CV_8U, Scalar(255));
     for (int i = 0; i < contour.size(); i++ )
     {
-        drawContours(map,contour,i,Scalar(0,0,0),2);
+        drawContours(map,contour,i,Scalar(0,0,0),4);
     }
 
     threshold(map,map,40,1, THRESH_BINARY);
