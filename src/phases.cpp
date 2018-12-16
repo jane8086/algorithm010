@@ -205,6 +205,8 @@ Mat calculate_period_Mat_graycode(vector<Mat> &graycodeimages){
 
 int calculate_periodnumber_graycode(vector<Mat> &period_number_Mats,int &amount_phaseshifts, int &amount_patterns){
 
+    int periods = pow(2,(amount_patterns - 2*amount_phaseshifts-2)/2);
+
     //Calculate absolute phasemaps
     vector<Mat> patterns_graycode_captured;
     load_images_gray(patterns_graycode_captured, amount_phaseshifts, amount_patterns);
@@ -215,8 +217,9 @@ int calculate_periodnumber_graycode(vector<Mat> &period_number_Mats,int &amount_
     //create subvector graycode patterns
     vector<Mat>::const_iterator first_gray = patterns_graycode_captured.begin();
     vector<Mat>::const_iterator last_gray = patterns_graycode_captured.end();
-    vector<Mat> gray_patterns_vertical(first_gray, first_gray+2); //ststic for period and amount of shifts
-    vector<Mat> gray_patterns_horizontal(first_gray+2, last_gray);//static for period and amount of shifts
+
+    vector<Mat> gray_patterns_vertical(first_gray, first_gray + log2(periods)); //ststic for period and amount of shifts
+    vector<Mat> gray_patterns_horizontal(first_gray + log2(periods), last_gray);//static for period and amount of shifts
 
     //Calculate period number horizontal and vertical
     Mat periodnumber_horizontal = calculate_period_Mat_graycode(gray_patterns_vertical);
@@ -289,7 +292,6 @@ int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, Mat &screen, i
 
     absolute_phasemaps.push_back(absolutephase_horizontal);
     absolute_phasemaps.push_back(absolutephase_vertical);
-
 
     return 0;
 
