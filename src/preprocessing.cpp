@@ -39,6 +39,7 @@ int reduce_moire(vector<Mat> &phase_shift, vector<Mat> &dst_phase_shift,int diam
     for (int i = 0; i < phase_shift.size(); i++)
     {
         Mat dst = phase_shift[i].clone();
+        GaussianBlur(phase_shift[i], dst, Size(3,3),0,0);
         bilateralFilter(phase_shift[i],dst,diameter,20,20);
         dst_phase_shift.push_back(dst);
     }
@@ -114,8 +115,7 @@ int remove_noise(Mat &relative, Mat &frame)
 }
 
 
-
-
+//int
 
 
 
