@@ -32,5 +32,4 @@ enum MonitorModel {
 
     };
 
-
 #endif // MONITOR_H

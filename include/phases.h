@@ -12,5 +12,6 @@ using namespace std;
  */
 int calculate_absolute_phasemaps(vector<Mat> &phaseMaps_absolut, int &amount_shifts, int amount_patterns);
 int calculate_realWorld_3d_coordinates(vector<Point3f> &points_world, vector<Point> &points_world_pixel, vector<Point2f> &points_image, Mat &absolutephasemap_hor, Mat &absolutephasemap_ver, Monitor &monitor, int &periods);
+Mat calculate_relative_phase(vector<Mat> &patterns);
 
 #endif // PHASES_H

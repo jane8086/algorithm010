@@ -3,7 +3,7 @@
 #include "include/patterns.h"
 #include "include/tools.h"
 #include "include/phases.h"
-#include "monitor.h"
+#include "include/monitor.h"
 #include "include/preprocessing.h"
 #include <QDir>
 
@@ -49,8 +49,8 @@ int main(void)
     vector<Point2f> image_points;
     vector<Point> points_world_pixel;
     vector<Point3f> points_world;
-    calculate_realWorld_3d_coordinates(points_world, points_world_pixel, image_points, patterns_absolut_phase[0], patterns_absolut_phase[1],monitor, periods);
-    saveDatayml(image_points, points_world_pixel, points_world);
+    //calculate_realWorld_3d_coordinates(points_world, points_world_pixel, image_points, patterns_absolut_phase[0], patterns_absolut_phase[1],monitor, periods);
+    //saveDatayml(image_points, points_world_pixel, points_world);
 
 
 

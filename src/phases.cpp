@@ -10,6 +10,34 @@ using namespace cv;
 
 #define pi 3.1415926
 
+/* function: novel2period, CV_32FC1
+ * input: Mat novel, relative phase of novel that store period information.
+ *        int period_num, number of periods
+ *  output: Mat file, that store period number of every pixel.
+ */
+Mat novel2period(Mat novel, int period_num){
+    double interval;
+    interval = 360.0/(double)period_num;
+    int row_size, col_size;
+    row_size = novel.rows;
+    col_size = novel.cols;
+    Mat period(row_size, col_size, CV_32FC1);
+    for (int col = 0; col < col_size; col++)
+    {
+        for (int row = 0; row < row_size; row++ )
+        {
+           period.at<float>(row,col) = novel.at<float>(row,col)/interval; // calculate the period number
+           /* Logically the function is done here, but some unexpected errors may occur, like some glitchs about
+            * the data type. For example when a pixel in Mat novel has a value like 59 and the interval is 60.
+            * Actually the period number of this pixel should be 1.0, but with the algorithm it will be 0. I
+            * don't know if it will occur, we should modify this function it necessary.
+            */
+
+        }
+    }
+
+}
+
 int transform_curvaturescreenpoint( Point2f &display_pixel, Point3f &display_pixel_curved_mm, Monitor &monitor){
 
     // Transform pixel into real world point with coordinate system in middle of screen
@@ -256,7 +284,7 @@ int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, int &amount_ph
 
     //Calculate absolute phasemap
     Mat absolutephase_vertical = calculate_absolute_phase(relative_phasemap_vertical, periodnumber_vertical);
-    Mat absolutephase_horizontal = calculate_absolute_phase(relative_phasemap_horizontal, periodnumber_horizontal);s
+    Mat absolutephase_horizontal = calculate_absolute_phase(relative_phasemap_horizontal, periodnumber_horizontal);
 
     absolute_phasemaps.push_back(absolutephase_horizontal);
     absolute_phasemaps.push_back(absolutephase_vertical);
