@@ -1,10 +1,12 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <fstream>
+#include "flycapture/FlyCapture2.h"
+#include "include/monitor.h"
 
-using namespace cv;
+using namespace FlyCapture2;
 using namespace std;
-
+using namespace cv;
 
 int save_images(std::vector<Mat> &images){
 
@@ -34,8 +36,9 @@ int load_images_phase_color(vector<Mat> &phase_images){
         }
         phase_images.push_back(image);
 
+    }
 }
-}
+
 
 int load_images_phase(vector<Mat> &phase_images, int &amount_shifts, int color_method){
 
@@ -79,6 +82,7 @@ int load_images_gray(vector<Mat> &gray_images, int &amount_shifts, int &amount_p
 
 }
 
+
 int save_points_to_csv(vector<Point2f> points_2d, string filename){
 
     ofstream fs1;
@@ -95,6 +99,7 @@ int save_points_to_csv(vector<Point2f> points_2d, string filename){
     fs1.close();
 
 }
+
 
 int save_points_to_csv(vector<Point> points_2d, string filename){
 
@@ -113,6 +118,7 @@ int save_points_to_csv(vector<Point> points_2d, string filename){
 
 }
 
+
 int save_points_to_csv(vector<Point3f> points_3d, string filename){
 
     ofstream fs1;
@@ -129,9 +135,6 @@ int save_points_to_csv(vector<Point3f> points_3d, string filename){
     fs1.close();
 
 }
-
-
-
 
 
 int saveDatayml(vector<Point2f> image_point, vector<Point> points_world_pixel, vector<Point3f> points_world){
@@ -167,5 +170,98 @@ int load_image_ground(vector<Mat> &ground_image, int &amount_shifts, int &amount
         ground_image.push_back(image);
     }
     return 0;
+}
+
+// create gradient image to adjust brightness
+int create_gradient(Mat &gradient, Monitor monitor)
+{
+    gradient = Mat(monitor.size_y, monitor.size_x, CV_32F, Scalar(0));
+    for (int r = 0; r < gradient.cols; r++)
+    {
+        gradient.col(r) = 1/monitor.size_x*r;
+    }
+    imshow("Gradient", gradient);
+    waitKey();
+    return 0;
+}
+
+
+int camera_brightness_adjust(Camera &camera, Mat &gradient, float white_threshold = 0.1)
+{
+
+    namedWindow("Adjust brightness", WINDOW_NORMAL);
+    moveWindow("Adjust brightness", +2000, -20);
+    setWindowProperty("Adjust brightness", WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
+    string path = "images/" ;
+
+    bool capturing = true;
+    while (capturing)
+    {
+        imshow("Adjust brightness", gradient);
+        waitKey(500);
+        Image new_image;
+        FlyCapture2::Error error = camera.RetrieveBuffer(&new_image);
+
+        if (error != PGRERROR_OK) {
+          std::cout << "capture error" << std::endl;
+          destroyWindow("Adjust brightness");
+          waitKey(1);
+          return -1;
+        }
+
+        Image grayscale;
+        new_image.Convert(FlyCapture2::PIXEL_FORMAT_MONO8, &grayscale);
+        unsigned int rowBytes =
+            (double)grayscale.GetReceivedDataSize() / (double)grayscale.GetRows();
+        Mat frame = Mat(grayscale.GetRows(), grayscale.GetCols(), CV_8U,
+                        grayscale.GetData(), rowBytes);
+
+
+        // checking if frame is not empty and showing camera informations
+        if (frame.data)
+        {
+            Mat capture_image = frame;
+            bool saved = imwrite(path + "gradient_image.png", capture_image);
+            if (saved)
+            {
+                // count number of white pixel
+                int count = 0;
+                for (int i = 0; i < capture_image.rows; i++)
+                {
+                    for (int j = 0; j < capture_image.cols; j++)
+                    {
+                        if (capture_image.at<uchar>(i,j) == 255)
+                        {
+                            count++;
+                        }
+                    }
+                }
+
+                // check the threshold, if the captured image is too bright, lower the gain, otherwise print the gain and exit
+                if ((float)count/(gradient.rows*gradient.cols) > white_threshold)
+                {
+                    // lower the gain here
+                    continue;
+                }
+                else
+                {
+                    cout << "The proper gain is: " << std::endl;
+                    capturing = false;
+                    return 1;
+                }
+
+            } else {
+                cout << "could not save gradient image" << endl;
+                return -1;
+            }
+        }
+
+    }
+
+
+    destroyWindow("Adjust brightness");
+    waitKey(1);
+    return 1;
+
 }
 

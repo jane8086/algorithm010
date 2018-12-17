@@ -1,6 +1,8 @@
 #ifndef TOOLS_H
 #define TOOLS_H
 #include "opencv2/opencv.hpp"
+#include "include/monitor.h"
+#include "flycapture/FlyCapture2.h"
 
 using namespace std;
 using namespace cv;
@@ -34,7 +36,13 @@ bool isPowerOfTwo (int x);
  */
 int load_image_ground(vector<Mat> &ground_image, int &amount_shifts, int &amount_pattern);
 
+/** @brief Create gradient image to adjust brightness of the camera
+ */
+int create_gradient(Mat &gradient, Monitor monitor);
 
+/** @brief Adjust brightness of camera
+ */
+int camera_brightness_adjust(Camera &camera, Mat &gradient, float white_threshold);
 
 #endif // TOOLS_H
 
