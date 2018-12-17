@@ -4,6 +4,7 @@
 #include "include/monitor.h"
 #include "flycapture/FlyCapture2.h"
 
+using  namespace FlyCapture2;
 using namespace std;
 using namespace cv;
 

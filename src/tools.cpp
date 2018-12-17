@@ -180,13 +180,24 @@ int create_gradient(Mat &gradient, Monitor monitor)
     {
         gradient.col(r) = 1/monitor.size_x*r;
     }
-    imshow("Gradient", gradient);
-    waitKey();
+
+    int count = 0;
+    for (int i = 0; i < gradient.rows; i++)
+    {
+        for (int j = 0; j < gradient.cols; j++)
+        {
+            if (gradient.at<uchar>(i,j) == 1)
+            {
+                count++;
+            }
+        }
+    }
+
     return 0;
 }
 
 
-int camera_brightness_adjust(Camera &camera, Mat &gradient, float white_threshold = 0.1)
+int camera_brightness_adjust(Camera &camera, Mat &gradient, float white_threshold = 0.15)
 {
 
     namedWindow("Adjust brightness", WINDOW_NORMAL);
@@ -238,7 +249,7 @@ int camera_brightness_adjust(Camera &camera, Mat &gradient, float white_threshol
                 }
 
                 // check the threshold, if the captured image is too bright, lower the gain, otherwise print the gain and exit
-                if ((float)count/(gradient.rows*gradient.cols) > white_threshold)
+                if ((float)count/(float)(gradient.rows*gradient.cols) > white_threshold)
                 {
                     // lower the gain here
                     continue;
