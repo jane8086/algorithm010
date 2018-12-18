@@ -8,6 +8,9 @@ using namespace cv;
 
 #define pi 3.1415926
 
+#define offset 122
+#define amplitude 122
+
 /*
 function create_patterns_novel
 input: screen_Width: resolution U
@@ -17,15 +20,15 @@ output: vector of mats
 */
 int create_patterns_novel(int screen_Width, int screen_Hight, int period_sum, vector<Mat> &patterns_novel)
 {
-    int step_number, offset, amplitude, interval_pixel_row, interval_pixel_col, period_number;
+    int step_number, interval_pixel_row, interval_pixel_col, period_number;
     interval_pixel_row = (int)(screen_Hight/period_sum);
     interval_pixel_col = (int)(screen_Width/period_sum);
     float interval_angle;
     interval_angle = 2*CV_PI/(float)period_sum;
 
     step_number = 3;
-    offset = 122;
-    amplitude = 122;
+    //offset = 122;
+    //amplitude = 122;
     Mat grayim(screen_Hight, screen_Width, CV_8UC1);
 
     for(int k=0; k<step_number; k++)
@@ -73,9 +76,9 @@ output: vector of mats
 */
 int create_patterns_phaseshift_general(int screen_Width, int screen_Hight, int period_sum, int step_number, vector<Mat> &patterns_phaseshift)
 {
-    int offset, amplitude ;
-    offset = 122;
-    amplitude = 122;
+    //int offset, amplitude ;
+    //offset = 122;
+    //amplitude = 122;
     Mat grayim(screen_Hight, screen_Width, CV_8UC1);
 
     for(int k=0; k<step_number; k++)
@@ -120,10 +123,10 @@ output: vector of mats
 */
 int create_patterns_phaseshift(int screen_Width, int screen_Hight, int period_sum, vector<Mat> &patterns_phaseshift)
 {
-    int step_number, offset, amplitude ;
+    int step_number;//, offset, amplitude ;
     step_number = 3;
-    offset = 122;
-    amplitude = 122;
+    //offset = 122;
+    //amplitude = 122;
     Mat grayim(screen_Hight, screen_Width, CV_8UC1);
 
     for(int k=0; k<step_number; k++)
@@ -168,10 +171,10 @@ output: one image, whose three channels have different phase shift. Order: RGB (
 */
 int create_patterns_colorphaseshift(int screen_Width, int screen_Hight, int period_sum, vector<Mat> &patterns_colorphaseshift)
 {
-    int step_number, offset, amplitude ;
+    int step_number;//, offset, amplitude ;
     step_number = 3;
-    offset = 122;
-    amplitude = 122;
+    //offset = 122;
+    //amplitude = 122;
     Mat colorim_hor(screen_Hight, screen_Width, CV_8UC3);
     Mat colorim_ver(screen_Hight, screen_Width, CV_8UC3);
 
