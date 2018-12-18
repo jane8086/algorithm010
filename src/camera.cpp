@@ -164,7 +164,7 @@ int camera_adjust_gain(Camera &camera, float &gain)
 }
 
 
-int camera_gain_adjustment(Camera &camera, Mat &threshold_image, int &threshold_value, float brighter_percent_threshold = 0.00)
+int camera_gain_adjustment(Camera &camera, Mat &threshold_image, int &threshold_value, float &brighter_percent_threshold)
 {
     CameraInfo caminfo;
     //------------------------------
