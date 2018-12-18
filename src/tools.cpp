@@ -215,8 +215,8 @@ int create_threshold_image(Mat &threshold_image, Monitor monitor, int &threshold
         return -1;
     }
     threshold_image = Mat(monitor.size_y, monitor.size_x, CV_8UC1, Scalar(threshold_value));
-    imshow("Threshold", threshold_image);
-    waitKey();
+//    imshow("Threshold", threshold_image);
+//    waitKey();
     return 1;
 }
 

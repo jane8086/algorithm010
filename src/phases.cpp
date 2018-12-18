@@ -238,6 +238,7 @@ int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, Mat &screen, i
     vector<Mat> patterns_phase_captured;
     load_images_phase(patterns_phase_captured, amount_phaseshifts, color_patterns);
 
+
     // reduce moire effect by using bilateral filter
     vector<Mat> patterns_phase_filtered;
     reduce_moire(patterns_phase_captured,patterns_phase_filtered,10);
@@ -304,7 +305,7 @@ int calculate_realWorld_3d_coordinates(vector<Point3f> &points_world_mm, vector<
                                        Mat &absolutephasemap_hor, Mat &absolutephasemap_ver, Monitor &monitor, int &periods, Mat &screen){
 
     //Iterate through every point in Mat
-    for( int row_i = 0; row_i < absolutephasemap_hor.rows; row_i ++){
+    for( int row_i = 0; row_i < absolutephasemap_hor.rows; row_i++){
 
         for( int column_i = 0; column_i < absolutephasemap_hor.cols; column_i++){
 
@@ -319,9 +320,6 @@ int calculate_realWorld_3d_coordinates(vector<Point3f> &points_world_mm, vector<
                 Point2f display_pixel;
                 display_pixel.x = absolutephasemap_ver.at<float>(imagepoint_i) * ((float)monitor.size_x /(2*(float)periods*180));
                 display_pixel.y  = absolutephasemap_hor.at<float>(imagepoint_i) * ((float)monitor.size_y /(2*(float)periods*180));
-
-
-
 
 
                 // When x or y are zero kick these pixels
