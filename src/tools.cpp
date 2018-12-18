@@ -172,6 +172,7 @@ int load_image_ground(vector<Mat> &ground_image, int &amount_shifts, int &amount
     return 0;
 }
 
+
 // create gradient image to adjust brightness
 int create_gradient(Mat &gradient, Monitor monitor)
 {
@@ -192,87 +193,31 @@ int create_gradient(Mat &gradient, Monitor monitor)
             }
         }
     }
+    float white = (float)count/(float)(gradient.rows*gradient.cols);
+    cout << white << endl;
+    imshow("Gradient", gradient);
+    waitKey();
 
     return 0;
 }
 
 
-int camera_brightness_adjust(Camera &camera, Mat &gradient, float white_threshold = 0.15)
+// create monoton-color threshold image to adjust camera's gain
+int create_threshold_image(Mat &threshold_image, Monitor monitor, int &threshold_value)
 {
-
-    namedWindow("Adjust brightness", WINDOW_NORMAL);
-    moveWindow("Adjust brightness", +2000, -20);
-    setWindowProperty("Adjust brightness", WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
-    string path = "images/" ;
-
-    bool capturing = true;
-    while (capturing)
+    if (threshold_value < 100)
     {
-        imshow("Adjust brightness", gradient);
-        waitKey(500);
-        Image new_image;
-        FlyCapture2::Error error = camera.RetrieveBuffer(&new_image);
-
-        if (error != PGRERROR_OK) {
-          std::cout << "capture error" << std::endl;
-          destroyWindow("Adjust brightness");
-          waitKey(1);
-          return -1;
-        }
-
-        Image grayscale;
-        new_image.Convert(FlyCapture2::PIXEL_FORMAT_MONO8, &grayscale);
-        unsigned int rowBytes =
-            (double)grayscale.GetReceivedDataSize() / (double)grayscale.GetRows();
-        Mat frame = Mat(grayscale.GetRows(), grayscale.GetCols(), CV_8U,
-                        grayscale.GetData(), rowBytes);
-
-
-        // checking if frame is not empty and showing camera informations
-        if (frame.data)
-        {
-            Mat capture_image = frame;
-            bool saved = imwrite(path + "gradient_image.png", capture_image);
-            if (saved)
-            {
-                // count number of white pixel
-                int count = 0;
-                for (int i = 0; i < capture_image.rows; i++)
-                {
-                    for (int j = 0; j < capture_image.cols; j++)
-                    {
-                        if (capture_image.at<uchar>(i,j) == 255)
-                        {
-                            count++;
-                        }
-                    }
-                }
-
-                // check the threshold, if the captured image is too bright, lower the gain, otherwise print the gain and exit
-                if ((float)count/(float)(gradient.rows*gradient.cols) > white_threshold)
-                {
-                    // lower the gain here
-                    continue;
-                }
-                else
-                {
-                    cout << "The proper gain is: " << std::endl;
-                    capturing = false;
-                    return 1;
-                }
-
-            } else {
-                cout << "could not save gradient image" << endl;
-                return -1;
-            }
-        }
-
+        cout << " The threshold image should be brighter. Suggested: 100 -> 254)" << endl;
+        return -1;
+    } else if (threshold_value > 255)
+    {
+        cout << " Wrong threshold value. Suggested: 200 -> 254)" << endl;
+        return -1;
     }
-
-
-    destroyWindow("Adjust brightness");
-    waitKey(1);
+    threshold_image = Mat(monitor.size_y, monitor.size_x, CV_8UC1, Scalar(threshold_value));
+    imshow("Threshold", threshold_image);
+    waitKey();
     return 1;
-
 }
+
 

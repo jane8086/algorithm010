@@ -24,10 +24,12 @@ int load_images_phase(std::vector<cv::Mat> &phase_images, int &amount_shifts, in
  */
 int load_images_gray(std::vector<cv::Mat> &gray_images, int &amount_shifts, int &amount_patterns);
 
+
 /** @brief Savesall gathered points into a data.yml file
  *
  */
 int saveDatayml(vector<Point2f> image_point, vector<Point> points_world_pixel, vector<Point3f> points_world);
+
 
 bool isPowerOfTwo (int x);
 
@@ -37,13 +39,19 @@ bool isPowerOfTwo (int x);
  */
 int load_image_ground(vector<Mat> &ground_image, int &amount_shifts, int &amount_pattern);
 
+
 /** @brief Create gradient image to adjust brightness of the camera
  */
 int create_gradient(Mat &gradient, Monitor monitor);
 
-/** @brief Adjust brightness of camera
+
+/** @brief Create threshold image to adjust brightness of the camera
  */
-int camera_brightness_adjust(Camera &camera, Mat &gradient, float white_threshold);
+int create_threshold_image(Mat &threshold_image, Monitor monitor, int &threshold_value);
+
+
+
+
 
 #endif // TOOLS_H
 
