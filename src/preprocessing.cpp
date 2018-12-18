@@ -22,7 +22,7 @@ int convert_binary(vector<Mat> &graycode_images){
 }
 
 
-int reduce_moire(vector<Mat> &phase_shift, vector<Mat> &dst_phase_shift,int diameter=20)
+int reduce_moire(vector<Mat> &phase_shift, vector<Mat> &dst_phase_shift,int diameter=10)
 {
     if (( diameter <= 0) || (diameter <10))
     {
@@ -65,6 +65,7 @@ Mat detect_screen(int &amount_pattern, int &amount_shifts,int crop_amount = 1)
     if (contour.empty())
     {
         cout << "The screen is not fully shown! Please adjust camera distance" << std::endl;
+        throw std::exception();
     }
 
     // find the largest contour (screen)
@@ -94,6 +95,11 @@ Mat detect_screen(int &amount_pattern, int &amount_shifts,int crop_amount = 1)
 
 int remove_noise(Mat &relative, Mat &frame)
 {
+    if (relative.empty())
+    {
+        cout << "Can't load relative phase" << endl;
+        return -1;
+    }
     vector<vector<Point>> contour;
 
     Mat dst = Mat::zeros(relative.size(), CV_8U);
@@ -115,24 +121,44 @@ int remove_noise(Mat &relative, Mat &frame)
 }
 
 
-//int
+int sgn(double x)
+{
+    if (x<0) return -1;
+    if (x>0) return 1;
+    return 0;
+}
 
+/** @brief Calculate correct display pixel from refraction with known transformation from camera to world
+ *  @param k2dvector: transform vector from camera to world
+ */
 
+int refraction(Point3f &k2dvector, Point3f &display_pixel_mm, Point3f &correct_display_pixel_mm)
+{
+    double n = 1.5; // refractive index
+    double d = 1; //thickness of display
 
+    // calculate the angle between vector<camera to pixel> and display plane as flat with normal vector(0,0,1)
+    Point3f k2display = -k2dvector + display_pixel_mm;
+    Point3f normal_display(0,0,1); // normal vector of display
 
+    // incident angle
+    double alpha1 = abs(acos(abs(k2display.x*normal_display.x + k2display.y*normal_display.y + k2display.z*normal_display.z) / \
+                             (sqrt(pow(k2display.x,2)+pow(k2display.y,2)+pow(k2display.z,2))*sqrt(pow(normal_display.x,2)+pow(normal_display.y,2)+pow(normal_display.z,2)))));
 
+    // refractive angle
+    double alpha2 = abs(asin(sin(alpha1)/n));
 
+    double h = abs(d*(1-tan(alpha2)/tan(alpha1))); // height offset
+    double delta = h*tan(alpha2); //shifted value
 
+    // display pixel angle from Ox
+    double beta = abs(acos(display_pixel_mm.x / sqrt(pow(display_pixel_mm.x,2)+pow(display_pixel_mm.y,2) + pow(display_pixel_mm.z,2))));
 
+    // corrected display pixel
+    correct_display_pixel_mm = Point3f(display_pixel_mm.x - sgn(display_pixel_mm.x)*delta*cos(beta), \
+                                       display_pixel_mm.y - sgn(display_pixel_mm.y)*delta*sin(beta), display_pixel_mm.z);
 
-
-
-
-
-
-
-
-
-
+    return 0;
+}
 
 
