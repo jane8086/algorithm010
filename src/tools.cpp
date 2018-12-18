@@ -174,7 +174,7 @@ int load_image_ground(vector<Mat> &ground_image, int &amount_shifts, int &amount
 
 
 // create gradient image to adjust brightness
-int create_gradient(Mat &gradient, Monitor monitor)
+int create_gradient(Mat &gradient, Monitor &monitor)
 {
     gradient = Mat(monitor.size_y, monitor.size_x, CV_32F, Scalar(0));
     for (int r = 0; r < gradient.cols; r++)
@@ -203,7 +203,7 @@ int create_gradient(Mat &gradient, Monitor monitor)
 
 
 // create monoton-color threshold image to adjust camera's gain
-int create_threshold_image(Mat &threshold_image, Monitor monitor, int &threshold_value)
+int create_threshold_image(Mat &threshold_image, Monitor &monitor, int &threshold_value)
 {
     if (threshold_value < 100)
     {
@@ -215,8 +215,8 @@ int create_threshold_image(Mat &threshold_image, Monitor monitor, int &threshold
         return -1;
     }
     threshold_image = Mat(monitor.size_y, monitor.size_x, CV_8UC1, Scalar(threshold_value));
-    imshow("Threshold", threshold_image);
-    waitKey();
+//    imshow("Threshold", threshold_image);
+//    waitKey();
     return 1;
 }
 
