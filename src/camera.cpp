@@ -151,7 +151,6 @@ int camera_routine(Camera & camera, vector<Mat> &patterns, vector<Mat> &patterns
 }
 
 
-
 int camera_adjust_gain(Camera &camera, float &gain)
 {
     //Set gain

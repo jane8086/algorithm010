@@ -11,7 +11,7 @@
 int main(void)
 {
 
-    QDir::setCurrent("/home/tae/TaeBuntu/PSA2018/phase_shifting");
+//    QDir::setCurrent("/home/tae/TaeBuntu/PSA2018/phase_shifting");
     //1. Create Phase and Gray code patterns
     vector<Mat> patterns;
     Monitor monitor(SAMSUNG_CURVED);
