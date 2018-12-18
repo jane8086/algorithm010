@@ -42,12 +42,12 @@ int load_image_ground(vector<Mat> &ground_image, int &amount_shifts, int &amount
 
 /** @brief Create gradient image to adjust brightness of the camera
  */
-int create_gradient(Mat &gradient, Monitor monitor);
+int create_gradient(Mat &gradient, Monitor &monitor);
 
 
 /** @brief Create threshold image to adjust brightness of the camera
  */
-int create_threshold_image(Mat &threshold_image, Monitor monitor, int &threshold_value);
+int create_threshold_image(Mat &threshold_image, Monitor &monitor, int &threshold_value);
 
 
 
