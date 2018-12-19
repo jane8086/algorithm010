@@ -5,7 +5,9 @@
 #include "include/phases.h"
 #include "include/monitor.h"
 #include "include/preprocessing.h"
+#include "include/calibration.h"
 #include <QDir>
+#include "opencv2/opencv.hpp"
 
 
 int main(void)
@@ -50,6 +52,11 @@ int main(void)
 
     calculate_realWorld_3d_coordinates(points_world, points_world_pixel, image_points, absolute_phasemaps[0], absolute_phasemaps[1],monitor, periods,screen);
     saveDatayml(image_points, points_world_pixel, points_world);
+
+    //6. Calibration routine
+    calibrationroutine(image_points, points_world);
+
+
 
     return 0;
 

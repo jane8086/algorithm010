@@ -87,7 +87,7 @@ int save_points_to_csv(vector<Point2f> points_2d, string filename){
 
     ofstream fs1;
     fs1.open(filename);
-    fs1 << "x,y, \n";
+    fs1 << "x,y\n";
 
     //iterate throuugh whole vector
     for(int point_i=0; point_i<points_2d.size(); point_i++){
@@ -105,9 +105,9 @@ int save_points_to_csv(vector<Point> points_2d, string filename){
 
     ofstream fs1;
     fs1.open(filename);
-    fs1 << "x,y, \n";
+    fs1 << "u_image,v_image\n";
 
-    //iterate throuugh whole vector
+    //iterate through whole vector
     for(int point_i=0; point_i<points_2d.size(); point_i++){
 
         fs1 << to_string(points_2d[point_i].x) + "," + to_string(points_2d[point_i].y) + "\n";
@@ -123,7 +123,7 @@ int save_points_to_csv(vector<Point3f> points_3d, string filename){
 
     ofstream fs1;
     fs1.open(filename);
-    fs1 << "x,y, \n";
+    fs1 << "x_mm,y_mm,z_mm\n";
 
     //iterate throuugh whole vector
     for(int point_i=0; point_i<points_3d.size(); point_i++){
@@ -142,6 +142,12 @@ int saveDatayml(vector<Point2f> image_point, vector<Point> points_world_pixel, v
     save_points_to_csv(image_point, "imagepoints.csv");
     save_points_to_csv(points_world_pixel, "displaypoints_pixel.csv");
     save_points_to_csv(points_world, "displaypoints_world_mm.csv");
+}
+
+int saveDatayml(vector<Point2f> image_point_calibrated, vector<Point3f> points_world_calibrated){
+
+    save_points_to_csv(image_point_calibrated, "imagepoints_calibrated.csv");
+    save_points_to_csv(points_world_calibrated, "displaypoints_world_mm_calibrated.csv");
 }
 
 

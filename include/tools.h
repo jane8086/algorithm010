@@ -25,6 +25,12 @@ int load_images_phase(std::vector<cv::Mat> &phase_images, int &amount_shifts, in
 int load_images_gray(std::vector<cv::Mat> &gray_images, int &amount_shifts, int &amount_patterns);
 
 
+/** @brief Saves all points used for calibration into two csv files
+ *
+ */
+int saveDatayml(vector<Point2f> image_point_calibrated, vector<Point3f> points_world_calibrated);
+
+
 /** @brief Savesall gathered points into a data.yml file
  *
  */
