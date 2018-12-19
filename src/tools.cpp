@@ -85,9 +85,10 @@ int load_images_gray(vector<Mat> &gray_images, int &amount_shifts, int &amount_p
 
 int save_points_to_csv(vector<Point2f> points_2d, string filename){
 
+
     ofstream fs1;
     fs1.open(filename);
-    fs1 << "x,y\n";
+    fs1 << "u_image,v_image\n";
 
     //iterate throuugh whole vector
     for(int point_i=0; point_i<points_2d.size(); point_i++){
@@ -105,7 +106,7 @@ int save_points_to_csv(vector<Point> points_2d, string filename){
 
     ofstream fs1;
     fs1.open(filename);
-    fs1 << "u_image,v_image\n";
+    fs1 << "u_display,v_display\n";
 
     //iterate through whole vector
     for(int point_i=0; point_i<points_2d.size(); point_i++){
