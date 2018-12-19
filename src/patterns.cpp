@@ -8,8 +8,112 @@ using namespace cv;
 
 #define pi 3.1415926
 
+#define offset 122
+#define amplitude 122
+
 /*
-function create_gray_patterns
+function create_patterns_novel
+input: screen_Width: resolution U
+       screen_Hight: resolution V
+       period_sum: sum of the periods
+output: vector of mats
+*/
+int create_patterns_novel(int screen_Width, int screen_Hight, int period_sum, vector<Mat> &patterns_novel)
+{
+    int step_number, interval_pixel_row, interval_pixel_col, period_number;
+    interval_pixel_row = (int)(screen_Hight/period_sum);
+    interval_pixel_col = (int)(screen_Width/period_sum);
+    float interval_angle;
+    interval_angle = 2*CV_PI/(float)period_sum;
+
+    step_number = 3;
+    //offset = 122;
+    //amplitude = 122;
+    Mat grayim(screen_Hight, screen_Width, CV_8UC1);
+
+    for(int k=0; k<step_number; k++)
+    {
+        // create vertical patterns with different initial phases
+        for( int i = 0; i < grayim.rows; ++i)
+            for( int j = 0; j < grayim.cols; ++j )
+            {
+                period_number = (int)(j/interval_pixel_col);
+                grayim.at<uchar>(i,j) = offset + int(amplitude*
+                                        (cos((float)period_number*interval_angle + (k-1)*2*CV_PI/3.0)));
+            }
+
+        // pushback mat to vector
+        patterns_novel.push_back(grayim.clone());
+    }
+
+    for(int k=0; k<step_number; k++)
+    {
+        // create horizontal patterns with different initial phases
+        for( int i = 0; i < grayim.rows; ++i)
+            for( int j = 0; j < grayim.cols; ++j )
+            {
+                period_number = (int)(i/interval_pixel_row);
+                grayim.at<uchar>(i,j) = offset + int(amplitude*
+                                        (cos((float)period_number*interval_angle + (k-1)*2*CV_PI/3.0)));
+
+            }
+
+        // pushback
+        patterns_novel.push_back(grayim.clone());
+    }
+
+    return 0;
+}
+
+/*
+function create_patterns_phaseshift_general
+input: screen_Width: resolution U
+       screen_Hight: resolution V
+       period_sum: sum of the periods
+       image_type: 1 for creating images, which are used to determine column number,
+                    other numbers for creating images, which are used to determine row number.
+output: vector of mats
+*/
+int create_patterns_phaseshift_general(int screen_Width, int screen_Hight, int period_sum, int step_number, vector<Mat> &patterns_phaseshift)
+{
+    //int offset, amplitude ;
+    //offset = 122;
+    //amplitude = 122;
+    Mat grayim(screen_Hight, screen_Width, CV_8UC1);
+
+    for(int k=1; k<step_number+1; k++)
+    {
+        // create vertical patterns with different initial phases
+        for( int i = 0; i < grayim.rows; ++i)
+            for( int j = 0; j < grayim.cols; ++j )
+            {
+                grayim.at<uchar>(i,j) = offset + int(amplitude*
+                                           (cos(period_sum*2*pi*j/(float)screen_Width - 2*pi*k/(float)step_number)));
+            }
+
+        // pushback mat to vector
+        patterns_phaseshift.push_back(grayim.clone());
+    }
+
+    for(int k=1; k<step_number+1; k++)
+    {
+        // create horizontal patterns with different initial phases
+        for( int i = 0; i < grayim.rows; ++i)
+            for( int j = 0; j < grayim.cols; ++j )
+            {
+                grayim.at<uchar>(i,j) = offset + int(amplitude*
+                                           (cos(period_sum*2*pi*i/float(screen_Hight) - 2*pi*k/(float)step_number)));
+            }
+
+        // pushback
+        patterns_phaseshift.push_back(grayim.clone());
+    }
+
+    return 0;
+}
+
+/*
+function create_patterns_phaseshift
 input: screen_Width: resolution U
        screen_Hight: resolution V
        period_sum: sum of the periods
@@ -19,10 +123,10 @@ output: vector of mats
 */
 int create_patterns_phaseshift(int screen_Width, int screen_Hight, int period_sum, vector<Mat> &patterns_phaseshift)
 {
-    int step_number, offset, amplitude ;
+    int step_number;//, offset, amplitude ;
     step_number = 3;
-    offset = 122;
-    amplitude = 122;
+    //offset = 122;
+    //amplitude = 122;
     Mat grayim(screen_Hight, screen_Width, CV_8UC1);
 
     for(int k=0; k<step_number; k++)
@@ -67,10 +171,10 @@ output: one image, whose three channels have different phase shift. Order: RGB (
 */
 int create_patterns_colorphaseshift(int screen_Width, int screen_Hight, int period_sum, vector<Mat> &patterns_colorphaseshift)
 {
-    int step_number, offset, amplitude ;
+    int step_number;//, offset, amplitude ;
     step_number = 3;
-    offset = 122;
-    amplitude = 122;
+    //offset = 122;
+    //amplitude = 122;
     Mat colorim_hor(screen_Hight, screen_Width, CV_8UC3);
     Mat colorim_ver(screen_Hight, screen_Width, CV_8UC3);
 
@@ -139,7 +243,7 @@ int create_patterns_graycodevertical(int screen_Width,int screen_Hight,int perdi
 {
 
     // adjust period_sum
-    perdiod_sum = perdiod_sum/2;
+    perdiod_sum = log2(perdiod_sum);
 
 
     // base case
@@ -210,7 +314,7 @@ int create_patterns_graycodevertical(int screen_Width,int screen_Hight,int perdi
 int create_patterns_graycodehorizontal(int screen_Width,int screen_Hight,int period_sum, vector<Mat> &patterns_graycode_horizontal)
 {
     // adjust period
-    period_sum = period_sum/2;
+    period_sum = log2(period_sum);
 
     // base case
     if (period_sum <= 0)
@@ -289,30 +393,39 @@ int create_patterns_offset(int screen_Width, int screen_Hight, vector<Mat> &outp
 
 }
 
-int create_patterns_all(int screen_Width, int screen_Hight, int period_sum, int pattern_type, vector<Mat> &patterns){
+int create_patterns_all(int screen_Width, int screen_Hight, int period_sum, vector<Mat> &patterns,int amount_shifts, int color_pattern ,int novel_method){
 
     if(!isPowerOfTwo(period_sum)){
         cout << "Period number must be power of two !" << endl;
         return -1;
     }
 
-    if(pattern_type){
+    if(color_pattern){
 
         create_patterns_colorphaseshift(screen_Width, screen_Hight, period_sum, patterns);
+    }else{
+
+        if(create_patterns_phaseshift_general(screen_Width, screen_Hight, period_sum, amount_shifts, patterns))
+            return -1;
     }
 
-    if(create_patterns_phaseshift(screen_Width, screen_Hight, period_sum, patterns))
-        return -1;
+    if(novel_method){
+        if(create_patterns_novel(screen_Width, screen_Hight, period_sum, patterns))
+            return -1;
+    }else{
 
-    if(create_patterns_graycodehorizontal(screen_Width, screen_Hight, period_sum, patterns))
-        return -1;
+        if(create_patterns_graycodehorizontal(screen_Width, screen_Hight, period_sum, patterns))
+            return -1;
+        if(create_patterns_graycodevertical(screen_Width, screen_Hight, period_sum, patterns))
+            return -1;
+    }
 
-    if(create_patterns_graycodevertical(screen_Width, screen_Hight, period_sum, patterns))
-        return -1;
     if(create_patterns_offset(screen_Width, screen_Hight, patterns))
         return -1;
 
     return 0;
 
 }
+
+
 
