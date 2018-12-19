@@ -10,33 +10,28 @@ using namespace cv;
 
 #define pi 3.1415926
 
-/* function: novel2period, CV_32FC1
+/* function: novel2period, CV_32FC1  !!!!!!!!ababdoned
  * input: Mat novel, relative phase of novel that store period information.
  *        int period_num, number of periods
  *  output: Mat file, that store period number of every pixel.
- */
-Mat novel2period(Mat novel, int period_num){
+ *
+Mat novel2period(Mat &novel, int period_num){
     double interval;
     interval = 360.0/(double)period_num;
     int row_size, col_size;
     row_size = novel.rows;
     col_size = novel.cols;
     Mat period(row_size, col_size, CV_32FC1);
-    for (int col = 0; col < col_size; col++)
+    for (int row = 0; row < row_size; row++)
     {
-        for (int row = 0; row < row_size; row++ )
+        for (int col = 0; col < col_size; col++ )
         {
-           period.at<float>(row,col) = novel.at<float>(row,col)/interval; // calculate the period number
-           /* Logically the function is done here, but some unexpected errors may occur, like some glitchs about
-            * the data type. For example when a pixel in Mat novel has a value like 59 and the interval is 60.
-            * Actually the period number of this pixel should be 1.0, but with the algorithm it will be 0. I
-            * don't know if it will occur, we should modify this function it necessary.
-            */
-
+            period.at<float>(row,col) = (double)((int)(novel.at<float>(row,col)/interval+0.5)); // calculate the period number
         }
     }
 
 }
+*/
 
 int transform_curvaturescreenpoint( Point2f &display_pixel, Point3f &display_pixel_curved_mm, Monitor &monitor){
 
@@ -66,14 +61,15 @@ int transform_curvaturescreenpoint( Point2f &display_pixel, Point3f &display_pix
  */
 Mat calculate_relative_phase_general(vector<Mat> &patterns)
 {
-
     // Here we assume that we are showing shifted patterns
-    Mat phasemap_relative(patterns[0].rows, patterns[0].cols, CV_8U);
+    Mat phasemap_relative(patterns[0].rows, patterns[0].cols, CV_32FC1);
 
     // calculate image number
     vector<Mat>::const_iterator first = patterns.begin();
     vector<Mat>::const_iterator last = patterns.end();
     int N = last - first;
+    cout<<N<<endl;
+    //cout<<patterns[0].at<uchar>(0,0)<<" "<<patterns[1].at<uchar>(0,0)<<" "<<patterns[2].at<uchar>(0,0)<<endl;
     double intensity_sum_sin, intensity_sum_cos, relative_phase;
 
     // get dimension of the image
@@ -81,20 +77,24 @@ Mat calculate_relative_phase_general(vector<Mat> &patterns)
     row_size = patterns[0].rows;
     col_size = patterns[0].cols;
 
-    int period_quarter =64;
-    for (int col = 0; col < col_size; col++)
+    int period_quarter =90;
+    for (int row = 0; row < row_size; row++)
     {
-        for (int row = 0; row < row_size; row++ )
+        for (int col = 0; col < col_size; col++ )
         {
             intensity_sum_sin=0; intensity_sum_cos=0;
             for (int n=1; n<N+1; n++){
-                intensity_sum_sin += static_cast<double>(patterns[n-1].at<uchar>(row,col))
-                        * sin(2*CV_PI*n/(double)N);
-                intensity_sum_cos += static_cast<double>(patterns[n-1].at<uchar>(row,col))
-                        * cos(2*CV_PI*n/(double)N);
+                intensity_sum_sin += (double)patterns[n-1].at<uchar>(row,col) * sin(2*CV_PI*(n)/(double)N);
+                intensity_sum_cos += (double)patterns[n-1].at<uchar>(row,col) * cos(2*CV_PI*(n)/(double)N);
             }
 
             relative_phase = atan(intensity_sum_sin/intensity_sum_cos);
+
+            if(col == 0 && row ==0)
+            {
+                cout<<patterns[0].at<uchar>(row,col)-patterns[2].at<uchar>(row,col)<<endl;
+                cout<<intensity_sum_sin<<" "<<intensity_sum_cos<<" "<<relative_phase<<" ";
+            }
 
             relative_phase = relative_phase*2*period_quarter/CV_PI;
             if((intensity_sum_cos < 0))  // represent the sign of cos value
@@ -105,8 +105,13 @@ Mat calculate_relative_phase_general(vector<Mat> &patterns)
             {
                 relative_phase += 4*period_quarter;
             }
-            phasemap_relative.at<uchar>(row,col) = relative_phase;
+            if (relative_phase > 359.5){
+                relative_phase = 0;
+            }
+
+            phasemap_relative.at<float>(row,col) = relative_phase;
         }
+        cout<<endl;
     }
     return phasemap_relative;
 }
@@ -154,11 +159,43 @@ Mat calculate_relative_phase(vector<Mat> &patterns)
             {
                 relative_phase += 4*period_quarter;
             }
+            if (relative_phase > 359.5){
+                relative_phase = 0;
+            }
             phasemap_relative.at<float>(row,col) = relative_phase;
         }
     }
     return phasemap_relative;
 
+}
+
+/*
+ * function: calculate_absolute_phase_novel
+ * input: relative_phase: Mat file of relative phase
+ *        period_number: Mat file of period number
+ *        range: range of a period, e.g. 360 (grad)
+ *        &absolute_phase: address of the vector of mats
+ * output: vector of mats
+ */
+Mat calculate_absolute_phase_novel(Mat &relative_phase, Mat &novel, int period_sum)
+{
+    int row_num, col_num;
+    row_num = relative_phase.rows;
+    col_num = relative_phase.cols;
+    Mat phase_abs(row_num, col_num, CV_32FC1);
+    int range = 360;
+    double interval = 360.0/(double)period_sum;
+
+    for(int row = 0; row < row_num; row++)
+    {
+        for(int col = 0; col < col_num; col++)
+        {
+            double period = (double)((int)(novel.at<float>(row,col)/interval+0.5)); // calculate the period number
+            float absolute_period = relative_phase.at<float>(row,col) + period*range;
+            phase_abs.at<float>(row,col) = absolute_period;
+        }
+    }
+    return phase_abs;
 }
 
 /*
@@ -183,7 +220,7 @@ Mat calculate_absolute_phase(Mat &relative_phase, Mat &period_number)
         for(int col = 0; col < col_num; col++)
         {
             float period = period_number.at<uchar>(row, col);
-            float absolute_period = relative_phase.at<float>(row,col) + period*range;
+            float absolute_period = relative_phase.at<float>(row,col) + period_number.at<float>(row,col)*range;
             phase_abs.at<float>(row,col) = absolute_period;
         }
     }

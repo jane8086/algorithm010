@@ -81,28 +81,28 @@ int create_patterns_phaseshift_general(int screen_Width, int screen_Hight, int p
     //amplitude = 122;
     Mat grayim(screen_Hight, screen_Width, CV_8UC1);
 
-    for(int k=0; k<step_number; k++)
+    for(int k=1; k<step_number+1; k++)
     {
         // create vertical patterns with different initial phases
         for( int i = 0; i < grayim.rows; ++i)
             for( int j = 0; j < grayim.cols; ++j )
             {
                 grayim.at<uchar>(i,j) = offset + int(amplitude*
-                                           (cos(period_sum*2*pi*j/(float)screen_Width - 2*pi*k/(float)period_sum)));
+                                           (cos(period_sum*2*pi*j/(float)screen_Width - 2*pi*k/(float)step_number)));
             }
 
         // pushback mat to vector
         patterns_phaseshift.push_back(grayim.clone());
     }
 
-    for(int k=0; k<step_number; k++)
+    for(int k=1; k<step_number+1; k++)
     {
         // create horizontal patterns with different initial phases
         for( int i = 0; i < grayim.rows; ++i)
             for( int j = 0; j < grayim.cols; ++j )
             {
                 grayim.at<uchar>(i,j) = offset + int(amplitude*
-                                           (cos(period_sum*2*pi*i/float(screen_Hight) - 2*pi*k/(float)period_sum)));
+                                           (cos(period_sum*2*pi*i/float(screen_Hight) - 2*pi*k/(float)step_number)));
             }
 
         // pushback
