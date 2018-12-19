@@ -140,7 +140,8 @@ Mat calculate_relative_phase(vector<Mat> &patterns)
         for (int row = 0; row < row_size; row++ )
         {
 
-            double intensity_1, intensity_2, intensity_3, relative_phase;
+            double intensity_1, intensity_2, intensity_3;
+            float relative_phase;
 
             intensity_1 = static_cast<double>(patterns[0].at<uchar>(row,col));
             intensity_2 = static_cast<double>(patterns[1].at<uchar>(row,col));
@@ -217,7 +218,8 @@ Mat calculate_absolute_phase(Mat &relative_phase, Mat &period_number)
         for(int col = 0; col < col_num; col++)
         {
             float period = period_number.at<uchar>(row, col);
-            float absolute_period = relative_phase.at<float>(row,col) + period_number.at<float>(row,col)*range;
+            float relative_value = relative_phase.at<float>(row,col);
+            float absolute_period =relative_value + period*range;
             phase_abs.at<float>(row,col) = absolute_period;
         }
     }
@@ -350,7 +352,6 @@ int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, Mat &screen, i
     }
 
 
-    //Calculate absolute phasemap
     Mat absolutephase_vertical = calculate_absolute_phase(relative_phasemap_vertical, period_number_mats[1]);
     Mat absolutephase_horizontal = calculate_absolute_phase(relative_phasemap_horizontal, period_number_mats[0]);
 

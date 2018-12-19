@@ -116,7 +116,6 @@ int remove_noise(Mat &relative, Mat &frame)
 
     threshold(map,map,40,1, THRESH_BINARY);
     bitwise_and(frame,map,frame);
-
     return 0;
 }
 

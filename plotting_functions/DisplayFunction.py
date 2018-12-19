@@ -22,12 +22,12 @@ image_points = pd.read_csv(filename2)
 point_correspondeces = pd.concat([displaypoints_pixel,image_points], axis =1)
 
 "Plot 2D Pixel points" 
-ax1 = point_correspondeces.plot.scatter(x='x', y ='y',title='Display Points in Pixel')
+ax1 = point_correspondeces.plot.scatter(x='u_display', y ='v_display',title='Display Points in Pixel', marker='x')
 ax1.set_ylim(1080,0)
 ax1.set_xlim(0,1980)
 
 "Plot 2D Image Points"
-ax2 = point_correspondeces.plot.scatter(x='u_image', y ='v_image',title='Image Points in Pixel')
+ax2 = point_correspondeces.plot.scatter(x='u_image', y ='v_image',title='Image Points in Pixel', marker='x')
 ax2.set_ylim(964,0)
 ax2.set_xlim(0,1288)
 

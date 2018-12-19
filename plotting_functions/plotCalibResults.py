@@ -21,12 +21,12 @@ image_points = pd.read_csv(filename2)
 point_correspondeces = pd.concat([displaypoints_pixel,image_points], axis =1)
 
 "Plot 2D Image points" 
-ax1 = point_correspondeces.plot.scatter(x='x', y ='y',title='Display Points in Pixel', marker='x')
-ax1.set_ylim(1080,0)
-ax1.set_xlim(0,1980)
+ax1 = point_correspondeces.plot.scatter(x='u_image', y ='v_image',title='Camera Points', marker='x')
+ax1.set_ylim(964,0)
+ax1.set_xlim(0,1288)
 
 "Plot 3D World Points"
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-ax.scatter(point_correspondeces['x_mm'], point_correspondeces['y_mm'], point_correspondeces['y_mm'], c='r', marker='x')
+ax.scatter(point_correspondeces['x_mm'], point_correspondeces['y_mm'], point_correspondeces['z_mm'], c='r', marker='x')
 

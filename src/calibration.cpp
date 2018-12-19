@@ -61,7 +61,7 @@ int calibrationroutine(vector<Point2f> &camera_points, vector<Point3f> &world_po
         //Get format for calibration method
         vector<vector<Point2f> > camera(1);
         vector<vector<Point3f> > world(1);
-        create_points_subset(camera_points, world_points, camera, world, PointSubset::Random_5000);
+        create_points_subset(camera_points, world_points, camera, world, PointSubset::Random_1000);
 
         //Calibrate with fisheye functions
         std::vector<cv::Vec3d> rvec;
