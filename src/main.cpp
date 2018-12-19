@@ -32,63 +32,8 @@ int main(void)
     //vector<Mat> patterns_absolut_phase;
     //calculate_absolute_phasemaps(patterns_absolut_phase, amount_shifts, (int)patterns.size());
 
-    /////////////////////////////////////////////////////////////////////////////////////////////  
-    // test from chao zhang: get period map using novel method
-    Mat period_novel;
-    vector<Mat> novel_patterns;
-    novel_patterns.push_back(patterns[12].clone());
-    novel_patterns.push_back(patterns[13].clone());
-    novel_patterns.push_back(patterns[14].clone());
-    //novel_patterns.push_back(patterns[21].clone());
-    //novel_patterns.push_back(patterns[22].clone());
 
-    imshow("patterns1",novel_patterns[0]);
-    waitKey();
-    imshow("patterns2",novel_patterns[1]);
-    waitKey();
-    imshow("patterns3",novel_patterns[2]);
-    waitKey();
 
-    Mat relative_phase;
-    relative_phase = calculate_relative_phase(patterns);
-    period_novel = calculate_relative_phase(novel_patterns);
-    //imshow("period map",period_novel);
-    //waitKey();
-
-    Mat period_map;
-    Mat absolute_phase_map;
-    absolute_phase_map = calculate_absolute_phase_novel(relative_phase, period_novel, periods);
-
-    /*
-    double interval;
-    interval = 90.0;
-    Mat period_map(1080, 1920, CV_32FC1);
-    for (int row = 0; row < 1080; row++)
-    {
-        for (int col = 0; col < 1920; col++)
-        {
-            period_map.at<float>(row,col) = (double)((int)(period_novel.at<float>(row,col)/interval+0.5)); // calculate the period number
-        }
-    }
-
-    Mat absolute_phase_map;
-    absolute_phase_map = calculate_absolute_phase(relative_phase, period_map);
-
-    int row_size, col_size;
-    row_size = period_novel.rows;
-    col_size = period_novel.cols;
-    */
-    for (int row = 0; row < 1080; row++ ){
-        for (int col = 0; col < 1920; col++)
-        {
-            if((col*16) % ((int)monitor.size_x) ==0){
-                cout<<absolute_phase_map.at<float>(row,col)<<" ";
-            }
-        }
-        cout<<endl;
-    }
-    // test end
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // detect screen
     Mat screen;
