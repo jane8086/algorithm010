@@ -11,6 +11,7 @@ int chose_random(vector<Point2f> &camera_points, vector<Point3f> &world_points,v
 
     int interval = camera_points.size();
     int random = 0;
+    srand( time(NULL) );
     for(int point_i = 0; point_i < amount; point_i++){
 
         random = rand() % interval;
@@ -61,19 +62,25 @@ int calibrationroutine(vector<Point2f> &camera_points, vector<Point3f> &world_po
         //Get format for calibration method
         vector<vector<Point2f> > camera(1);
         vector<vector<Point3f> > world(1);
-        create_points_subset(camera_points, world_points, camera, world, PointSubset::Random_1000);
+
+
+        //Undistort first with old method...
+        //create_points_subset(camera_points, world_points, camera, world, PointSubset::Random_50000);
+        camera[0] = camera_points;
+        world[0] = world_points;
 
         //Calibrate with fisheye functions
-        std::vector<cv::Vec3d> rvec;
-        std::vector<cv::Vec3d> tvec;
-        cv::Matx33d K;
-        cv::Vec4d D;
+        vector<Mat> rvec;
+        vector<Mat> tvec;
+        Mat K = (Mat1f(3,3) << 800.0, 0.0, 644.0, 0., 800.0, 482.0, 0.0, 0.0, 1.0);
+        Mat D = Mat::zeros(4, 1, CV_32F);
         Mat distimage = imread("images/pattern_cam_im1.png", IMREAD_GRAYSCALE); // Load first image
-
-        int flags = cv::fisheye::CALIB_RECOMPUTE_EXTRINSIC | cv::fisheye::CALIB_FIX_SKEW ;
-
+        int flag = 0;
+//        flag |= cv::fisheye::CALIB_RECOMPUTE_EXTRINSIC;
+//        flag |= cv::fisheye::CALIB_CHECK_COND;
+//        flag |= cv::fisheye::CALIB_FIX_SKEW;
         //calibrate camera
-        double reprojectionerror = cv::fisheye::calibrate(world, camera, distimage.size(), K, D, rvec, tvec, flags);
+        double reprojectionerror = calibrateCamera(world, camera, distimage.size(), K, D, rvec, tvec,CV_CALIB_USE_INTRINSIC_GUESS);
         //---
          cout << "Camera Matrix:" << endl;
          cout << K << endl;

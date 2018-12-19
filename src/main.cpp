@@ -17,7 +17,7 @@ int main(void)
     //1. Create Phase and Gray code patterns
     vector<Mat> patterns;
     Monitor monitor(SAMSUNG_CURVED);
-    int periods = 4;
+    int periods = 8;
     int amount_shifts = 3;
     int color_patterns = 0;
     int novel_method = 0;
