@@ -17,9 +17,11 @@ int main(void)
     Monitor monitor(SAMSUNG_CURVED);
     int periods = 4;
     int amount_shifts = 3;
+    int color_patterns = 0;
+    int novel_method = 0;
 
-    create_patterns_all(monitor.size_x, monitor.size_y, periods, 0, patterns);
-
+    //Routine to create all phase_shifting patterns
+    create_patterns_all(monitor.size_x, monitor.size_y, periods, patterns,amount_shifts);
 
 //    //3. Show and Capture Patterns
 //    FlyCapture2::Camera camera;
@@ -30,6 +32,7 @@ int main(void)
     //vector<Mat> patterns_absolut_phase;
     //calculate_absolute_phasemaps(patterns_absolut_phase, amount_shifts, (int)patterns.size());
 
+    /////////////////////////////////////////////////////////////////////////////////////////////  
     // test from chao zhang: get period map using novel method
     Mat period_novel;
     vector<Mat> novel_patterns;
@@ -85,24 +88,23 @@ int main(void)
         cout<<endl;
     }
     // test end
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // detect screen
-    Mat screen = detect_screen(periods, amount_shifts, 10);
+    Mat screen;
 
-
+    //Calculate absolute phasemaps
+    vector<Mat> absolute_phasemaps;
+    calculate_absolute_phasemaps(absolute_phasemaps, screen, amount_shifts, patterns.size(), color_patterns, novel_method);
 
 
     //5. Create Point Correspondences
     vector<Point2f> image_points;
     vector<Point> points_world_pixel;
     vector<Point3f> points_world;
-    //calculate_realWorld_3d_coordinates(points_world, points_world_pixel, image_points, patterns_absolut_phase[0], patterns_absolut_phase[1],monitor, periods);
-    //saveDatayml(image_points, points_world_pixel, points_world);
 
-
-
-
-
+    calculate_realWorld_3d_coordinates(points_world, points_world_pixel, image_points, absolute_phasemaps[0], absolute_phasemaps[1],monitor, periods,screen);
+    saveDatayml(image_points, points_world_pixel, points_world);
 
     return 0;
 
