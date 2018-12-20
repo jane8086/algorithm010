@@ -296,9 +296,7 @@ int calculate_periodnumber_graycode(vector<Mat> &period_number_Mats,int &amount_
 
 }
 
-
-
-int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, Mat &screen, int &amount_phaseshifts, int amount_patterns, int &color_patterns, int &novel_method){
+int calculate_all_phasemaps(vector<Mat> &absolute_phasemaps,vector<Mat> &relative_phasemaps, Mat &screen, int &amount_phaseshifts, int amount_patterns, int &color_patterns, int &novel_method){
 
     //Load phase images from folder
     vector<Mat> patterns_phase_captured;
@@ -357,6 +355,82 @@ int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, Mat &screen, i
 
     absolute_phasemaps.push_back(absolutephase_horizontal);
     absolute_phasemaps.push_back(absolutephase_vertical);
+    relative_phasemaps.push_back(relative_phasemap_horizontal);
+    relative_phasemaps.push_back(relative_phasemap_vertical);
+
+
+    return 0;
+
+
+
+
+}
+
+
+int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, Mat &screen, int &amount_phaseshifts, int amount_patterns, int &color_patterns, int &novel_method){
+
+    //Load phase images from folder
+    vector<Mat> patterns_phase_captured;
+    load_images_phase(patterns_phase_captured, amount_phaseshifts, color_patterns);
+
+    // reduce moire effect by using bilateral filter
+    vector<Mat> patterns_phase_filtered;
+    reduce_moire(patterns_phase_captured,patterns_phase_filtered,10);
+
+    //Maybe do some preprocessing here
+    screen = detect_screen(amount_patterns,amount_phaseshifts,10);
+
+/*
+    if(amount_phaseshifts != 3){
+        cout <<"Can't calculate relative phase yet! " << endl;
+        return -1;
+    }
+*/
+
+    //create subvector phase shift patterns
+    vector<Mat>::const_iterator first = patterns_phase_filtered.begin();
+    vector<Mat>::const_iterator last = patterns_phase_filtered.end();
+    vector<Mat> phase_patterns_vertical(first, first+amount_phaseshifts);
+    vector<Mat> phase_patterns_horizontal(first+amount_phaseshifts, last);
+
+    //Calculate both relative phasemaps
+    Mat relative_phasemap_horizontal;
+    Mat relative_phasemap_vertical;
+
+    if(color_patterns){
+        // Calculate relative_phase based on color patterns here....
+    }else{
+
+        relative_phasemap_vertical = calculate_relative_phase(phase_patterns_vertical);
+        relative_phasemap_horizontal = calculate_relative_phase(phase_patterns_horizontal);
+
+        remove_noise(relative_phasemap_vertical,screen);
+        remove_noise(relative_phasemap_horizontal,screen);
+
+        imshow("relatiphase_vertical",relative_phasemap_vertical/360);
+
+    }
+
+    //Calculate Period Number Mats
+    vector<Mat> period_number_mats;
+
+    if(novel_method){
+
+        //Calculate the period number here
+    }else{
+
+        calculate_periodnumber_graycode(period_number_mats, amount_phaseshifts,amount_patterns);
+    }
+
+
+    Mat absolutephase_vertical = calculate_absolute_phase(relative_phasemap_vertical, period_number_mats[1]);
+    Mat absolutephase_horizontal = calculate_absolute_phase(relative_phasemap_horizontal, period_number_mats[0]);
+
+    absolute_phasemaps.push_back(absolutephase_horizontal);
+    absolute_phasemaps.push_back(absolutephase_vertical);
+
+    imshow("absolutphase_vertical",absolutephase_vertical/(128*360));
+    waitKey();
 
     return 0;
 
@@ -413,4 +487,62 @@ int calculate_realWorld_3d_coordinates(vector<Point3f> &points_world_mm, vector<
     return 0;
 
 }
+
+int calculate_realWorld_3d_coordinates(vector<Point3f> &points_world_mm, vector<Point> &points_world_pixel, vector<Point2f> &points_image, \
+                                       Mat &absolutephasemap_hor, Mat &absolutephasemap_ver,Mat &relativePhase_hor, Mat &relativephasemap_ver, Monitor &monitor, int &periods, Mat &screen){
+
+    //Iterate through every point in Mat
+    for( int row_i = 0; row_i < absolutephasemap_hor.rows; row_i ++){
+
+        for( int column_i = 0; column_i < absolutephasemap_hor.cols; column_i++){
+
+            if (screen.at<uchar>(row_i,column_i)!=0)
+            {
+
+                //Current point in image
+                Point2f imagepoint_i(column_i, row_i);
+
+
+                if((40.0<=relativePhase_hor.at<float>(imagepoint_i))&&(relativePhase_hor.at<float>(imagepoint_i)<=70.0) && (40.0<=relativephasemap_ver.at<float>(imagepoint_i))&& (relativephasemap_ver.at<float>(imagepoint_i)<=70.0)){
+
+
+
+                    //Calculate phases into pixel coorindates
+                    Point2f display_pixel;
+                    display_pixel.x = absolutephasemap_ver.at<float>(imagepoint_i) * ((float)monitor.size_x /(2*(float)periods*180));
+                    display_pixel.y  = absolutephasemap_hor.at<float>(imagepoint_i) * ((float)monitor.size_y /(2*(float)periods*180));
+
+
+
+
+
+                    // When x or y are zero kick these pixels
+                    if((display_pixel.x != 0) || (display_pixel.y != 0)){
+
+                        //Pushback pixel position
+                        points_world_pixel.push_back(display_pixel);
+
+                        //Calculate 3D point
+                        Point3f display_worldpoint(0,0,0);
+                        transform_curvaturescreenpoint(display_pixel, display_worldpoint, monitor);
+
+                        //Chuck points into vectors
+                        points_world_mm.push_back(display_worldpoint);
+                        points_image.push_back(imagepoint_i);
+                    }
+
+                }
+            }
+
+
+        }
+    }
+
+    return 0;
+
+}
+
+
+
+
 

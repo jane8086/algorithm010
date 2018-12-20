@@ -62,17 +62,16 @@ int calibrationroutine(vector<Point2f> &camera_points, vector<Point3f> &world_po
         //Get format for calibration method
         vector<vector<Point2f> > camera(1);
         vector<vector<Point3f> > world(1);
-
-
-        //Undistort first with old method...
-        //create_points_subset(camera_points, world_points, camera, world, PointSubset::Random_50000);
         camera[0] = camera_points;
         world[0] = world_points;
+
+        //Undistort first with old method...
+        //create_points_subset(camera_points, world_points, camera, world, PointSubset::Random_5000);
 
         //Calibrate with fisheye functions
         vector<Mat> rvec;
         vector<Mat> tvec;
-        Mat K = (Mat1f(3,3) << 800.0, 0.0, 644.0, 0., 800.0, 482.0, 0.0, 0.0, 1.0);
+        Mat K = (Mat1f(3,3) << 800.0, 0.0, 644.0, 0., 600.0, 482.0, 0.0, 0.0, 1.0);
         Mat D = Mat::zeros(4, 1, CV_32F);
         Mat distimage = imread("images/pattern_cam_im1.png", IMREAD_GRAYSCALE); // Load first image
         int flag = 0;

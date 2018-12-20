@@ -17,7 +17,7 @@ int main(void)
     //1. Create Phase and Gray code patterns
     vector<Mat> patterns;
     Monitor monitor(SAMSUNG_CURVED);
-    int periods = 8;
+    int periods = 64;
     int amount_shifts = 3;
     int color_patterns = 0;
     int novel_method = 0;
@@ -30,9 +30,6 @@ int main(void)
 //    vector<Mat> patterns_captured;
 //    camera_routine(camera, patterns, patterns_captured);
 
-    //4. Unwrap Phase Maps
-    //vector<Mat> patterns_absolut_phase;
-    //calculate_absolute_phasemaps(patterns_absolut_phase, amount_shifts, (int)patterns.size());
 
 
 
@@ -42,15 +39,21 @@ int main(void)
 
     //Calculate absolute phasemaps
     vector<Mat> absolute_phasemaps;
-    calculate_absolute_phasemaps(absolute_phasemaps, screen, amount_shifts, patterns.size(), color_patterns, novel_method);
+    vector<Mat> relative_phasemaps;
+    calculate_all_phasemaps(absolute_phasemaps, relative_phasemaps,screen, amount_shifts, patterns.size(), color_patterns, novel_method);
+    //calculate_absolute_phasemaps(absolute_phasemaps, screen, amount_shifts, patterns.size(), color_patterns, novel_method);
 
 
     //5. Create Point Correspondences
     vector<Point2f> image_points;
     vector<Point> points_world_pixel;
     vector<Point3f> points_world;
+    //Calculate only points where relative phase equals other relative phase
+    imshow("vertival_relative", relative_phasemaps[0]/360);
+    imshow("hotizontal_relative",relative_phasemaps[1]/360);
+    waitKey();
 
-    calculate_realWorld_3d_coordinates(points_world, points_world_pixel, image_points, absolute_phasemaps[0], absolute_phasemaps[1],monitor, periods,screen);
+    calculate_realWorld_3d_coordinates(points_world, points_world_pixel, image_points, absolute_phasemaps[0], absolute_phasemaps[1],relative_phasemaps[0],relative_phasemaps[1],monitor, periods,screen);
     saveDatayml(image_points, points_world_pixel, points_world);
 
     //6. Calibration routine
