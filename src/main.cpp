@@ -9,18 +9,15 @@
 #include <QDir>
 #include "opencv2/opencv.hpp"
 
-
+// CLANG FORMAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
 int main(void)
 {
-
-
-    //1. Create Phase and Gray code patterns
     vector<Mat> patterns;
     Monitor monitor(SAMSUNG_CURVED);
-    int periods = 64;
-    int amount_shifts = 3;
-    int color_patterns = 0;
-    int novel_method = 0;
+    constexpr int periods = 64;
+    constexpr int amount_shifts = 3;
+    constexpr int color_patterns = 0;
+    constexpr int novel_method = 0;
 
     //Routine to create all phase_shifting patterns
     create_patterns_all(monitor.size_x, monitor.size_y, periods, patterns,amount_shifts);

@@ -296,7 +296,7 @@ int calculate_periodnumber_graycode(vector<Mat> &period_number_Mats,int &amount_
 
 }
 
-int calculate_all_phasemaps(vector<Mat> &absolute_phasemaps,vector<Mat> &relative_phasemaps, Mat &screen, int &amount_phaseshifts, int amount_patterns, int &color_patterns, int &novel_method){
+    int calculate_all_phasemaps(vector<Mat> &absolute_phasemaps,vector<Mat> &relative_phasemaps, Mat &screen, int amount_phaseshifts, int amount_patterns, int color_patterns, int novel_method){
 
     //Load phase images from folder
     vector<Mat> patterns_phase_captured;
@@ -489,7 +489,7 @@ int calculate_realWorld_3d_coordinates(vector<Point3f> &points_world_mm, vector<
 }
 
 int calculate_realWorld_3d_coordinates(vector<Point3f> &points_world_mm, vector<Point> &points_world_pixel, vector<Point2f> &points_image, \
-                                       Mat &absolutephasemap_hor, Mat &absolutephasemap_ver,Mat &relativePhase_hor, Mat &relativephasemap_ver, Monitor &monitor, int &periods, Mat &screen){
+                                       Mat &absolutephasemap_hor, Mat &absolutephasemap_ver,Mat &relativePhase_hor, Mat &relativephasemap_ver, Monitor &monitor, int periods, Mat &screen){
 
     //Iterate through every point in Mat
     for( int row_i = 0; row_i < absolutephasemap_hor.rows; row_i ++){
