@@ -58,8 +58,8 @@ int calibrationroutine(vector<Point2f> &camera_points,
   world[0] = world_points;
 
   // Undistort first with old method...
-  // create_points_subset(camera_points, world_points, camera, world,
-  // PointSubset::Random_5000);
+  create_points_subset(camera_points, world_points, camera, world,
+  PointSubset::Random_500);
 
   // Calibrate with fisheye functions
   vector<Mat> rvec;

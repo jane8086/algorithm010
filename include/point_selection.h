@@ -1,0 +1,4 @@
+#ifndef POINT_SELECTION_H
+#define POINT_SELECTION_H
+
+#endif // POINT_SELECTION_H

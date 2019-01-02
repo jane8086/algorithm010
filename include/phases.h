@@ -1,8 +1,8 @@
 #ifndef PHASES_H
 #define PHASES_H
 
-#include "opencv2/opencv.hpp"
 #include "include/monitor.h"
+#include "opencv2/opencv.hpp"
 using namespace cv;
 using namespace std;
 
@@ -16,20 +16,38 @@ Mat calculate_absolute_phase(Mat &relative_phase, Mat &period_number);
  *
  */
 
-int calculate_all_phasemaps(vector<Mat> &absolute_phasemaps,vector<Mat> &relative_phasemaps, Mat &screen, int amount_phaseshifts,int amount_patterns, int color_patterns, int novel_method); // flags as ENUM!!!!!!!!!!!!
+int calculate_all_phasemaps(vector<Mat> &absolute_phasemaps,
+                            vector<Mat> &relative_phasemaps, Mat &screen,
+                            int amount_phaseshifts, int amount_patterns,
+                            int color_patterns,
+                            int novel_method); // flags as ENUM!!!!!!!!!!!!
 Mat calculate_relative_phase_general(vector<Mat> &patterns);
-Mat calculate_absolute_phase_novel(Mat &relative_phase, Mat &novel, int period_sum);
-int calculate_realWorld_3d_coordinates(vector<Point3f> &points_world, vector<Point> &points_world_pixel, vector<Point2f> &points_image, Mat &absolutephasemap_hor, Mat &absolutephasemap_ver, Monitor &monitor, int &periods);
+Mat calculate_absolute_phase_novel(Mat &relative_phase, Mat &novel,
+                                   int period_sum);
+int calculate_realWorld_3d_coordinates(vector<Point3f> &points_world,
+                                       vector<Point2f> &points_world_pixel,
+                                       vector<Point2f> &points_image,
+                                       Mat &absolutephasemap_hor,
+                                       Mat &absolutephasemap_ver,
+                                       Monitor &monitor, int &periods);
 Mat calculate_relative_phase(vector<Mat> &patterns);
-int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, Mat &screen, int &amount_phaseshifts,int amount_patterns, int &color_patterns, int &novel_method);
-
-int calculate_realWorld_3d_coordinates(vector<Point3f> &points_world_mm, vector<Point> &points_world_pixel, vector<Point2f> &points_image, \
-                                       Mat &absolutephasemap_hor, Mat &absolutephasemap_ver, Monitor &monitor, int periods, Mat &screen);
-
-/** @brief Calculates subset of point correspondences based on relative and absolute phasemap
+int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, Mat &screen,
+                                 int &amount_phaseshifts, int amount_patterns,
+                                 int &color_patterns, int &novel_method);
+/** @brief Transforms the display pixels into 3D coordinates in mm for calibration
  *
  */
-int calculate_realWorld_3d_coordinates(vector<Point3f> &points_world_mm, vector<Point> &points_world_pixel, vector<Point2f> &points_image, \
-                                       Mat &absolutephasemap_hor, Mat &absolutephasemap_ver,Mat &relativePhase_hor, Mat &relativephasemap_ver, Monitor &monitor, int periods, Mat &screen);
+void calculate_realWorld_3d_coordinates(const vector<Point2f> &display_points, const Monitor &monitor, vector<Point3f> &points_world_mm);
+
+
+
+/** @brief Calculates point correspondeces between the image and display pixels
+ *
+ */
+void  calculate_display_coordinates(vector<Point2f> &points_display,
+    vector<Point2f> &points_image, Mat &absolutephasemap_hor,
+    Mat &absolutephasemap_ver,Monitor &monitor, int periods, Mat &screen);
+
+
 Mat calculate_relative_phase_general(vector<Mat> &patterns);
 #endif // PHASES_H
