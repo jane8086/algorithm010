@@ -14,7 +14,7 @@
 int main(void) {
   vector<Mat> patterns;
   Monitor monitor(SAMSUNG_CURVED);
-  constexpr int periods = 64;
+  constexpr int periods = 32;
   constexpr int amount_shifts = 3;
   constexpr int color_patterns = 0;
   constexpr int novel_method = 0;
@@ -43,25 +43,35 @@ int main(void) {
   // 5. Calculate Point Correspondences
   vector<Point2f> image_points;
   vector<Point2f> points_display;
-  calculate_display_coordinates(points_display,
-      image_points, absolute_phasemaps[0], absolute_phasemaps[1], monitor, periods, screen);
+  //  calculate_display_coordinates(points_display,
+  //      image_points, absolute_phasemaps[0], absolute_phasemaps[1], monitor,
+  //      periods, screen);
 
-  // 6. Calculate Distortion parameters
-  Point_Correspondences pc_input(image_points, points_display);
-  double distCoeff =  calculate_distortionParameter(pc_input, monitor);
-  cout << distCoeff << endl;
-  vector<Point2f> rectified_image_points(image_points.size());
-  //7. Rectify Points
-  rectify_all_image_points(image_points, rectified_image_points, distCoeff);
-  //8. Choose only intersection Point_Correspondences
-
-  //9. Calculate their Real world position
+  // Test gridpoint calculation
+  double stepsize = 280;
+  calculate_display_coordinates_on_relative_phasegrid(
+      points_display, image_points, absolute_phasemaps[0],
+      absolute_phasemaps[1], relative_phasemaps, monitor, screen, periods,
+      stepsize);
   vector<Point3f> points_world(image_points.size());
   calculate_realWorld_3d_coordinates(points_display, monitor, points_world);
+  saveDatayml(image_points, points_display, points_world);
 
+  //  // 6. Calculate Distortion parameters
+  //  Point_Correspondences pc_input(image_points, points_display);
+  //  double distCoeff =  calculate_distortionParameter(pc_input, monitor);
+  //  cout << distCoeff << endl;
+  //  vector<Point2f> rectified_image_points(image_points.size());
+  //  //7. Rectify Points
+  //  rectify_all_image_points(image_points, rectified_image_points, distCoeff);
+
+  //  //9. Calculate their Real world position
+  //  vector<Point3f> points_world(image_points.size());
+  //  calculate_realWorld_3d_coordinates(points_display, monitor, points_world);
+  //  saveDatayml(rectified_image_points, points_display, points_world);
 
   // 7. Calibration routine
-  calibrationroutine(rectified_image_points, points_world);
+  calibrationroutine(image_points, points_world);
 
   return 0;
 }

@@ -35,14 +35,15 @@ number
 }
 */
 
-Point3f transform_to_3D_point(const Point2f &display_pixel,const Monitor &monitor) {
+Point3f transform_to_3D_point(const Point2f &display_pixel,
+                              const Monitor &monitor) {
 
   // Transform pixel into real world point with coordinate system in middle of
   // screen
   double x_mm = display_pixel.x * monitor.pixelsize_x -
-               0.5 * monitor.size_x * monitor.pixelsize_x;
+                0.5 * monitor.size_x * monitor.pixelsize_x;
   double y_mm = display_pixel.y * monitor.pixelsize_y -
-               0.5 * monitor.size_y * monitor.pixelsize_y;
+                0.5 * monitor.size_y * monitor.pixelsize_y;
 
   // calculate new x_curve and z_curve
   double alpha = (x_mm / monitor.radiusofCurvature);
@@ -412,7 +413,6 @@ int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, Mat &screen,
 
     remove_noise(relative_phasemap_vertical, screen);
     remove_noise(relative_phasemap_horizontal, screen);
-
   }
 
   // Calculate Period Number Mats
@@ -438,20 +438,67 @@ int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, Mat &screen,
   return 0;
 }
 
-void calculate_realWorld_3d_coordinates(const vector<Point2f> &display_points, const Monitor &monitor, vector<Point3f> &points_world_mm){
+void calculate_realWorld_3d_coordinates(const vector<Point2f> &display_points,
+                                        const Monitor &monitor,
+                                        vector<Point3f> &points_world_mm) {
 
-    for(unsigned long point_i = 0; point_i<display_points.size(); ++point_i){
+  for (unsigned long point_i = 0; point_i < display_points.size(); ++point_i) {
 
-        points_world_mm[point_i] = transform_to_3D_point(display_points[point_i], monitor);
-    }
-
+    points_world_mm[point_i] =
+        transform_to_3D_point(display_points[point_i], monitor);
+  }
 }
 
+bool same_relative_phasevalues(
+    const vector<Mat> &relative_phasemaps, const Point2f &point,
+    const double phase_tolerance_horizontal_vertical) {
 
+  double phase_deviation_horizontal_vertical =
+      abs(relative_phasemaps[0].at<float>(point) -
+          relative_phasemaps[1].at<float>(point));
 
-void  calculate_display_coordinates(vector<Point2f> &points_display,
-    vector<Point2f> &points_image, Mat &absolutephasemap_hor,
-    Mat &absolutephasemap_ver,Monitor &monitor, int periods, Mat &screen) {
+  if (phase_deviation_horizontal_vertical <=
+      phase_tolerance_horizontal_vertical) {
+
+    return true;
+  } else {
+    return false;
+  }
+}
+
+bool lies_on_phasegrid(const vector<Mat> &relative_phasemaps,
+                       const Point2f &point, const double phase_stepszise,
+                       Monitor &monitor, int periods) {
+
+  double horizontal_phaseresolution_display =
+      360.0 / (monitor.size_x / periods);
+
+  double horizontal_phase_tolerance = 1;
+
+  for (auto horizontal_phase_i = 50; (horizontal_phase_i / 360) <= 1;
+       horizontal_phase_i += phase_stepszise) {
+
+    double horizontal_phase_deviation =
+        abs(relative_phasemaps[1].at<float>(point) - horizontal_phase_i);
+    if (horizontal_phase_deviation <= horizontal_phase_tolerance) {
+
+      double phase_tolerance_horizontal_vertical = 5;
+      return same_relative_phasevalues(relative_phasemaps, point,
+                                       phase_tolerance_horizontal_vertical);
+    }
+  }
+  return false;
+}
+
+//  Calculate 360/phase intervall =
+// Check if phase value is one of those calculated phases
+// Check if points lie on the same relative phase
+
+void calculate_display_coordinates_on_relative_phasegrid(
+    vector<Point2f> &points_display, vector<Point2f> &points_image,
+    Mat &absolutephasemap_hor, Mat &absolutephasemap_ver,
+    const vector<Mat> &relative_phasemaps, Monitor &monitor, Mat &screen,
+    int periods, const double phase_stepsize) {
 
   // Iterate through every point in Mat
   for (int row_i = 0; row_i < absolutephasemap_hor.rows; row_i++) {
@@ -460,8 +507,11 @@ void  calculate_display_coordinates(vector<Point2f> &points_display,
 
       if (screen.at<uchar>(row_i, column_i) != 0) {
 
-        // Current point in image
+        // Current pointr in image
         Point2f imagepoint_i(column_i, row_i);
+
+        if (lies_on_phasegrid(relative_phasemaps, imagepoint_i, phase_stepsize,
+                              monitor, periods)) {
 
           // Calculate phases into pixel coorindates
           Point2f display_pixel;
@@ -480,6 +530,42 @@ void  calculate_display_coordinates(vector<Point2f> &points_display,
             points_image.push_back(imagepoint_i);
           }
         }
+      }
+    }
+  }
+}
+
+void calculate_display_coordinates(vector<Point2f> &points_display,
+                                   vector<Point2f> &points_image,
+                                   Mat &absolutephasemap_hor,
+                                   Mat &absolutephasemap_ver, Monitor &monitor,
+                                   int periods, Mat &screen) {
+
+  // Iterate through every point in Mat
+  for (int row_i = 0; row_i < absolutephasemap_hor.rows; row_i++) {
+
+    for (int column_i = 0; column_i < absolutephasemap_hor.cols; column_i++) {
+
+      if (screen.at<uchar>(row_i, column_i) != 0) {
+
+        // Current point in image
+        Point2f imagepoint_i(column_i, row_i);
+
+        // Calculate phases into pixel coorindates
+        Point2f display_pixel;
+        display_pixel.x = absolutephasemap_ver.at<float>(imagepoint_i) *
+                          ((float)monitor.size_x / (2 * (float)periods * 180));
+        display_pixel.y = absolutephasemap_hor.at<float>(imagepoint_i) *
+                          ((float)monitor.size_y / (2 * (float)periods * 180));
+
+        // When x or y are zero kick these pixels
+        if ((display_pixel.x != 0) || (display_pixel.y != 0)) {
+
+          // Pushback pixel position
+          points_display.push_back(display_pixel);
+          points_image.push_back(imagepoint_i);
+        }
+      }
     }
   }
 }

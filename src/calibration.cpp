@@ -5,7 +5,8 @@
 using namespace cv;
 using namespace std;
 
-int chose_random(const vector<Point2f> &camera_points, const vector<Point3f> &world_points,
+int chose_random(const vector<Point2f> &camera_points,
+                 const vector<Point3f> &world_points,
                  vector<vector<Point2f>> &camera,
                  vector<vector<Point3f>> &world, int amount) {
 
@@ -57,10 +58,6 @@ int calibrationroutine(vector<Point2f> &camera_points,
   camera[0] = camera_points;
   world[0] = world_points;
 
-  // Undistort first with old method...
-  create_points_subset(camera_points, world_points, camera, world,
-  PointSubset::Random_500);
-
   // Calibrate with fisheye functions
   vector<Mat> rvec;
   vector<Mat> tvec;
@@ -105,8 +102,8 @@ int calibrationroutine(vector<Point2f> &camera_points,
   Mat map1, map2, rview;
   Mat I = Mat::eye(3, 3, CV_8U);
   // initUndistortRectifyMap(opt_cameraMatrix, distCoeffs, Mat(), Mat(),
-  // distimage.size(), CV_16SC2, map1, map2);  remap(distimage, rview, map1, map2,
-  // INTER_LINEAR);
+  // distimage.size(), CV_16SC2, map1, map2);  remap(distimage, rview, map1,
+  // map2, INTER_LINEAR);
 
   return 0;
 }
