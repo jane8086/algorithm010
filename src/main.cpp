@@ -6,12 +6,14 @@
 #include "include/patterns.h"
 #include "include/phases.h"
 #include "include/point_correspondeces.hpp"
+#include "include/point_selection.h"
 #include "include/preprocessing.h"
 #include "include/tools.h"
 #include "opencv2/opencv.hpp"
 #include <QDir>
 
 int main(void) {
+
   vector<Mat> patterns;
   Monitor monitor(SAMSUNG_CURVED);
   constexpr int periods = 32;
@@ -19,7 +21,7 @@ int main(void) {
   constexpr int color_patterns = 0;
   constexpr int novel_method = 0;
 
-  // Routine to create all phase_shifting patterns
+  // 1. Routine to create all phase_shifting patterns
   create_patterns_all(monitor.size_x, monitor.size_y, periods, patterns,
                       amount_shifts);
 
@@ -28,34 +30,38 @@ int main(void) {
   //    vector<Mat> patterns_captured;
   //    camera_routine(camera, patterns, patterns_captured);
 
-  // detect screen
+  // 2. detect screen
   Mat screen;
 
-  // Calculate absolute phasemaps
+  // 3. Calculate absolute phasemaps
   vector<Mat> absolute_phasemaps;
   vector<Mat> relative_phasemaps;
   calculate_all_phasemaps(absolute_phasemaps, relative_phasemaps, screen,
                           amount_shifts, patterns.size(), color_patterns,
                           novel_method);
-  // calculate_absolute_phasemaps(absolute_phasemaps, screen, amount_shifts,
-  // patterns.size(), color_patterns, novel_method);
 
-  // 5. Calculate Point Correspondences
-  vector<Point2f> image_points;
-  vector<Point2f> points_display;
+  // 4. Choose points based on paper
+  vector<Point2d> new_image_points;
+  vector<Point2d> new_absoulte_phasevalues;
+  paper_phasemap_intersection(absolute_phasemaps, new_image_points,
+                              new_absoulte_phasevalues);
+
+  // 4. Calculate Point Correspondences
+  // vector<Point2f> image_points;
+  // vector<Point2f> points_display;
   //  calculate_display_coordinates(points_display,
   //      image_points, absolute_phasemaps[0], absolute_phasemaps[1], monitor,
   //      periods, screen);
 
-  // Test gridpoint calculation
-  double stepsize = 280;
-  calculate_display_coordinates_on_relative_phasegrid(
-      points_display, image_points, absolute_phasemaps[0],
-      absolute_phasemaps[1], relative_phasemaps, monitor, screen, periods,
-      stepsize);
-  vector<Point3f> points_world(image_points.size());
-  calculate_realWorld_3d_coordinates(points_display, monitor, points_world);
-  saveDatayml(image_points, points_display, points_world);
+  //  // Test gridpoint calculation
+  //  double stepsize = 280;
+  //  calculate_display_coordinates_on_relative_phasegrid(
+  //      points_display, image_points, absolute_phasemaps[0],
+  //      absolute_phasemaps[1], relative_phasemaps, monitor, screen, periods,
+  //      stepsize);
+  //  vector<Point3f> points_world(image_points.size());
+  //  calculate_realWorld_3d_coordinates(points_display, monitor, points_world);
+  //  saveDatayml(image_points, points_display, points_world);
 
   //  // 6. Calculate Distortion parameters
   //  Point_Correspondences pc_input(image_points, points_display);
@@ -71,7 +77,7 @@ int main(void) {
   //  saveDatayml(rectified_image_points, points_display, points_world);
 
   // 7. Calibration routine
-  calibrationroutine(image_points, points_world);
+  //  calibrationroutine(image_points, points_world);
 
   return 0;
 }

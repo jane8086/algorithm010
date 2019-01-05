@@ -134,7 +134,8 @@ int saveDatayml(vector<Point2f> image_point, vector<Point2f> points_world_pixel,
 int saveDatayml(vector<Point2f> image_point_calibrated,
                 vector<Point3f> points_world_calibrated) {
 
-  save_image_points_to_csv(image_point_calibrated, "imagepoints_calibrated.csv");
+  save_image_points_to_csv(image_point_calibrated,
+                           "imagepoints_calibrated.csv");
   save_points_to_csv(points_world_calibrated,
                      "displaypoints_world_mm_calibrated.csv");
 }
@@ -202,4 +203,60 @@ int create_threshold_image(Mat &threshold_image, Monitor &monitor,
   //    imshow("Threshold", threshold_image);
   //    waitKey();
   return 1;
+}
+
+void planeTesting(void) {
+
+  // Point generation
+  Point3f P1(0, 0, 100);
+  Point3f P2(0, 1, 200);
+  Point3f P3(1, 0, 100);
+  Point3f P4(1, 1, 200);
+
+  vector<Point3f> points{P1, P2, P3, P4};
+
+  // Create Equation System
+  CvMat *res = cvCreateMat(3, 1, CV_32FC1);
+  CvMat *matX = cvCreateMat(4, 3, CV_32FC1);
+  CvMat *matZ = cvCreateMat(4, 1, CV_32FC1);
+
+  // Matrix generation
+  for (auto point_i = 0; point_i < points.size(); ++point_i) {
+
+    cvmSet(matX, point_i, 0, points[point_i].x);
+    cvmSet(matX, point_i, 1, points[point_i].y);
+    cvmSet(matX, point_i, 2, points[point_i].z);
+    cvmSet(matZ, point_i, 0, 1);
+  }
+
+  // Solve equation
+  cvSolve(matX, matZ, res, CV_SVD);
+  double A = cvmGet(res, 0, 0);
+  double B = cvmGet(res, 1, 0);
+  double C = cvmGet(res, 2, 0);
+  double average = (P1.z + P2.z + P3.z + P4.z) / 4;
+
+  // Calculate Cross product with average plane
+  Mat plane_a = (Mat_<double>(3, 1) << A, B, C);
+  Mat plane_b = (Mat_<double>(3, 1) << 0, 0, 1);
+  Mat cross = plane_a.cross(plane_b);
+
+  // Get Equation in Parameterform and set x to zero
+  vector<double> Plane_A = {B, C, 1};
+  vector<double> Plane_B = {0, 1, average};
+
+  // Compute Equation Systen
+  Mat matX2 =
+      (Mat_<double>(2, 2) << Plane_A[0], Plane_A[1], Plane_B[0], Plane_B[1]);
+  Mat matZ2 = (Mat_<double>(2, 1) << Plane_A[2], Plane_B[2]);
+  Mat res2 = (Mat_<double>(2, 1) << 0, 0);
+  solve(matX2, matZ2, res2);
+
+  // This is line:
+  Point3d p0(0, res2.at<double>(0), res2.at<double>(1));
+  Point3d vector(cross.at<double>(0), cross.at<double>(1), cross.at<double>(2));
+
+  // This is line in 2d
+  Point2d p0_2d(0, res2.at<double>(0));
+  Point2d vector_2d(cross.at<double>(0), cross.at<double>(1));
 }
