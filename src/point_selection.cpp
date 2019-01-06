@@ -9,9 +9,8 @@ phase_average_from_neighbours(const vector<Point2f> &neighbourhood_points,
 
   double phase_sum = 0;
 
-  for (auto point_i = 0; point_i < neighbourhood_points.size(); ++point_i) {
-
-    phase_sum += phasemap.at<float>(point_i);
+  for (const auto &point : neighbourhood_points) {
+    phase_sum += phasemap.at<float>(point);
   }
 
   if (phase_sum == 0) {
@@ -148,15 +147,15 @@ vector<Point2f> choose_four_neighbouring_imagepoints(const int column_i,
 }
 
 void paper_phasemap_intersection(const vector<Mat> &absolute_phasemaps,
-                                 vector<Point2d> new_imagepoints,
-                                 vector<Point2d> new_average_phasevalues) {
+                                 vector<Point2d> &new_imagepoints,
+                                 vector<Point2d> &new_average_phasevalues) {
 
   // Find four neighbours where phase is in one period(iterate through whole
   // mat)
-  for (auto row_i = 0; row_i < absolute_phasemaps[0].rows; row_i + 2) {
+  for (auto row_i = 500; row_i < absolute_phasemaps[0].rows; row_i += 2) {
 
-    for (auto column_i = 0; column_i < absolute_phasemaps[0].cols;
-         column_i + 2) {
+    for (auto column_i = 500; column_i < absolute_phasemaps[0].cols;
+         column_i += 2) {
 
       vector<Point2f> four_neighbours =
           choose_four_neighbouring_imagepoints(column_i, row_i);
@@ -179,12 +178,18 @@ void paper_phasemap_intersection(const vector<Mat> &absolute_phasemaps,
           calculate_phase_intersection_lines(absolute_phasemaps[1],
                                              four_neighbours, p0_verticalphase,
                                              v0_verticalphase);
-          line_line_intersection(p0_horizontalphase, v0_horizontalphase,
-                                 p0_verticalphase, v0_verticalphase,
-                                 new_imagepoint);
+          bool have_intersection = line_line_intersection(
+              p0_horizontalphase, v0_horizontalphase, p0_verticalphase,
+              v0_verticalphase, new_imagepoint);
+          Point2f average_phasevalues(
+              phase_average_from_neighbours(four_neighbours,
+                                            absolute_phasemaps[0]),
+              phase_average_from_neighbours(four_neighbours,
+                                            absolute_phasemaps[1]));
 
           // If image point scoordinate smaller 0, kick it
-          if ((new_imagepoint.x >= 0) || (new_imagepoint.y >= 0)) {
+          if (((new_imagepoint.x >= 0) && (new_imagepoint.y >= 0)) &&
+              have_intersection) {
 
             new_phasevalues.x = phase_average_from_neighbours(
                 four_neighbours, absolute_phasemaps[0]);

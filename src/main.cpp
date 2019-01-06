@@ -43,8 +43,7 @@ int main(void) {
   // 4. Choose points based on paper
   vector<Point2d> new_image_points;
   vector<Point2d> new_absoulte_phasevalues;
-  paper_phasemap_intersection(absolute_phasemaps, new_image_points,
-                              new_absoulte_phasevalues);
+  paper_phasemap_intersection(absolute_phasemaps, new_image_points, new_absoulte_phasevalues);
 
   // 4. Calculate Point Correspondences
   // vector<Point2f> image_points;
