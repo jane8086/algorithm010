@@ -74,7 +74,8 @@ int load_images_gray(vector<Mat> &gray_images, int &amount_shifts,
   return 0;
 }
 
-int save_image_points_to_csv(vector<Point2f> points_2d, string filename) {
+int save_image_points_to_csv(const vector<Point2d> &points_2d,
+                             const string &filename) {
 
   ofstream fs1;
   fs1.open(filename);
@@ -90,7 +91,23 @@ int save_image_points_to_csv(vector<Point2f> points_2d, string filename) {
   fs1.close();
 }
 
-int save_display_points_to_csv(vector<Point2f> points_2d, string filename) {
+int save_new_phasevalues_to_csv(vector<Point2d> points_2d, string filename) {
+
+  ofstream fs1;
+  fs1.open(filename);
+  fs1 << "phasevalue_hor,phasevalue_ver\n";
+
+  // iterate through whole vector
+  for (int point_i = 0; point_i < points_2d.size(); point_i++) {
+
+    fs1 << to_string(points_2d[point_i].x) + "," +
+               to_string(points_2d[point_i].y) + "\n";
+  }
+
+  fs1.close();
+}
+
+int save_display_points_to_csv(vector<Point2d> points_2d, string filename) {
 
   ofstream fs1;
   fs1.open(filename);
@@ -106,7 +123,7 @@ int save_display_points_to_csv(vector<Point2f> points_2d, string filename) {
   fs1.close();
 }
 
-int save_points_to_csv(vector<Point3f> points_3d, string filename) {
+int save_points_to_csv(vector<Point3d> points_3d, string filename) {
 
   ofstream fs1;
   fs1.open(filename);
@@ -123,16 +140,23 @@ int save_points_to_csv(vector<Point3f> points_3d, string filename) {
   fs1.close();
 }
 
-int saveDatayml(vector<Point2f> image_point, vector<Point2f> points_world_pixel,
-                vector<Point3f> points_world) {
+int saveDatayml(const vector<Point2d> &image_point_calibrated,
+                const vector<Point2d> &phase_values) {
+
+  save_image_points_to_csv(image_point_calibrated, "new_imagepoints.csv");
+  save_new_phasevalues_to_csv(phase_values, "new_phasevalues.csv");
+}
+
+int saveDatayml(vector<Point2d> image_point, vector<Point2d> points_world_pixel,
+                vector<Point3d> points_world) {
 
   save_image_points_to_csv(image_point, "imagepoints.csv");
   save_display_points_to_csv(points_world_pixel, "displaypoints_pixel.csv");
   save_points_to_csv(points_world, "displaypoints_world_mm.csv");
 }
 
-int saveDatayml(vector<Point2f> image_point_calibrated,
-                vector<Point3f> points_world_calibrated) {
+int saveDatayml(vector<Point2d> image_point_calibrated,
+                vector<Point3d> points_world_calibrated) {
 
   save_image_points_to_csv(image_point_calibrated,
                            "imagepoints_calibrated.csv");
@@ -234,7 +258,7 @@ void planeTesting(void) {
   double A = cvmGet(res, 0, 0);
   double B = cvmGet(res, 1, 0);
   double C = cvmGet(res, 2, 0);
-  double average = (P1.z + P2.z + P3.z + P4.z) / 4;
+  double average = (P1.z + P2.z + P3.z + P4.z) / 4.0;
 
   // Calculate Cross product with average plane
   Mat plane_a = (Mat_<double>(3, 1) << A, B, C);

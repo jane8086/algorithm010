@@ -82,7 +82,7 @@ int calibrationroutine(vector<Point2f> &camera_points,
   //--
 
   // Save used points
-  saveDatayml(camera[0], world[0]);
+  // saveDatayml(camera[0], world[0]);
 
   // Mat optimal_cameraMatrix = getOptimalNewCameraMatrix(cameraMatrix,
   // distCoeffs, white_screen.size(), 0, Size());

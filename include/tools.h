@@ -23,17 +23,20 @@ int load_images_phase(std::vector<cv::Mat> &phase_images, int &amount_shifts,
 int load_images_gray(std::vector<cv::Mat> &gray_images, int &amount_shifts,
                      int &amount_patterns);
 
+void saveDatayml(const vector<Point2d> &new_imagepoints,
+                 const vector<Point2d> &phase_values);
+
 /** @brief Saves all points used for calibration into two csv files
  *
  */
-int saveDatayml(vector<Point2f> image_point_calibrated,
-                vector<Point3f> points_world_calibrated);
+int saveDatayml(vector<Point2d> image_point_calibrated,
+                vector<Point3d> points_world_calibrated);
 
 /** @brief Savesall gathered points into a data.yml file
  *
  */
-int saveDatayml(vector<Point2f> image_point, vector<Point2f> points_world_pixel,
-                vector<Point3f> points_world);
+int saveDatayml(vector<Point2d> image_point, vector<Point2d> points_world_pixel,
+                vector<Point3d> points_world);
 
 bool isPowerOfTwo(int x);
 

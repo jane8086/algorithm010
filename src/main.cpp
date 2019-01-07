@@ -16,7 +16,7 @@ int main(void) {
 
   vector<Mat> patterns;
   Monitor monitor(SAMSUNG_CURVED);
-  constexpr int periods = 32;
+  constexpr int periods = 64;
   constexpr int amount_shifts = 3;
   constexpr int color_patterns = 0;
   constexpr int novel_method = 0;
@@ -43,8 +43,12 @@ int main(void) {
   // 4. Choose points based on paper
   vector<Point2d> new_image_points;
   vector<Point2d> new_absoulte_phasevalues;
-  paper_phasemap_intersection(absolute_phasemaps, new_image_points, new_absoulte_phasevalues);
-
+  paper_phasemap_intersection(absolute_phasemaps, new_image_points,
+                              new_absoulte_phasevalues);
+  saveDatayml(new_image_points, new_absoulte_phasevalues);
+  imshow("phasmap_hor", absolute_phasemaps[0] / (periods * 360.0));
+  imshow("phasemap_ver", absolute_phasemaps[1] / (periods * 360.0));
+  waitKey();
   // 4. Calculate Point Correspondences
   // vector<Point2f> image_points;
   // vector<Point2f> points_display;
