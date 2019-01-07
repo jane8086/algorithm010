@@ -24,7 +24,11 @@ SOURCES += src/main.cpp \
     src/phases.cpp \
     src/tools.cpp \
     src/preprocessing.cpp \
-    src/monitor.cpp
+    src/monitor.cpp \
+    src/calibration.cpp \
+    src/lines_rectification.cpp \
+    src/point_correspondences.cpp \
+    src/point_selection.cpp
 
 HEADERS += \
     include/camera.h \
@@ -32,5 +36,9 @@ HEADERS += \
     include/phases.h \
     include/tools.h \
     include/preprocessing.h \
-    include/monitor.h
+    include/monitor.h \
+    include/calibration.h \
+    include/lines_rectification.h \
+    include/point_correspondeces.hpp \
+    include/point_selection.h
 

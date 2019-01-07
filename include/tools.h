@@ -8,6 +8,10 @@ using namespace FlyCapture2;
 using namespace std;
 using namespace cv;
 
+int patterns_lookuptable(vector<Mat> &patterns);
+/** @brief avoid creating same patterns if we already have it
+ */
+
 int save_images(const std::vector<cv::Mat> &images);
 
 /** @brief Loads captured  phase shifting patterns from folder images

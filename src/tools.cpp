@@ -3,19 +3,71 @@
 #include <fstream>
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 
 using namespace FlyCapture2;
 using namespace std;
 using namespace cv;
 
+int patterns_lookuptable(vector<Mat> &patterns)
+{
+    ifstream in("images_index.txt");
+    string line;
+
+    if(in) //if the indexlist exist
+    {
+        while(getline(in,line))
+        {
+            //cout<< line << endl;
+            Mat temp;
+            temp = imread(line);
+            patterns.push_back(temp.clone());//save exsited images into a vector
+        }
+
+    }else{
+        cout<<"images do not exist"<<endl;
+    }
+
+    return 0;
+
+}
+
+
 int save_images(const std::vector<Mat> &images) {
 
   // Look if folder with images already exists
+    string dir = "images";
+    //make a folder if it doesn't exist
+    if(access(dir.c_str(),0)==-1)
+    {
+        //cout<< "folder doesn't exist, now make it"<<endl;
+        int flag = mkdir(dir.c_str(),0777);
+        if (flag ==0)
+        {
+           //cout<<"make successfully"<<endl;
+        }else{
+            cout<<"make folder failed"<<endl;
+        }
+    }
   for (int image_i = 0; image_i < images.size(); image_i++) {
 
     string path = "images/pattern_" + to_string(image_i) + ".png";
     imwrite(path, images[image_i]);
   }
+
+  //creat an indexlist to deliver the info about the imagesname
+  ofstream indexfile;
+  indexfile.open("images_index.txt");
+  if(!indexfile.is_open())
+      return 0;
+  for(int image_i = 0; image_i < images.size(); image_i++){
+    indexfile<<"images/pattern_" + to_string(image_i)+".png"+ "\n";
+  }
+  indexfile.close();
+
   return 0;
 }
 

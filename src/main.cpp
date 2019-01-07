@@ -11,6 +11,7 @@
 #include "include/tools.h"
 #include "opencv2/opencv.hpp"
 #include <QDir>
+#include <unistd.h> //test if folder exist
 
 int main(void) {
 
@@ -21,9 +22,16 @@ int main(void) {
   constexpr int color_patterns = 0;
   constexpr int novel_method = 0;
 
-  // 1. Routine to create all phase_shifting patterns
-  create_patterns_all(monitor.size_x, monitor.size_y, periods, patterns,
-                      amount_shifts);
+  //1. create all phase_shifting patterns only one time
+    string dir = "images";
+    if(access(dir.c_str(),0)==0)  //if the patterns are already existed, then get them from lookuotable directly
+    {
+        patterns_lookuptable(patterns);
+    }else{                       //if the patterns are not created yet, then create them
+        create_patterns_all(monitor.size_x, monitor.size_y, periods, patterns,amount_shifts);
+        save_images(patterns);
+
+    }
 
   //    //3. Show and Capture Patterns
   //    FlyCapture2::Camera camera;
