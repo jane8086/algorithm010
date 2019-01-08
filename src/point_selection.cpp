@@ -3,6 +3,36 @@
 using namespace std;
 using namespace cv;
 
+bool have_same_phasevalue(const Point2f &phase_values,
+                          const double max_phase_difference) {
+
+  if (abs(phase_values.x - phase_values.y) < max_phase_difference)
+    return true;
+  return false;
+}
+
+void smooth_phasemap_results(const vector<Point2d> &new_imagepoints,
+                             const vector<Point2d> phase_values,
+                             vector<Point2d> &new_imagepoints_smooth,
+                             vector<Point2d> &phase_values_smooth) {
+
+  // We could just get rid of points which phase values are not nearly the same
+  for (unsigned long point_i = 0; point_i < new_imagepoints.size(); ++point_i) {
+
+    double max_phase_difference = 50.0;
+
+    if (have_same_phasevalue(phase_values[point_i], max_phase_difference)) {
+
+      new_imagepoints_smooth[point_i] = new_imagepoints[point_i];
+      phase_values_smooth[point_i] = phase_values[point_i];
+    }
+
+    // Resize vectors
+    new_imagepoints_smooth.shrink_to_fit();
+    phase_values_smooth.shrink_to_fit();
+  }
+}
+
 double
 phase_average_from_neighbours(const vector<Point2f> &neighbourhood_points,
                               const Mat &phasemap) {

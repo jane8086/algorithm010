@@ -28,8 +28,6 @@ int reduce_moire(vector<Mat> &phase_shift, vector<Mat> &dst_phase_shift,
  */
 Mat detect_screen(int &amount_pattern, int &amount_shifts, int crop_amount = 1);
 
-int remove_noise(Mat &relative, Mat &frame);
-
 int sgn(double x);
 
 int refraction(Point3f &k2dvector, Point3f &display_pixel_mm,

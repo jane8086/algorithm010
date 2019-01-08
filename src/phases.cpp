@@ -308,10 +308,10 @@ int calculate_all_phasemaps(vector<Mat> &absolute_phasemaps,
                     color_patterns);
 
   // reduce moire effect by using bilateral filter
-  vector<Mat> patterns_phase_filtered;
-  reduce_moire(patterns_phase_captured, patterns_phase_filtered, 10);
+  // vector<Mat> patterns_phase_filtered;
+  // reduce_moire(patterns_phase_captured, patterns_phase_filtered, 10);
 
-  // Maybe do some preprocessing here
+  // Detect the screen and throw out all the other points
   screen = detect_screen(amount_patterns, amount_phaseshifts, 10);
 
   /*
@@ -322,8 +322,8 @@ int calculate_all_phasemaps(vector<Mat> &absolute_phasemaps,
   */
 
   // create subvector phase shift patterns
-  vector<Mat>::const_iterator first = patterns_phase_filtered.begin();
-  vector<Mat>::const_iterator last = patterns_phase_filtered.end();
+  vector<Mat>::const_iterator first = patterns_phase_captured.begin();
+  vector<Mat>::const_iterator last = patterns_phase_captured.end();
   vector<Mat> phase_patterns_vertical(first, first + amount_phaseshifts);
   vector<Mat> phase_patterns_horizontal(first + amount_phaseshifts, last);
 
@@ -340,8 +340,12 @@ int calculate_all_phasemaps(vector<Mat> &absolute_phasemaps,
     relative_phasemap_horizontal =
         calculate_relative_phase(phase_patterns_horizontal);
 
-    remove_noise(relative_phasemap_vertical, screen);
-    remove_noise(relative_phasemap_horizontal, screen);
+    // Just look at ROI of screen
+    relative_phasemap_vertical = relative_phasemap_vertical.mul(screen);
+    relative_phasemap_horizontal = relative_phasemap_horizontal.mul(screen);
+
+    imshow("rel", relative_phasemap_vertical / 360);
+    waitKey();
   }
 
   // Calculate Period Number Mats
@@ -369,9 +373,9 @@ int calculate_all_phasemaps(vector<Mat> &absolute_phasemaps,
   return 0;
 }
 
-int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, Mat &screen,
-                                 int &amount_phaseshifts, int amount_patterns,
-                                 int &color_patterns, int &novel_method) {
+int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps,
+                                 int amount_phaseshifts, int amount_patterns,
+                                 int color_patterns, int novel_method) {
 
   // Load phase images from folder
   vector<Mat> patterns_phase_captured;
@@ -381,9 +385,6 @@ int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, Mat &screen,
   // reduce moire effect by using bilateral filter
   vector<Mat> patterns_phase_filtered;
   reduce_moire(patterns_phase_captured, patterns_phase_filtered, 10);
-
-  // Maybe do some preprocessing here
-  screen = detect_screen(amount_patterns, amount_phaseshifts, 10);
 
   /*
       if(amount_phaseshifts != 3){
@@ -410,9 +411,6 @@ int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, Mat &screen,
         calculate_relative_phase(phase_patterns_vertical);
     relative_phasemap_horizontal =
         calculate_relative_phase(phase_patterns_horizontal);
-
-    remove_noise(relative_phasemap_vertical, screen);
-    remove_noise(relative_phasemap_horizontal, screen);
   }
 
   // Calculate Period Number Mats

@@ -42,13 +42,18 @@ int main(void) {
 
   // 4. Choose points based on paper
   vector<Point2d> new_image_points;
-  vector<Point2d> new_absoulte_phasevalues;
+  vector<Point2d> new_absolute_phasevalues;
   paper_phasemap_intersection(absolute_phasemaps, new_image_points,
-                              new_absoulte_phasevalues);
-  saveDatayml(new_image_points, new_absoulte_phasevalues);
-  imshow("phasmap_hor", absolute_phasemaps[0] / (periods * 360.0));
-  imshow("phasemap_ver", absolute_phasemaps[1] / (periods * 360.0));
-  waitKey();
+                              new_absolute_phasevalues);
+
+  vector<Point2d> new_image_points_smooth(new_image_points.size());
+  vector<Point2d> new_absolute_phasevalues_smoothed(
+      new_absolute_phasevalues.size());
+  smooth_phasemap_results(new_image_points, new_absolute_phasevalues,
+                          new_image_points_smooth,
+                          new_absolute_phasevalues_smoothed);
+  saveDatayml(new_image_points_smooth, new_absolute_phasevalues_smoothed);
+
   // 4. Calculate Point Correspondences
   // vector<Point2f> image_points;
   // vector<Point2f> points_display;
