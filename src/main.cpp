@@ -16,7 +16,7 @@ int main(void) {
 
   vector<Mat> patterns;
   Monitor monitor(SAMSUNG_CURVED);
-  constexpr int periods = 64;
+  constexpr int periods = 32;
   constexpr int amount_shifts = 3;
   constexpr int color_patterns = 0;
   constexpr int novel_method = 0;
@@ -41,18 +41,27 @@ int main(void) {
                           novel_method);
 
   // 4. Choose points based on paper
-  vector<Point2d> new_image_points;
-  vector<Point2d> new_absolute_phasevalues;
-  paper_phasemap_intersection(absolute_phasemaps, new_image_points,
-                              new_absolute_phasevalues);
+  double max_error = 0.1;
+  double min_max_error = 5e-6;
+  double avg_error = 0;
+  for (double interval = 5.0; max_error >= min_max_error;
+       max_error = max_error / interval) {
 
-  vector<Point2d> new_image_points_smooth(new_image_points.size());
-  vector<Point2d> new_absolute_phasevalues_smoothed(
-      new_absolute_phasevalues.size());
-  smooth_phasemap_results(new_image_points, new_absolute_phasevalues,
-                          new_image_points_smooth,
-                          new_absolute_phasevalues_smoothed);
-  saveDatayml(new_image_points_smooth, new_absolute_phasevalues_smoothed);
+    vector<Point2d> new_image_points;
+    vector<Point2d> new_absolute_phasevalues;
+
+    paper_phasemap_intersection(absolute_phasemaps, new_image_points,
+                                new_absolute_phasevalues, max_error, avg_error);
+
+    vector<Point2d> new_image_points_smooth(new_image_points.size());
+    vector<Point2d> new_absolute_phasevalues_smoothed(
+        new_absolute_phasevalues.size());
+    if (new_image_points.size() == 0)
+      break;
+    saveDatayml(new_image_points, new_absolute_phasevalues,
+                to_string(max_error));
+    cout << "max_error = " << max_error << "  avg_error: " << avg_error << endl;
+  }
 
   // 4. Calculate Point Correspondences
   // vector<Point2f> image_points;

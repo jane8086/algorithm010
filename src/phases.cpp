@@ -295,6 +295,8 @@ int calculate_periodnumber_graycode(vector<Mat> &period_number_Mats,
 
   period_number_Mats.push_back(periodnumber_horizontal);
   period_number_Mats.push_back(periodnumber_vertical);
+
+  return 0;
 }
 
 int calculate_all_phasemaps(vector<Mat> &absolute_phasemaps,
@@ -343,9 +345,6 @@ int calculate_all_phasemaps(vector<Mat> &absolute_phasemaps,
     // Just look at ROI of screen
     relative_phasemap_vertical = relative_phasemap_vertical.mul(screen);
     relative_phasemap_horizontal = relative_phasemap_horizontal.mul(screen);
-
-    imshow("rel", relative_phasemap_vertical / 360);
-    waitKey();
   }
 
   // Calculate Period Number Mats

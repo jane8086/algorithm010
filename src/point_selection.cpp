@@ -19,9 +19,10 @@ void smooth_phasemap_results(const vector<Point2d> &new_imagepoints,
   // We could just get rid of points which phase values are not nearly the same
   for (unsigned long point_i = 0; point_i < new_imagepoints.size(); ++point_i) {
 
-    double max_phase_difference = 50.0;
+    bool neighbourhood_is_smooth;
+    bool conditions = false;
 
-    if (have_same_phasevalue(phase_values[point_i], max_phase_difference)) {
+    if (conditions) {
 
       new_imagepoints_smooth[point_i] = new_imagepoints[point_i];
       phase_values_smooth[point_i] = phase_values[point_i];
@@ -49,9 +50,8 @@ phase_average_from_neighbours(const vector<Point2f> &neighbourhood_points,
                                   phasemap.at<float>(neighbourhood_points[1]),
                                   phasemap.at<float>(neighbourhood_points[2]),
                                   phasemap.at<float>(neighbourhood_points[3])};
-  auto it = max_element(std::begin(phasemapvalues), std::end(phasemapvalues));
-  float max = it[0];
-  return max;
+
+  return phase_sum / (float)neighbourhood_points.size();
 }
 
 bool intersection(const Point2d o1, const Point2d p1, const Point2d o2,
@@ -86,7 +86,8 @@ bool line_line_intersection(Point2d o1, Point2d v1, Point2d o2, Point2d v2,
 
 void calculate_phase_intersection_lines(const Mat &phasemap,
                                         const vector<Point2f> &four_neighbours,
-                                        Point2d &p0_2d, Point2d &vector_2d) {
+                                        Point2d &p0_2d, Point2d &vector_2d,
+                                        double &rms) {
 
   // Create Average Plane in Phase Direction
   double phase_average =
@@ -109,6 +110,22 @@ void calculate_phase_intersection_lines(const Mat &phasemap,
   double A = res.at<float>(0, 0);
   double B = res.at<float>(0, 1);
   double C = res.at<float>(0, 2);
+
+  // Calculate RMS
+  assert(abs(C) > 0.0);
+  Point3d normal_vector_plane(A, B, C);
+  Point3d point_on_plane(0, 0, 1 / C);
+  double square_distances = 0;
+  for (const auto &point : four_neighbours) {
+
+    double distance = abs(A * (double)point.x + B * (double)point.y +
+                          C * (double)phasemap.at<float>(point) - 1.0) /
+                      norm(normal_vector_plane);
+    square_distances += pow(distance, 2);
+  }
+
+  assert(four_neighbours.size() > 0);
+  rms = sqrt((square_distances) / four_neighbours.size());
 
   // Calculate Cross product with average plane
   Mat plane_a = (Mat_<double>(3, 1) << A, B, C);
@@ -135,12 +152,14 @@ void calculate_phase_intersection_lines(const Mat &phasemap,
   p0_2d.y = res2.at<double>(0);
   vector_2d.x = cross.at<double>(0);
   vector_2d.y = cross.at<double>(1);
+
+  //
 }
 
 bool are_points_relative_phase_neighbours(const Mat &relative_phasemap,
                                           vector<Point2f> neighbours) {
   // TODO see if phase_jump can be interpolated properly as well
-  constexpr double max_phase_differemce = 30;
+  constexpr double max_phase_differemce = 200;
 
   vector<double> phase_differences(4);
   phase_differences[0] = relative_phasemap.at<float>(neighbours[0]) -
@@ -177,7 +196,10 @@ vector<Point2f> choose_four_neighbouring_imagepoints(const int column_i,
 
 void paper_phasemap_intersection(const vector<Mat> &absolute_phasemaps,
                                  vector<Point2d> &new_imagepoints,
-                                 vector<Point2d> &new_average_phasevalues) {
+                                 vector<Point2d> &new_average_phasevalues,
+                                 const double max_rms, double &avg_rms) {
+
+  double cumulated_rms = 0;
 
   // Find four neighbours where phase is in one period(iterate through whole
   // mat)
@@ -185,48 +207,59 @@ void paper_phasemap_intersection(const vector<Mat> &absolute_phasemaps,
 
     for (auto column_i = 0; column_i < absolute_phasemaps[0].cols; ++column_i) {
 
-      vector<Point2f> four_neighbours =
-          choose_four_neighbouring_imagepoints(column_i, row_i);
-      bool a = are_points_relative_phase_neighbours(absolute_phasemaps[0],
-                                                    four_neighbours);
-      bool b = are_points_relative_phase_neighbours(absolute_phasemaps[1],
-                                                    four_neighbours);
+      if ((absolute_phasemaps[0].at<float>(row_i, column_i) > 0) &&
+          (absolute_phasemaps[1].at<float>(row_i, column_i) > 0)) {
 
-      if (a && b) {
+        vector<Point2f> four_neighbours =
+            choose_four_neighbouring_imagepoints(column_i, row_i);
+        double rms_phase_hor = 0;
+        double rms_phase_ver = 0;
 
-        // Do paper calculations
-        Point2d p0_horizontalphase, v0_horizontalphase, p0_verticalphase,
-            v0_verticalphase, new_imagepoint, new_phasevalues;
+        if (are_points_relative_phase_neighbours(absolute_phasemaps[0],
+                                                 four_neighbours) &&
+            are_points_relative_phase_neighbours(absolute_phasemaps[1],
+                                                 four_neighbours)) {
 
-        // Calculate average phase and intersect four neighbour plane with
-        // average plane
-        calculate_phase_intersection_lines(absolute_phasemaps[0],
-                                           four_neighbours, p0_horizontalphase,
-                                           v0_horizontalphase);
-        calculate_phase_intersection_lines(absolute_phasemaps[1],
-                                           four_neighbours, p0_verticalphase,
-                                           v0_verticalphase);
-        bool have_intersection = line_line_intersection(
-            p0_horizontalphase, v0_horizontalphase, p0_verticalphase,
-            v0_verticalphase, new_imagepoint);
-        Point2f average_phasevalues(
-            phase_average_from_neighbours(four_neighbours,
-                                          absolute_phasemaps[0]),
-            phase_average_from_neighbours(four_neighbours,
-                                          absolute_phasemaps[1]));
+          // Do paper calculations
+          Point2d p0_horizontalphase, v0_horizontalphase, p0_verticalphase,
+              v0_verticalphase, new_imagepoint, new_phasevalues;
 
-        // If image point scoordinate smaller 0, kick it
-        if (((new_imagepoint.x >= 0) && (new_imagepoint.y >= 0)) &&
-            have_intersection) {
+          // Calculate average phase and intersect four neighbour plane with
+          // average plane
+          calculate_phase_intersection_lines(
+              absolute_phasemaps[0], four_neighbours, p0_horizontalphase,
+              v0_horizontalphase, rms_phase_hor);
+          calculate_phase_intersection_lines(absolute_phasemaps[1],
+                                             four_neighbours, p0_verticalphase,
+                                             v0_verticalphase, rms_phase_ver);
+          bool have_intersection = line_line_intersection(
+              p0_horizontalphase, v0_horizontalphase, p0_verticalphase,
+              v0_verticalphase, new_imagepoint);
 
-          new_phasevalues.x = phase_average_from_neighbours(
-              four_neighbours, absolute_phasemaps[0]);
-          new_phasevalues.y = phase_average_from_neighbours(
-              four_neighbours, absolute_phasemaps[1]);
-          new_imagepoints.push_back(new_imagepoint);
-          new_average_phasevalues.push_back(new_phasevalues);
+          Point2f average_phasevalues(
+              phase_average_from_neighbours(four_neighbours,
+                                            absolute_phasemaps[0]),
+              phase_average_from_neighbours(four_neighbours,
+                                            absolute_phasemaps[1]));
+
+          // If image point scoordinate smaller 0, kick it
+          if (((new_imagepoint.x >= 0) && (new_imagepoint.y >= 0)) &&
+              have_intersection && (rms_phase_hor < max_rms) &&
+              (rms_phase_ver < max_rms)) {
+
+            new_phasevalues.x = phase_average_from_neighbours(
+                four_neighbours, absolute_phasemaps[0]);
+            new_phasevalues.y = phase_average_from_neighbours(
+                four_neighbours, absolute_phasemaps[1]);
+            new_imagepoints.push_back(new_imagepoint);
+            new_average_phasevalues.push_back(new_phasevalues);
+            cumulated_rms += (rms_phase_hor + rms_phase_ver);
+          }
         }
       }
     }
   }
+  if ((new_imagepoints.size() == 0))
+    avg_rms = 0;
+  avg_rms = cumulated_rms / ((double)new_imagepoints.size() * 2);
 }

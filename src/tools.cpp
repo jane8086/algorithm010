@@ -141,10 +141,12 @@ int save_points_to_csv(vector<Point3d> points_3d, string filename) {
 }
 
 int saveDatayml(const vector<Point2d> &image_point_calibrated,
-                const vector<Point2d> &phase_values) {
+                const vector<Point2d> &phase_values, const string &name) {
 
-  save_image_points_to_csv(image_point_calibrated, "new_imagepoints.csv");
-  save_new_phasevalues_to_csv(phase_values, "new_phasevalues.csv");
+  save_image_points_to_csv(image_point_calibrated,
+                           "new_imagepoints_max_error_" + name + ".csv");
+  save_new_phasevalues_to_csv(phase_values,
+                              "new_phasevalues_max_error_" + name + ".csv");
 }
 
 int saveDatayml(vector<Point2d> image_point, vector<Point2d> points_world_pixel,

@@ -24,7 +24,7 @@ int load_images_gray(std::vector<cv::Mat> &gray_images, int &amount_shifts,
                      int &amount_patterns);
 
 void saveDatayml(const vector<Point2d> &new_imagepoints,
-                 const vector<Point2d> &phase_values);
+                 const vector<Point2d> &phase_values, const string &name);
 
 /** @brief Saves all points used for calibration into two csv files
  *
