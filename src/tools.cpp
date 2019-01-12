@@ -19,6 +19,20 @@ int save_images(const std::vector<Mat> &images) {
   return 0;
 }
 
+int load_images_novel(vector<Mat> &novel_images, int &amount_shifts) {
+
+  for (int image_i = amount_shifts * 2 + 1; image_i < amount_shifts * 2 + 7; image_i++) {
+    string image_path = "images/pattern_cam_im" + to_string(image_i) + ".png";
+    Mat image = imread(image_path, IMREAD_GRAYSCALE);
+    if (image.empty()) {
+      cout << "Coud not read image from filesystem" << endl;
+      return -1;
+    }
+    novel_images.push_back(image);
+  }
+  return 0;
+}
+
 int load_images_phase_color(vector<Mat> &phase_images) {
 
   int amount_shifts = 3; // Can't make more shifts than three color channels!

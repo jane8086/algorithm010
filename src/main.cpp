@@ -16,14 +16,14 @@ int main(void) {
 
   vector<Mat> patterns;
   Monitor monitor(SAMSUNG_CURVED);
-  constexpr int periods = 32;
-  constexpr int amount_shifts = 3;
+  constexpr int periods = 4;
+  constexpr int amount_shifts = 4;
   constexpr int color_patterns = 0;
   constexpr int novel_method = 0;
 
   // 1. Routine to create all phase_shifting patterns
   create_patterns_all(monitor.size_x, monitor.size_y, periods, patterns,
-                      amount_shifts);
+                      amount_shifts, color_patterns, novel_method);
 
   //    //3. Show and Capture Patterns
   //    FlyCapture2::Camera camera;
@@ -38,7 +38,7 @@ int main(void) {
   vector<Mat> relative_phasemaps;
   calculate_all_phasemaps(absolute_phasemaps, relative_phasemaps, screen,
                           amount_shifts, patterns.size(), color_patterns,
-                          novel_method);
+                          novel_method, periods);
 
   // 4. Choose points based on paper
   double max_error = 0.1;
