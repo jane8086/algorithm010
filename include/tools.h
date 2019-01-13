@@ -60,4 +60,8 @@ int create_gradient(Mat &gradient, Monitor &monitor);
 int create_threshold_image(Mat &threshold_image, Monitor &monitor,
                            int &threshold_value);
 
+void average_captureimages(vector<Mat> &patterns_captured,int captured_times,vector<Mat> &average_images);
+/** @brief average the captured images' grayvalue
+  */
+
 #endif // TOOLS_H

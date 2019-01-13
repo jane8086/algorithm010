@@ -21,6 +21,7 @@ int main(void) {
   constexpr int amount_shifts = 3;
   constexpr int color_patterns = 0;
   constexpr int novel_method = 0;
+  constexpr int captured_times = 5;
 
   //1. create all phase_shifting patterns only one time
     string dir = "images";
@@ -31,12 +32,18 @@ int main(void) {
         create_patterns_all(monitor.size_x, monitor.size_y, periods, patterns,amount_shifts);
         save_images(patterns);
 
+
     }
 
+
+
   //    //3. Show and Capture Patterns
-  //    FlyCapture2::Camera camera;
-  //    vector<Mat> patterns_captured;
-  //    camera_routine(camera, patterns, patterns_captured);
+      FlyCapture2::Camera camera;
+      vector<Mat> patterns_captured;
+      vector<Mat> average_images;
+      camera_routine(camera, patterns, patterns_captured,captured_times);
+
+      average_captureimages(patterns_captured,captured_times, average_images);
 
   // 2. detect screen
   Mat screen;

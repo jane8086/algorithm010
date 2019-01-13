@@ -336,3 +336,24 @@ void planeTesting(void) {
   Point2d p0_2d(0, res2.at<double>(0));
   Point2d vector_2d(cross.at<double>(0), cross.at<double>(1));
 }
+
+
+void average_captureimages(vector<Mat> &patterns_captured,int captured_times,vector<Mat> &average_images)
+{
+
+    int width = patterns_captured[0].cols;
+    int height = patterns_captured[0].rows;
+    int num_images = patterns_captured.size()/captured_times;
+
+
+    for (int i =0; i < num_images; i++) {
+        Mat acc = Mat::zeros(width, height, CV_64FC1);
+        for(int j =i*captured_times ; j<(i*captured_times + captured_times); j++)
+        {
+            acc += patterns_captured[j];
+        }
+        acc /= captured_times;
+        average_images.push_back(acc.clone());
+    }
+}
+

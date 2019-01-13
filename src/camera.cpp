@@ -71,7 +71,7 @@ int camera_disconnect(Camera &camera) {
 }
 
 int camera_capture(Camera &camera, vector<cv::Mat> &patterns,
-                   vector<Mat> &patterns_captured) {
+                   vector<Mat> &patterns_captured, int captured_times) {
 
   if (!patterns.size()) {
     cout << "Pattern is empty!" << endl;
@@ -86,42 +86,53 @@ int camera_capture(Camera &camera, vector<cv::Mat> &patterns,
   int pattern_i = 0;
   string path = "images/";
 
-  while (pattern_i < patterns.size()) {
+ // int captured_num = patterns.size() * captured_times;
+  //captured_num : total times to capture
+  //captured_times : how many times to capture a single pattern
 
+  while (pattern_i < patterns.size()) {
     imshow("Pattern", patterns[pattern_i]);
-    waitKey(500);
+    waitKey(500 * captured_times); //increasing pattern display time
     Image new_image;
     FlyCapture2::Error error = camera.RetrieveBuffer(&new_image);
     if (error != PGRERROR_OK) {
-
       std::cout << "capture error" << std::endl;
       break;
     }
-    Image grayscale;
-    new_image.Convert(FlyCapture2::PIXEL_FORMAT_MONO8, &grayscale);
-    unsigned int rowBytes =
-        (double)grayscale.GetReceivedDataSize() / (double)grayscale.GetRows();
-    Mat frame = Mat(grayscale.GetRows(), grayscale.GetCols(), CV_8U,
-                    grayscale.GetData(), rowBytes);
 
-    // checking if frame is not empty and showing camera informations
-    if (frame.data) {
+    int captured_i = 0;
+    while(captured_i < captured_times)  //capture a sigle pattern captured_times times
+    {
+        //Image new_image;
+        Image grayscale;
+        new_image.Convert(FlyCapture2::PIXEL_FORMAT_MONO8, &grayscale);
+        unsigned int rowBytes =
+            (double)grayscale.GetReceivedDataSize() / (double)grayscale.GetRows();
+        Mat frame = Mat(grayscale.GetRows(), grayscale.GetCols(), CV_8U,
+                        grayscale.GetData(), rowBytes);
 
-      Mat capture_image = frame;
-      ostringstream name;
-      name << pattern_i + 1;
-      bool saved =
-          imwrite(path + "pattern_cam_im" + name.str() + ".png", capture_image);
+        // checking if frame is not empty and showing camera informations
+        if (frame.data) {
 
-      if (saved) {
+          Mat capture_image = frame;
+          ostringstream name,subname;
+          name << pattern_i + 1;
+          subname << captured_i + 1;
+          bool saved =
+              imwrite(path + "pattern_cam_im" + name.str() + "_" +subname.str() +".png", capture_image);
 
-        // cout << "pattern:  " << image_counter + 1 << "was saved" << endl;
-        pattern_i++;
-      } else {
-        cout << "could not save image: " << pattern_i + 1 << endl;
-        return -1;
-      }
+          if (saved) {
+
+            //cout << "pattern:  " << image_counter + 1 << "was saved" << endl;
+
+          } else {
+            cout << "could not save image: " << pattern_i + 1 << "_" << captured_i +1 << endl;
+            return -1;
+          }
+        }
+        captured_i++;
     }
+    pattern_i++;
   }
 
   destroyWindow("Pattern");
@@ -130,14 +141,14 @@ int camera_capture(Camera &camera, vector<cv::Mat> &patterns,
 }
 
 int camera_routine(Camera &camera, vector<Mat> &patterns,
-                   vector<Mat> &patterns_captured) {
+                   vector<Mat> &patterns_captured,int captured_times) {
 
   // Information not used yet-----------
   CameraInfo caminfo;
   //------------------------------
   camera_connect(camera, caminfo);
   camera_adjust(camera);
-  camera_capture(camera, patterns, patterns_captured);
+  camera_capture(camera, patterns, patterns_captured, captured_times);
   camera_disconnect(camera);
 
   return 0;

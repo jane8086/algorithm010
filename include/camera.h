@@ -8,6 +8,6 @@
  *
  */
 int camera_routine(FlyCapture2::Camera &camera, std::vector<cv::Mat> &patterns,
-                   std::vector<cv::Mat> &patterns_captured);
+                   std::vector<cv::Mat> &patterns_captured, int captured_times);
 
 #endif // CAMERA
