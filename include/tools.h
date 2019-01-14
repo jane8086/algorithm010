@@ -14,6 +14,7 @@ void save_results(const int periods, const int amount_shifts,
                   const double distError);
 
 int save_images(const std::vector<cv::Mat> &images);
+int load_images_novel(vector<Mat> &novel_images, int &amount_shifts);
 
 /** @brief Loads captured  phase shifting patterns from folder images
  *  @param color_method If 1, colored patterns are loaded

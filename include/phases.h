@@ -26,7 +26,8 @@ int calculate_all_phasemaps(vector<Mat> &absolute_phasemaps,
                             vector<Mat> &relative_phasemaps, Mat &screen,
                             int amount_phaseshifts, int amount_patterns,
                             int color_patterns,
-                            int novel_method); // flags as ENUM!!!!!!!!!!!!
+                            int novel_method,
+                            int period); // flags as ENUM!!!!!!!!!!!!
 Mat calculate_relative_phase_general(vector<Mat> &patterns);
 Mat calculate_absolute_phase_novel(Mat &relative_phase, Mat &novel,
                                    int period_sum);
