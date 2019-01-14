@@ -326,11 +326,18 @@ int calculate_all_phasemaps(vector<Mat> &absolute_phasemaps,
   if (color_patterns) {
     // Calculate relative_phase based on color patterns here....
   } else {
-
-    relative_phasemap_vertical =
-        calculate_relative_phase_general(phase_patterns_vertical);
-    relative_phasemap_horizontal =
-        calculate_relative_phase_general(phase_patterns_horizontal);
+      if(amount_phaseshifts == 3){
+          relative_phasemap_vertical =
+              calculate_relative_phase(phase_patterns_vertical);
+          relative_phasemap_horizontal =
+              calculate_relative_phase(phase_patterns_horizontal);
+      }
+      else{
+          relative_phasemap_vertical =
+              calculate_relative_phase_general(phase_patterns_vertical);
+          relative_phasemap_horizontal =
+              calculate_relative_phase_general(phase_patterns_horizontal);
+      }
 
     // Just look at ROI of screen
     relative_phasemap_vertical = relative_phasemap_vertical.mul(screen);

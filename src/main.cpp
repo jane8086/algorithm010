@@ -40,6 +40,8 @@ int main(void) {
                           amount_shifts, patterns.size(), color_patterns,
                           novel_method, periods);
 
+  imshow("rela", relative_phasemaps[1]/360);
+  waitKey();
   imshow("absolute", absolute_phasemaps[1]/(360*periods));
   waitKey();
 
