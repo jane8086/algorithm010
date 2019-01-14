@@ -42,7 +42,7 @@ int main(void) {
 
   // 4. Choose points based on paper
   double max_error = 0.1;
-  double min_max_error = 0.1;
+  double min_max_error = 0.0002;
   double avg_error = 0;
   vector<Point2d> new_image_points;
   vector<Point2d> absolute_phasemap_values;
@@ -55,10 +55,6 @@ int main(void) {
     paper_phasemap_intersection(absolute_phasemaps, new_image_points_calculate,
                                 new_absolute_phasevalues_calculate, max_error,
                                 avg_error);
-
-    vector<Point2d> new_image_points_smooth(new_image_points_calculate.size());
-    vector<Point2d> new_absolute_phasevalues_smoothed(
-        new_absolute_phasevalues_calculate.size());
     new_image_points = new_image_points_calculate;
     absolute_phasemap_values = new_image_points_calculate;
 
@@ -80,12 +76,17 @@ int main(void) {
   cout << distCoeff << endl;
 
   // 8. Rectify Points
-  vector<Point2d> rectified_image_points(new_image_points.size());
-  rectify_all_image_points(new_image_points, rectified_image_points, distCoeff);
+  //vector<Point2d> rectified_image_points(new_image_points.size());
+  //rectify_all_image_points(new_image_points, rectified_image_points, distCoeff);
 
   // 6. Calculate their Real world position
   vector<Point3d> points_world(new_image_points.size());
   calculate_realWorld_3d_coordinates(points_display, monitor, points_world);
+
+  // 7. Convert to Point3f and Point2f so we can calbrate with it
+  vector<Point3f> calib_worldpoints(points_world.size());
+  vector<Point2f> calib_imagepoints(points_world.size());
+  convert_to_floatpoints(points_world, new_image_points, calib_worldpoints, calib_imagepoints);
 
   // 4. Calculate Point Correspondences
   // vector<Point2f> image_points;
@@ -119,7 +120,7 @@ int main(void) {
 
   // 7. Calibration routine
   double repo_error = 0.0;
-  calibrationroutine(rectified_image_points, points_world, repo_error);
+  calibrationroutine(calib_imagepoints, calib_worldpoints, repo_error);
 
   // Save results
   save_results(periods, amount_shifts, color_patterns, novel_method, avg_error,

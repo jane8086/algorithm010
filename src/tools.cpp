@@ -309,3 +309,16 @@ void planeTesting(void) {
   Point2d p0_2d(0, res2.at<double>(0));
   Point2d vector_2d(cross.at<double>(0), cross.at<double>(1));
 }
+
+void convert_to_floatpoints(const vector<Point3d> &world_points, const vector<Point2d> &image_points, vector<Point3f> &worldpoints_float, vector<Point2f> &imagepoints_float){
+
+    for(auto point_i = 0; point_i<world_points.size(); ++point_i){
+
+        imagepoints_float[point_i] = image_points[point_i];
+        worldpoints_float[point_i] = world_points[point_i];
+
+    }
+
+}
+
+

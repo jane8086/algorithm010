@@ -61,4 +61,6 @@ int create_gradient(Mat &gradient, Monitor &monitor);
 int create_threshold_image(Mat &threshold_image, Monitor &monitor,
                            int &threshold_value);
 
+void convert_to_floatpoints(const vector<Point3d> &world_points, const vector<Point2d> &image_points, vector<Point3f> &worldpoints_float, vector<Point2f> &imagepoints_float);
+
 #endif // TOOLS_H
