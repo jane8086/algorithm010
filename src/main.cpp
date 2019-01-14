@@ -16,7 +16,7 @@ int main(void) {
 
   vector<Mat> patterns;
   Monitor monitor(SAMSUNG_CURVED);
-  constexpr int periods = 4;
+  constexpr int periods = 16;
   constexpr int amount_shifts = 4;
   constexpr int color_patterns = 0;
   constexpr int novel_method = 0;
@@ -40,9 +40,12 @@ int main(void) {
                           amount_shifts, patterns.size(), color_patterns,
                           novel_method, periods);
 
+  imshow("absolute", absolute_phasemaps[1]/(360*periods));
+  waitKey();
+
   // 4. Choose points based on paper
   double max_error = 0.1;
-  double min_max_error = 0.0002;
+  double min_max_error = 0.1;
   double avg_error = 0;
   vector<Point2d> new_image_points;
   vector<Point2d> absolute_phasemap_values;
