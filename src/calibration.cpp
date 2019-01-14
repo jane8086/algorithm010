@@ -50,7 +50,7 @@ int create_points_subset(const vector<Point2f> &camera_points,
 }
 
 int calibrationroutine(vector<Point2f> &camera_points,
-                       vector<Point3f> &world_points) {
+                       vector<Point3f> &world_points, double error) {
 
   // Get format for calibration method
   vector<vector<Point2f>> camera(1);
@@ -70,15 +70,14 @@ int calibrationroutine(vector<Point2f> &camera_points,
   //        flag |= cv::fisheye::CALIB_CHECK_COND;
   //        flag |= cv::fisheye::CALIB_FIX_SKEW;
   // calibrate camera
-  double reprojectionerror =
-      calibrateCamera(world, camera, distimage.size(), K, D, rvec, tvec,
-                      CV_CALIB_USE_INTRINSIC_GUESS);
+  error = calibrateCamera(world, camera, distimage.size(), K, D, rvec, tvec,
+                          CV_CALIB_USE_INTRINSIC_GUESS);
   //---
   cout << "Camera Matrix:" << endl;
   cout << K << endl;
   cout << "distCoefs: " << endl;
   cout << D << endl;
-  cout << "ReprojectionError= " << reprojectionerror << endl;
+  cout << "ReprojectionError= " << error << endl;
   //--
 
   // Save used points

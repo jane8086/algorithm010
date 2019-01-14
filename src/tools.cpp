@@ -8,6 +8,29 @@ using namespace FlyCapture2;
 using namespace std;
 using namespace cv;
 
+void save_results(const int periods, const int amount_shifts,
+                  const int color_patterns, const int novel_method,
+                  const double avg_error, const double max_error,
+                  const double dist_error) {
+
+  string y = "no";
+  ofstream fs1;
+  fs1.open("Results.txt");
+  fs1 << "Amount periods : " << periods << "\n";
+  fs1 << "Amount shifts : " << amount_shifts << "\n";
+  if (color_patterns)
+    y = "yes";
+  fs1 << "Color patterns used : " + y << "\n";
+  y = "no";
+  if (novel_method)
+    y = "yes";
+  fs1 << "Novel method used for decoding period number : " + y << "\n";
+  fs1 << "Max standart deviation allowed : " << max_error << "\n";
+  fs1 << "Average standart deviation from phasemap : " << avg_error << "\n";
+  fs1 << "distortion Error = " << dist_error;
+  fs1.close();
+}
+
 int save_images(const std::vector<Mat> &images) {
 
   // Look if folder with images already exists

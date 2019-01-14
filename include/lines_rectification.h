@@ -9,7 +9,9 @@ using namespace cv;
 using namespace std;
 
 double calculate_distortionParameter(Point_Correspondences &pc,
-                                   const Monitor &monitor);
-void rectify_all_image_points(const vector<Point2f> &image_points, vector<Point2f> &rectified_image_points, const double distCoef);
+                                     const Monitor &monitor);
+void rectify_all_image_points(const vector<Point2d> &image_points,
+                              vector<Point2d> &rectified_image_points,
+                              const double distCoef);
 
 #endif // LINES_RECTIFICATION_H

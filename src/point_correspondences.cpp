@@ -6,7 +6,7 @@ using namespace cv;
 using namespace std;
 
 Point_Correspondences::Point_Correspondences(
-    const vector<Point2f> &image_points, const vector<Point2f> &display_points)
+    const vector<Point2d> &image_points, const vector<Point2d> &display_points)
     : points_image(image_points), points_display(display_points) {}
 
 Line_Correspondences
@@ -22,8 +22,8 @@ make_line_correspondences(const Point_Correspondences &point_correspondences,
   Line_Correspondences line_correspondences;
   while (display_u_index < monitor.size_x) {
 
-      vector<Point2f> line_image_i;
-      vector<Point2f> line_display_i;
+    vector<Point2d> line_image_i;
+    vector<Point2d> line_display_i;
     for (auto point_i = 0; point_i < point_correspondences.points_image.size();
          ++point_i) {
 
@@ -37,9 +37,9 @@ make_line_correspondences(const Point_Correspondences &point_correspondences,
       }
     }
     constexpr int minimum_points_per_line = 200;
-    if(line_image_i.size() > minimum_points_per_line){
-    line_correspondences.pointlines_image.push_back(line_image_i);
-    line_correspondences.pointlines_display.push_back(line_display_i);
+    if (line_image_i.size() > minimum_points_per_line) {
+      line_correspondences.pointlines_image.push_back(line_image_i);
+      line_correspondences.pointlines_display.push_back(line_display_i);
     }
     display_u_index += stepsize;
   }

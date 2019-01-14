@@ -8,6 +8,11 @@ using namespace FlyCapture2;
 using namespace std;
 using namespace cv;
 
+void save_results(const int periods, const int amount_shifts,
+                  const int color_patterns, const int novel_method,
+                  const double avg_error, const double max_error,
+                  const double distError);
+
 int save_images(const std::vector<cv::Mat> &images);
 
 /** @brief Loads captured  phase shifting patterns from folder images

@@ -6,6 +6,12 @@
 using namespace cv;
 using namespace std;
 
+void calculate_display_coordinates(const vector<Point2d> &points_image,
+                                   const vector<Point2d> &phasemaps,
+                                   vector<Point2d> &points_image_wrong,
+                                   vector<Point2d> &points_display,
+                                   Monitor &monitor, int periods);
+
 /** @brief Calculates two absolut phasemaps vertical and horizontal
  *  @param a pixel resolution in width.
  *
@@ -38,9 +44,9 @@ int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, Mat &screen,
  * calibration
  *
  */
-void calculate_realWorld_3d_coordinates(const vector<Point2f> &display_points,
+void calculate_realWorld_3d_coordinates(const vector<Point2d> &display_points,
                                         const Monitor &monitor,
-                                        vector<Point3f> &points_world_mm);
+                                        vector<Point3d> &points_world_mm);
 
 /** @brief Calculates point correspondeces between the image and display pixels
  *
