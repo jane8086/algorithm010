@@ -51,7 +51,7 @@ bool isPowerOfTwo(int x);
  *
  */
 int load_image_ground(vector<Mat> &ground_image, int &amount_shifts,
-                      int &amount_pattern);
+                      int &amount_pattern, int period);
 
 /** @brief Create gradient image to adjust brightness of the camera
  */
@@ -62,6 +62,12 @@ int create_gradient(Mat &gradient, Monitor &monitor);
 int create_threshold_image(Mat &threshold_image, Monitor &monitor,
                            int &threshold_value);
 
-void convert_to_floatpoints(const vector<Point3d> &world_points, const vector<Point2d> &image_points, vector<Point3f> &worldpoints_float, vector<Point2f> &imagepoints_float);
+void convert_to_floatpoints(const vector<Point3d> &world_points,
+                            const vector<Point2d> &image_points,
+                            vector<Point3f> &worldpoints_float,
+                            vector<Point2f> &imagepoints_float);
+
+Mat average_captureimages(const vector<Mat> &patterns_captured,
+                          int captured_times);
 
 #endif // TOOLS_H

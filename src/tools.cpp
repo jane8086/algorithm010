@@ -44,7 +44,8 @@ int save_images(const std::vector<Mat> &images) {
 
 int load_images_novel(vector<Mat> &novel_images, int &amount_shifts) {
 
-  for (int image_i = amount_shifts * 2 + 1; image_i < amount_shifts * 2 + 7; image_i++) {
+  for (int image_i = amount_shifts * 2 + 1; image_i < amount_shifts * 2 + 7;
+       image_i++) {
     string image_path = "images/pattern_cam_im" + to_string(image_i) + ".png";
     Mat image = imread(image_path, IMREAD_GRAYSCALE);
     if (image.empty()) {
@@ -209,11 +210,9 @@ bool isPowerOfTwo(int x) {
 }
 
 int load_image_ground(vector<Mat> &ground_image, int &amount_shifts,
-                      int &amount_pattern) {
-  int period = pow(2, (amount_pattern - 2 * amount_shifts - 2) / 2);
+                      int &amount_pattern, int period) {
 
-  for (int image_i = amount_shifts * 2 + 2 * log2(period) + 1;
-       image_i < amount_shifts * 2 + 2 * log2(period) + 3; image_i++) {
+  for (int image_i = amount_pattern - 1; image_i <= amount_pattern; image_i++) {
 
     string image_path = "images/pattern_cam_im" + to_string(image_i) + ".png";
     Mat image = imread(image_path, IMREAD_GRAYSCALE);
@@ -324,15 +323,27 @@ void planeTesting(void) {
   Point2d vector_2d(cross.at<double>(0), cross.at<double>(1));
 }
 
-void convert_to_floatpoints(const vector<Point3d> &world_points, const vector<Point2d> &image_points, vector<Point3f> &worldpoints_float, vector<Point2f> &imagepoints_float){
+void convert_to_floatpoints(const vector<Point3d> &world_points,
+                            const vector<Point2d> &image_points,
+                            vector<Point3f> &worldpoints_float,
+                            vector<Point2f> &imagepoints_float) {
 
-    for(auto point_i = 0; point_i<world_points.size(); ++point_i){
+  for (auto point_i = 0; point_i < world_points.size(); ++point_i) {
 
-        imagepoints_float[point_i] = image_points[point_i];
-        worldpoints_float[point_i] = world_points[point_i];
-
-    }
-
+    imagepoints_float[point_i] = image_points[point_i];
+    worldpoints_float[point_i] = world_points[point_i];
+  }
 }
 
+Mat average_captureimages(const vector<Mat> &patterns_captured,
+                          int captured_times) {
 
+  int width = patterns_captured[0].cols;
+  int height = patterns_captured[0].rows;
+  Mat acc = Mat::zeros(width, height, CV_64FC1);
+  for (int j = 0; j < captured_times; j++) {
+    acc += patterns_captured[j];
+  }
+  acc /= captured_times;
+  return acc;
+}

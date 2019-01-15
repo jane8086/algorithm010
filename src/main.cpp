@@ -11,41 +11,46 @@
 #include "include/tools.h"
 #include "opencv2/opencv.hpp"
 #include <QDir>
+#include <ids_camera.h>
 
 int main(void) {
 
   vector<Mat> patterns;
   Monitor monitor(SAMSUNG_CURVED);
-  constexpr int periods = 16;
-  constexpr int amount_shifts = 4;
+  constexpr int periods = 32;
+  constexpr int amount_shifts = 3;
   constexpr int color_patterns = 0;
-  constexpr int novel_method = 0;
+  constexpr int novel_method = 1;
+  constexpr int take_average = 0;
 
-  // 1. Routine to create all phase_shifting patterns
+  // Routine to create all phase_shifting patterns
   create_patterns_all(monitor.size_x, monitor.size_y, periods, patterns,
                       amount_shifts, color_patterns, novel_method);
 
-  //    //3. Show and Capture Patterns
-  //    FlyCapture2::Camera camera;
-  //    vector<Mat> patterns_captured;
-  //    camera_routine(camera, patterns, patterns_captured);
+  //  // Show and Capture Patterns
+  //  FlyCapture2::Camera camera;
+  //  vector<Mat> patterns_captured;
+  //  camera_routine(camera, patterns, patterns_captured, take_average);
 
-  // 2. detect screen
+  // detect screen
   Mat screen;
 
-  // 3. Calculate absolute phasemaps
+  // Substract the offset
+  substract_offset_black(patterns.back(), patterns);
+
+  // Calculate absolute phasemaps
   vector<Mat> absolute_phasemaps;
   vector<Mat> relative_phasemaps;
   calculate_all_phasemaps(absolute_phasemaps, relative_phasemaps, screen,
                           amount_shifts, patterns.size(), color_patterns,
                           novel_method, periods);
 
-  imshow("absolute", absolute_phasemaps[1]/(360*periods));
+  imshow("lalal", absolute_phasemaps[0]);
   waitKey();
 
-  // 4. Choose points based on paper
-  double max_error = 0.1;
-  double min_max_error = 0.1;
+  // Choose points based on paper
+  double max_error = 0.01;
+  double min_max_error = 0.01;
   double avg_error = 0;
   vector<Point2d> new_image_points;
   vector<Point2d> absolute_phasemap_values;
@@ -67,62 +72,35 @@ int main(void) {
                 to_string(max_error));
   }
 
-  // 5. Calculate Display points
+  // Calculate Display points
   vector<Point2d> wrong_image_points;
   vector<Point2d> points_display;
   calculate_display_coordinates(new_image_points, absolute_phasemap_values,
                                 wrong_image_points, points_display, monitor,
                                 periods);
-  // 7. Calculate Distortion parameters
+  // Calculate Distortion parameters
   Point_Correspondences pc_input(new_image_points, points_display);
   double distCoeff = calculate_distortionParameter(pc_input, monitor);
   cout << distCoeff << endl;
 
   // 8. Rectify Points
-  //vector<Point2d> rectified_image_points(new_image_points.size());
-  //rectify_all_image_points(new_image_points, rectified_image_points, distCoeff);
+  // vector<Point2d> rectified_image_points(new_image_points.size());
+  // rectify_all_image_points(new_image_points, rectified_image_points,
+  // distCoeff);
 
-  // 6. Calculate their Real world position
+  // Calculate their Real world position
   vector<Point3d> points_world(new_image_points.size());
   calculate_realWorld_3d_coordinates(points_display, monitor, points_world);
 
-  // 7. Convert to Point3f and Point2f so we can calbrate with it
+  // Convert to Point3f and Point2f so we can calbrate with it
   vector<Point3f> calib_worldpoints(points_world.size());
   vector<Point2f> calib_imagepoints(points_world.size());
-  convert_to_floatpoints(points_world, new_image_points, calib_worldpoints, calib_imagepoints);
+  convert_to_floatpoints(points_world, new_image_points, calib_worldpoints,
+                         calib_imagepoints);
 
-  // 4. Calculate Point Correspondences
-  // vector<Point2f> image_points;
-  // vector<Point2f> points_display;
-  //  calculate_display_coordinates(points_display,
-  //      image_points, absolute_phasemaps[0], absolute_phasemaps[1], monitor,
-  //      periods, screen);
-
-  //  // Test gridpoint calculation
-  //  double stepsize = 280;
-  //  calculate_display_coordinates_on_relative_phasegrid(
-  //      points_display, image_points, absolute_phasemaps[0],
-  //      absolute_phasemaps[1], relative_phasemaps, monitor, screen, periods,
-  //      stepsize);
-  //  vector<Point3f> points_world(image_points.size());
-  //  calculate_realWorld_3d_coordinates(points_display, monitor, points_world);
-  //  saveDatayml(image_points, points_display, points_world);
-
-  //  // 6. Calculate Distortion parameters
-  //  Point_Correspondences pc_input(image_points, points_display);
-  //  double distCoeff =  calculate_distortionParameter(pc_input, monitor);
-  //  cout << distCoeff << endl;
-  //  vector<Point2f> rectified_image_points(image_points.size());
-  //  //7. Rectify Points
-  //  rectify_all_image_points(image_points, rectified_image_points, distCoeff);
-
-  //  //9. Calculate their Real world position
-  //  vector<Point3f> points_world(image_points.size());
-  //  calculate_realWorld_3d_coordinates(points_display, monitor, points_world);
-  //  saveDatayml(rectified_image_points, points_display, points_world);
-
-  // 7. Calibration routine
+  // Calibration routine
   double repo_error = 0.0;
+  cout << calib_imagepoints.size() << endl;
   calibrationroutine(calib_imagepoints, calib_worldpoints, repo_error);
 
   // Save results

@@ -26,11 +26,14 @@ int reduce_moire(vector<Mat> &phase_shift, vector<Mat> &dst_phase_shift,
  *  @tparam crop_amount crop the contour to avoid unwanted noise, DEFAULT
  * crop_amount=1
  */
-Mat detect_screen(int &amount_pattern, int &amount_shifts, int crop_amount = 1);
+Mat detect_screen(int &amount_pattern, int &amount_shifts, int period,
+                  int crop_amount = 1);
 
 int sgn(double x);
 
 int refraction(Point3f &k2dvector, Point3f &display_pixel_mm,
                Point3f &correct_display_pixel);
+
+void substract_offset_black(const Mat &blackMat, vector<Mat> &taken_images);
 
 #endif // PREPROCESSING_H

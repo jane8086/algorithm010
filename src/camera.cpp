@@ -1,4 +1,5 @@
 #include "flycapture/FlyCapture2.h"
+#include "include/tools.h"
 #include "opencv2/opencv.hpp"
 #include <iostream>
 
@@ -18,7 +19,7 @@ int camera_adjust(Camera &camera) {
   prop_g.type = GAIN;
   prop_g.autoManualMode = false;
   prop_g.absControl = true;
-  prop_g.absValue = 0;
+  prop_g.absValue = 2.408;
 
   FlyCapture2::Error error1 = camera.SetProperty(&prop);
   FlyCapture2::Error error2 = camera.SetProperty(&prop_g);
@@ -71,7 +72,7 @@ int camera_disconnect(Camera &camera) {
 }
 
 int camera_capture(Camera &camera, vector<cv::Mat> &patterns,
-                   vector<Mat> &patterns_captured) {
+                   vector<Mat> &patterns_captured, const bool take_average) {
 
   if (!patterns.size()) {
     cout << "Pattern is empty!" << endl;
@@ -91,18 +92,45 @@ int camera_capture(Camera &camera, vector<cv::Mat> &patterns,
     imshow("Pattern", patterns[pattern_i]);
     waitKey(500);
     Image new_image;
-    FlyCapture2::Error error = camera.RetrieveBuffer(&new_image);
-    if (error != PGRERROR_OK) {
+    int amount_pictures_average = 10;
+    vector<Mat> average_frames(amount_pictures_average);
+    Mat frame;
+    if (take_average) {
 
-      std::cout << "capture error" << std::endl;
-      break;
+      for (auto picture_i = 0; picture_i < amount_pictures_average;
+           ++picture_i) {
+
+        FlyCapture2::Error error = camera.RetrieveBuffer(&new_image);
+        if (error != PGRERROR_OK) {
+
+          std::cout << "capture error" << std::endl;
+          break;
+        }
+        Image grayscale;
+        new_image.Convert(FlyCapture2::PIXEL_FORMAT_MONO8, &grayscale);
+        unsigned int rowBytes = (double)grayscale.GetReceivedDataSize() /
+                                (double)grayscale.GetRows();
+        average_frames[picture_i] =
+            Mat(grayscale.GetRows(), grayscale.GetCols(), CV_8U,
+                grayscale.GetData(), rowBytes);
+      }
+
+      frame = average_captureimages(average_frames, amount_pictures_average);
+
+    } else {
+      FlyCapture2::Error error = camera.RetrieveBuffer(&new_image);
+      if (error != PGRERROR_OK) {
+
+        std::cout << "capture error" << std::endl;
+        break;
+      }
+      Image grayscale;
+      new_image.Convert(FlyCapture2::PIXEL_FORMAT_MONO8, &grayscale);
+      unsigned int rowBytes =
+          (double)grayscale.GetReceivedDataSize() / (double)grayscale.GetRows();
+      frame = Mat(grayscale.GetRows(), grayscale.GetCols(), CV_8U,
+                  grayscale.GetData(), rowBytes);
     }
-    Image grayscale;
-    new_image.Convert(FlyCapture2::PIXEL_FORMAT_MONO8, &grayscale);
-    unsigned int rowBytes =
-        (double)grayscale.GetReceivedDataSize() / (double)grayscale.GetRows();
-    Mat frame = Mat(grayscale.GetRows(), grayscale.GetCols(), CV_8U,
-                    grayscale.GetData(), rowBytes);
 
     // checking if frame is not empty and showing camera informations
     if (frame.data) {
@@ -130,14 +158,14 @@ int camera_capture(Camera &camera, vector<cv::Mat> &patterns,
 }
 
 int camera_routine(Camera &camera, vector<Mat> &patterns,
-                   vector<Mat> &patterns_captured) {
+                   vector<Mat> &patterns_captured, const bool take_average) {
 
   // Information not used yet-----------
   CameraInfo caminfo;
   //------------------------------
   camera_connect(camera, caminfo);
   camera_adjust(camera);
-  camera_capture(camera, patterns, patterns_captured);
+  camera_capture(camera, patterns, patterns_captured, take_average);
   camera_disconnect(camera);
 
   return 0;

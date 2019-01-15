@@ -297,14 +297,15 @@ int calculate_all_phasemaps(vector<Mat> &absolute_phasemaps,
 
   // Load phase images from folder
   vector<Mat> patterns_phase_captured;
-  load_images_phase(patterns_phase_captured, amount_phaseshifts, color_patterns);
+  load_images_phase(patterns_phase_captured, amount_phaseshifts,
+                    color_patterns);
 
   // reduce moire effect by using bilateral filter
   // vector<Mat> patterns_phase_filtered;
   // reduce_moire(patterns_phase_captured, patterns_phase_filtered, 10);
 
   // Detect the screen and throw out all the other points
-  screen = detect_screen(amount_patterns, amount_phaseshifts, 10);
+  screen = detect_screen(amount_patterns, amount_phaseshifts, period, 10);
 
   /*
       if(amount_phaseshifts != 3){
@@ -326,51 +327,58 @@ int calculate_all_phasemaps(vector<Mat> &absolute_phasemaps,
   if (color_patterns) {
     // Calculate relative_phase based on color patterns here....
   } else {
-
     relative_phasemap_vertical =
         calculate_relative_phase_general(phase_patterns_vertical);
     relative_phasemap_horizontal =
         calculate_relative_phase_general(phase_patterns_horizontal);
 
     // Just look at ROI of screen
+
     relative_phasemap_vertical = relative_phasemap_vertical.mul(screen);
     relative_phasemap_horizontal = relative_phasemap_horizontal.mul(screen);
   }
 
   // Calculate Period Number Mats
   vector<Mat> period_number_mats;
-    Mat absolutephase_vertical;
-    Mat absolutephase_horizontal;
+  Mat absolutephase_vertical;
+  Mat absolutephase_horizontal;
 
   if (novel_method) {
-      vector<Mat> novels;
-      load_images_novel(novels,amount_phaseshifts);
+    vector<Mat> novels;
+    load_images_novel(novels, amount_phaseshifts);
 
-      vector<Mat>::const_iterator novel_first = novels.begin();
-      vector<Mat>::const_iterator novel_last = novels.end();
+    vector<Mat>::const_iterator novel_first = novels.begin();
+    vector<Mat>::const_iterator novel_last = novels.end();
 
-      // load vertical and horizontal novel patterns, 3 vertial and 3 horizontal
-      vector<Mat> novels_vertical(novel_first, novel_first+3);
-      vector<Mat> novels_horizontal(novel_first+3, novel_last);
+    // load vertical and horizontal novel patterns, 3 vertial and 3 horizontal
+    vector<Mat> novels_vertical(novel_first, novel_first + 3);
+    vector<Mat> novels_horizontal(novel_first + 3, novel_last);
 
-      // calculate relative phase of novel patterns, period information is stored in relative phase.
-      Mat novels_vertical_period = calculate_relative_phase(novels_vertical);
-      Mat novels_horizontal_period = calculate_relative_phase(novels_horizontal);
+    // calculate relative phase of novel patterns, period information is stored
+    // in relative phase.
+    Mat novels_vertical_period = calculate_relative_phase(novels_vertical);
+    Mat novels_horizontal_period = calculate_relative_phase(novels_horizontal);
 
-      // calculate absolute phase using novel relative phase
-      absolutephase_vertical = calculate_absolute_phase_novel(
-           relative_phasemap_vertical, novels_vertical_period, period);
-      absolutephase_horizontal = calculate_absolute_phase_novel(
-           relative_phasemap_horizontal, novels_horizontal_period, period);
+    // reduce to ROI
+    novels_vertical_period = novels_vertical_period.mul(screen);
+    novels_horizontal_period = novels_horizontal_period.mul(screen);
+
+    // calculate absolute phase using novel relative phase
+    absolutephase_vertical = calculate_absolute_phase_novel(
+        relative_phasemap_vertical, novels_vertical_period, period);
+    absolutephase_horizontal = calculate_absolute_phase_novel(
+        relative_phasemap_horizontal, novels_horizontal_period, period);
+    imshow("realtive_phasemap", absolutephase_horizontal / (360 * period));
+    waitKey();
   } else {
 
     calculate_periodnumber_graycode(period_number_mats, amount_phaseshifts,
                                     amount_patterns);
 
     absolutephase_vertical = calculate_absolute_phase(
-         relative_phasemap_vertical, period_number_mats[1]);
+        relative_phasemap_vertical, period_number_mats[1]);
     absolutephase_horizontal = calculate_absolute_phase(
-         relative_phasemap_horizontal, period_number_mats[0]);
+        relative_phasemap_horizontal, period_number_mats[0]);
   }
 
   absolute_phasemaps.push_back(absolutephase_horizontal);
