@@ -17,10 +17,10 @@ int main(void) {
 
   vector<Mat> patterns;
   Monitor monitor(SAMSUNG_CURVED);
-  constexpr int periods = 32;
+  constexpr int periods = 64;
   constexpr int amount_shifts = 3;
   constexpr int color_patterns = 0;
-  constexpr int novel_method = 1;
+  constexpr int novel_method = 0;
   constexpr int take_average = 0;
 
   // Routine to create all phase_shifting patterns
@@ -45,12 +45,12 @@ int main(void) {
                           amount_shifts, patterns.size(), color_patterns,
                           novel_method, periods);
 
-  imshow("lalal", absolute_phasemaps[0]);
+  imshow("lalal", absolute_phasemaps[0] / (360 * periods));
   waitKey();
 
   // Choose points based on paper
   double max_error = 0.01;
-  double min_max_error = 0.01;
+  double min_max_error = 0.001;
   double avg_error = 0;
   vector<Point2d> new_image_points;
   vector<Point2d> absolute_phasemap_values;
