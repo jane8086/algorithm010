@@ -56,16 +56,18 @@ Point2f distort_point(const Point2f &undistorted_point,
   return distorted;
 }
 
-void rectify_all_image_points(const vector<Point2f> &image_points, vector<Point2f> &rectified_image_points, const double distCoef){
+void rectify_all_image_points(const vector<Point2f> &image_points,
+                              vector<Point2f> &rectified_image_points,
+                              const double distCoef) {
 
-    assert(image_points.size() > 0);
+  assert(image_points.size() > 0);
 
-    for(unsigned long point_i = 0; point_i < image_points.size(); ++point_i){
+  for (unsigned long point_i = 0; point_i < image_points.size(); ++point_i) {
 
-        Point2f rectified_point = distort_point(image_points[point_i], Point(644,483), distCoef);
-        rectified_image_points[point_i] = rectified_point;
-
-    }
+    Point2f rectified_point =
+        distort_point(image_points[point_i], Point(644, 483), distCoef);
+    rectified_image_points[point_i] = rectified_point;
+  }
 }
 
 vector<vector<Point2f>>
@@ -89,8 +91,8 @@ distortLinePointsdM(const Point2f &dist_center,
 }
 
 double calculate_distortionParameter(Point_Correspondences &pc,
-                                   const Monitor &monitor) {
-  constexpr int stepsize = 20;
+                                     const Monitor &monitor) {
+  constexpr int stepsize = 10;
   constexpr int display_u_i = 0;
   auto line_correspondences =
       make_line_correspondences(pc, monitor, stepsize, display_u_i);
@@ -105,13 +107,14 @@ double calculate_distortionParameter(Point_Correspondences &pc,
   for (double distCoeff_i = 0; distCoeff_i > magic_value;
        distCoeff_i -= 0.000000001, i++) {
 
-    distorted_imagepoints = distortLinePointsdM(
-        Point(644, 483), line_correspondences.pointlines_image, distCoeff_i);
+    distorted_imagepoints =
+        distortLinePointsdM(Point2f(644.0, 483.0),
+                            line_correspondences.pointlines_image, distCoeff_i);
     fitted_lines = fitLines(distorted_imagepoints);
     distances.push_back(costvalue(distorted_imagepoints, fitted_lines));
     if (i > 1 && distances[i] > distances[i - 1]) {
 
-      return  distCoeff_i;
+      return distCoeff_i;
     }
   }
 }

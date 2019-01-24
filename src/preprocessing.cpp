@@ -24,7 +24,12 @@ int convert_binary(vector<Mat> &graycode_images){
 
 int reduce_moire(vector<Mat> &phase_shift, vector<Mat> &dst_phase_shift,int diameter=10)
 {
-    if (( diameter <= 0) || (diameter <10))
+    if (diameter == 0)
+    {
+        dst_phase_shift = phase_shift;
+        return 0;
+    }
+    if (( diameter < 0) || (diameter <10))
     {
         cout << "Invalid value of diameter. Suggested: 10->80" << endl;
         return -1;
@@ -119,7 +124,6 @@ int remove_noise(Mat &relative, Mat &frame)
     return 0;
 }
 
-
 int sgn(double x)
 {
     if (x<0) return -1;
@@ -160,4 +164,11 @@ int refraction(Point3f &k2dvector, Point3f &display_pixel_mm, Point3f &correct_d
     return 0;
 }
 
+void substract_offset_black(const Mat &blackMat, vector<Mat> &taken_images) {
+
+  for (unsigned long i = 0; i < taken_images.size() - 1; ++i) {
+
+    taken_images[i] = taken_images[i] - blackMat;
+  }
+}
 

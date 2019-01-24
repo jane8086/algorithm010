@@ -34,6 +34,12 @@ Mat calculate_relative_phase(vector<Mat> &patterns);
 int calculate_absolute_phasemaps(vector<Mat> &absolute_phasemaps, Mat &screen,
                                  int &amount_phaseshifts, int amount_patterns,
                                  int &color_patterns, int &novel_method);
+
+int extract_zerophasemap(Mat &screen, Mat &extract_point, vector<Mat> &period_number_mats,
+                         int amount_phaseshifts, int amount_patterns,
+                         int color_patterns, int novel_method);
+
+
 /** @brief Transforms the display pixels into 3D coordinates in mm for calibration
  *
  */
@@ -44,10 +50,12 @@ void calculate_realWorld_3d_coordinates(const vector<Point2f> &display_points, c
 /** @brief Calculates point correspondeces between the image and display pixels
  *
  */
-void  calculate_display_coordinates(vector<Point2f> &points_display,
-    vector<Point2f> &points_image, Mat &absolutephasemap_hor,
-    Mat &absolutephasemap_ver,Monitor &monitor, int periods, Mat &screen);
+//void  calculate_display_coordinates(vector<Point2f> &points_display,
+//    vector<Point2f> &points_image, Mat &absolutephasemap_hor,
+//    Mat &absolutephasemap_ver,Monitor &monitor, int periods, Mat &screen);
 
+void  calculate_display_coordinates(vector<Point2f> &points_display,
+    vector<Point2f> &points_image, vector<Mat> &period_number_mats, Monitor &monitor, int periods, Mat &extract_point);
 
 Mat calculate_relative_phase_general(vector<Mat> &patterns);
 #endif // PHASES_H

@@ -30,9 +30,19 @@ Mat detect_screen(int &amount_pattern, int &amount_shifts, int crop_amount = 1);
 
 int remove_noise(Mat &relative, Mat &frame);
 
+int detect_edge_phase_vertical(Mat &relative, Mat &frame, Mat &edge_map);
+int detect_edge_phase_horizontal(Mat &relative, Mat &frame, Mat &edge_map);
+
+int correct_period_vertical(Mat &extract_point, Mat &period_number_vertical);
+
+int correct_period_horizontal(Mat &extract_point, Mat &period_number_horizontal);
+
 int sgn(double x);
 
 int refraction(Point3f &k2dvector, Point3f &display_pixel_mm,
                Point3f &correct_display_pixel);
+
+
+void substract_offset_black(const Mat &blackMat, vector<Mat> &taken_images);
 
 #endif // PREPROCESSING_H

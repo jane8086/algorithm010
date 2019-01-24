@@ -5,7 +5,8 @@
 using namespace cv;
 using namespace std;
 
-int chose_random(const vector<Point2f> &camera_points, const vector<Point3f> &world_points,
+int chose_random(const vector<Point2f> &camera_points,
+                 const vector<Point3f> &world_points,
                  vector<vector<Point2f>> &camera,
                  vector<vector<Point3f>> &world, int amount) {
 
@@ -49,17 +50,13 @@ int create_points_subset(const vector<Point2f> &camera_points,
 }
 
 int calibrationroutine(vector<Point2f> &camera_points,
-                       vector<Point3f> &world_points) {
+                       vector<Point3f> &world_points, double error) {
 
   // Get format for calibration method
   vector<vector<Point2f>> camera(1);
   vector<vector<Point3f>> world(1);
   camera[0] = camera_points;
   world[0] = world_points;
-
-  // Undistort first with old method...
-  create_points_subset(camera_points, world_points, camera, world,
-  PointSubset::Random_500);
 
   // Calibrate with fisheye functions
   vector<Mat> rvec;
@@ -73,19 +70,18 @@ int calibrationroutine(vector<Point2f> &camera_points,
   //        flag |= cv::fisheye::CALIB_CHECK_COND;
   //        flag |= cv::fisheye::CALIB_FIX_SKEW;
   // calibrate camera
-  double reprojectionerror =
-      calibrateCamera(world, camera, distimage.size(), K, D, rvec, tvec,
-                      CV_CALIB_USE_INTRINSIC_GUESS);
+  error = calibrateCamera(world, camera, distimage.size(), K, D, rvec, tvec,
+                          CV_CALIB_USE_INTRINSIC_GUESS);
   //---
   cout << "Camera Matrix:" << endl;
   cout << K << endl;
   cout << "distCoefs: " << endl;
   cout << D << endl;
-  cout << "ReprojectionError= " << reprojectionerror << endl;
+  cout << "ReprojectionError= " << error << endl;
   //--
 
   // Save used points
-  saveDatayml(camera[0], world[0]);
+  // saveDatayml(camera[0], world[0]);
 
   // Mat optimal_cameraMatrix = getOptimalNewCameraMatrix(cameraMatrix,
   // distCoeffs, white_screen.size(), 0, Size());
@@ -105,8 +101,8 @@ int calibrationroutine(vector<Point2f> &camera_points,
   Mat map1, map2, rview;
   Mat I = Mat::eye(3, 3, CV_8U);
   // initUndistortRectifyMap(opt_cameraMatrix, distCoeffs, Mat(), Mat(),
-  // distimage.size(), CV_16SC2, map1, map2);  remap(distimage, rview, map1, map2,
-  // INTER_LINEAR);
+  // distimage.size(), CV_16SC2, map1, map2);  remap(distimage, rview, map1,
+  // map2, INTER_LINEAR);
 
   return 0;
 }
