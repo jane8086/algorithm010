@@ -72,7 +72,7 @@ int detect_edge_phase_vertical(Mat &relative, Mat &frame, Mat &edge_map)
 //                detect_edge.at<uchar>(i,j-1) = 0;
 //                detect_edge.at<uchar>(i,j-2) = 0;
 //                detect_edge.at<uchar>(i,j-2) = 0;
-                if ((int)dst.at<char>(i,j) > 60) {
+                if ((int)dst.at<char>(i,j) > 40) {
 //                    cout << (int)dst.at<uchar>(i,j) << "     ";
 //                    int min = find_minimal_phase_edge(dst,i,j,true);
 //                    cout << "min"<< abs(min-j) << endl;
@@ -163,7 +163,7 @@ int detect_edge_phase_horizontal(Mat &relative, Mat &frame, Mat &edge_map)
         {
             if (detect_edge.at<uchar>(i,j) == 1)
             {
-                if (dst.at<char>(i,j) > 50)
+                if (dst.at<char>(i,j) > 40)
                 {
                     int n = i;
                     while (n > i -5)
@@ -218,7 +218,7 @@ int correct_period_vertical(Mat &extract_point, Mat &period_number_vertical)
                 float sum = 0;
                 for (int i = row-3; i < row+3; i++)
                 {
-                    for (int j = col-10; j < col-2; j++)
+                    for (int j = col+5; j < col+15; j++)
                     {
                         sum = sum + period_number_vertical.at<uchar>(i,j);
                         count++;
@@ -226,11 +226,12 @@ int correct_period_vertical(Mat &extract_point, Mat &period_number_vertical)
                 }
                 int period = round(sum/count);
 //                cout << period << " ";
-                if (((int)period_number_vertical.at<uchar>(row,col) - period < 1))
+                if (((int)period_number_vertical.at<uchar>(row,col) - period == -1))
                 {
-                    period_number_vertical.at<uchar>(row,col) = period+1;
+                    period_number_vertical.at<uchar>(row,col) = period;
 //                    cout << " Corect:" << (int)period_number_vertical.at<uchar>(row,col) << endl;
                 }
+                period_number_vertical.at<uchar>(row,col) = period;
             }
         }
     }
@@ -249,9 +250,9 @@ int correct_period_horizontal(Mat &extract_point, Mat &period_number_horizontal)
 
                 float count = 0;
                 float sum = 0;
-                for (int i = row-7; i < row-2; i++)
+                for (int i = row+3; i < row+10; i++)
                 {
-                    for (int j = col-3; j < col+3; j++)
+                    for (int j = col-5; j < col+5; j++)
                     {
                         sum = sum + period_number_horizontal.at<uchar>(i,j);
                         count++;
@@ -259,11 +260,12 @@ int correct_period_horizontal(Mat &extract_point, Mat &period_number_horizontal)
                 }
                 int period = round(sum/count);
 //                cout << period << " ";
-                if (((int)period_number_horizontal.at<uchar>(row,col) - period < 1))
+                if (((int)period_number_horizontal.at<uchar>(row,col) - period == -1))
                 {
-                    period_number_horizontal.at<uchar>(row,col) = period+1;
+                    period_number_horizontal.at<uchar>(row,col) = period;
 //                    cout << " Corect:" << (int)period_number_horizontal.at<uchar>(row,col) << endl;
                 }
+                period_number_horizontal.at<uchar>(row,col) = period;
             }
         }
     }
@@ -271,3 +273,39 @@ int correct_period_horizontal(Mat &extract_point, Mat &period_number_horizontal)
 
 }
 
+void detect_minimal_phasevalue(Mat &relative_vertical, Mat &relative_horizontal,Mat &screen, Mat &point_map)
+{
+    int row = relative_vertical.rows;
+    int col = relative_vertical.cols;
+    Mat map = Mat(row,col,CV_8U, Scalar(0));
+    for (int i = 0; i < row; i++) {
+        for (int j = 0; j < col; j++) {
+            if (screen.at<uchar>(i,j) == 1) {
+                if ((relative_vertical.at<float>(i,j) < 5) || (relative_horizontal.at<float>(i,j) < 5)){
+                    map.at<uchar>(i,j) = 1;
+                }
+            }
+        }
+    }
+    point_map = map.clone();
+}
+
+void remove_duplicate_zerophase(Mat &extract_point) {
+    int row = extract_point.rows;
+    int col = extract_point.cols;
+    for (int i = 0; i < row; i++) {
+        for (int j = 0; j < col; j++) {
+            if (extract_point.at<uchar>(i,j) == 1) {
+                for (int k=1; k<5; k++)
+                {
+                    if (extract_point.at<uchar>(i,j+k)==1) {
+                        extract_point.at<uchar>(i,j+k-1)=0;
+                    }
+                    if (extract_point.at<uchar>(i+k,j)==1) {
+                        extract_point.at<uchar>(i+k-1,j)=0;
+                    }
+                }
+            }
+        }
+    }
+}
