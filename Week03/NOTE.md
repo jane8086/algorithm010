@@ -1,6 +1,8 @@
 # 学习笔记
 
+
 + 递归模版
+```python
 def recursion(level, param1, param2, ...):
     # recursion terminator 递归终结条件
     if level > MAX_LEVEL:
@@ -13,9 +15,11 @@ def recursion(level, param1, param2, ...):
     self.recursion(level+1, p1, ...)
     
     # reverse the current level status if needed  清理当前层
-    
+```
+
 
 + 回溯模版
+```python
 result = []
 def backtrack(路径, 选择列表):
     if 满足结束条件:
@@ -26,8 +30,11 @@ def backtrack(路径, 选择列表):
         做选择
         backtrack(路径, 选择列表)
         撤销选择
+```
+
 
 + 分治模版
+```python
 def divide_conquer(problem, parma1, param2, ...):
     # recursion terminator 
     if problem is None:
@@ -48,3 +55,4 @@ def divide_conquer(problem, parma1, param2, ...):
     result = process_result(subresult1, subresult2, subresult3, ...)
     
     # revert the current level states
+```
