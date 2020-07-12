@@ -48,7 +48,8 @@ def postorder(node):
 
 + Heap
     + 堆可以看作是一个API, heap[0] 可以返回这个堆的最大值或者是最小值
-    + python 中的堆默认为是小顶堆
+    + python 中的堆默认为是小顶堆 
+    + [python heapq 的源码](https://docs.python.org/3/library/heapq.html)
 ```python
 import heapq as h
 
@@ -75,3 +76,34 @@ heap = nums
 h.heapify(heap)
 
 ```
+哈希表（字典）、映射、集合 有关题：
+
+|分类|题目|
+|:------:|:------:|
+|字典|[LC 242 有效字母异位词](https://leetcode-cn.com/problems/valid-anagram/description/)|
+|字典|[LC 49 字母异位词分组](https://leetcode-cn.com/problems/group-anagrams/)|
+|字典|[LC 1 两数之和](https://leetcode-cn.com/problems/two-sum/description/)|
+
+树、二叉树、[二叉搜索树](https://visualgo.net/zh/bst?slide=1) 有关题：
+
+|分类|题目|
+|:------:|:------:|
+|二叉树遍历|[LC94 二叉树的中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)|
+|二叉树遍历|[LC144 二叉树的前序遍历](https://leetcode-cn.com/problems/binary-tree-preorder-traversal/)|
+|N叉树遍历|[LC590 N叉树的后序遍历](https://leetcode-cn.com/problems/n-ary-tree-postorder-traversal/)|
+|N叉树遍历|[LC589 N叉树的前序遍历](https://leetcode-cn.com/problems/n-ary-tree-preorder-traversal/description/)|
+|N叉树遍历|[LC429 N叉树的层序遍历](https://leetcode-cn.com/problems/n-ary-tree-level-order-traversal/)|
+
+堆、二叉堆、图 相关题：
+
+|分类|题目|
+|:------:|:------:|
+|堆|[剑指 Offer 40. 最小的k个数](https://leetcode-cn.com/problems/zui-xiao-de-kge-shu-lcof/)|
+|堆|[239. 滑动窗口最大值](https://leetcode-cn.com/problems/sliding-window-maximum/)|
+|堆|[剑指 Offer 49. 丑数](https://leetcode-cn.com/problems/chou-shu-lcof/)|
+|堆|[347. 前 K 个高频元素](https://leetcode-cn.com/problems/top-k-frequent-elements/)|
+|源码实现，堆|[HeapSort](https://www.geeksforgeeks.org/heap-sort/)|
+|图|[连通图个数](https://leetcode-cn.com/problems/number-of-islands/)|
+|图|[拓扑排序 (Topological Sorting)](https://zhuanlan.zhihu.com/p/34871092)|
+|图|[最短路径（Shortest Path）：Dijkstra](https://www.bilibili.com/video/av25829980?from=search&seid=13391343514095937158)|
+|图|[最小生成树 (Minimum Spanning Tree)](https://www.bilibili.com/video/av84820276?from=search&seid=17476598104352152051)|

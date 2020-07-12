@@ -56,3 +56,31 @@ def divide_conquer(problem, parma1, param2, ...):
     
     # revert the current level states
 ```
+
+泛型递归、树的递归 相关题：
+
+|分类|题目|
+|:------:|:------:|
+|泛型递归|[70. 爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)|
+|泛型递归|[22. 括号生成](https://leetcode-cn.com/problems/generate-parentheses/)|
+|泛型递归|[77. 组合](https://leetcode-cn.com/problems/combinations/)|
+|泛型递归|[46. 全排列](https://leetcode-cn.com/problems/permutations/)|
+|泛型递归|[47. 全排列 II](https://leetcode-cn.com/problems/permutations-ii/)|
+|树的递归|[226. 翻转二叉树](https://leetcode-cn.com/problems/invert-binary-tree/description/)|
+|树的递归|[98. 验证二叉搜索树](https://leetcode-cn.com/problems/validate-binary-search-tree/)|
+|树的递归|[104. 二叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/)|
+|树的递归|[111. 二叉树的最小深度](https://leetcode-cn.com/problems/minimum-depth-of-binary-tree/)|
+|树的递归|[297. 二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)|
+|树的递归|[236. 二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)|
+|树的递归|[105. 从前序与中序遍历序列构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/)|
+
+分治、回溯 相关题：
+
+|分类|题目|
+|:------:|:------:|
+|分治|[50. Pow(x, n)](https://leetcode-cn.com/problems/powx-n/) [牛顿迭代法](http://www.matrix67.com/blog/archives/361) [代码](http://www.voidcn.com/article/p-eudisdmk-zm.html)|  
+|分治|[78. 子集](https://leetcode-cn.com/problems/subsets/)|
+|分治|[169. 多数元素](https://leetcode-cn.com/problems/majority-element/description/)|
+|分治|[17. 电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)|
+|分治|[51. N皇后](https://leetcode-cn.com/problems/n-queens/)|
+|分治|[]()|
